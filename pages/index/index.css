@@ -1,0 +1,295 @@
+
+
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scroll-behavior:smooth;
+}
+
+@font-face {
+    font-family: 'Eina';
+    src: url('fonts/eina.woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ArvoBold';
+    src: url('fonts/Arvo-Bold.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Neuz';
+    src: url('fonts/Neuz.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* HEADER OVERALL */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: auto;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-size: 2vw;
+
+    background-color: #5285AC;
+
+    transition: all .5s ease;
+    cursor: pointer;
+
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 10px 10px rgba(0,0,0, 0.1);
+
+
+    font-family: 'Eina', sans-serif;
+}
+
+header.scrolled {
+    padding: .5rem;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 5px rgba(0,0,0, 0.1);
+
+    transition: all .5s ease;
+}
+
+header nav {
+    font-size: 2vw;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    display: inline;
+    list-style-type:none;
+    margin: 0 20px;
+    padding: 0;
+}
+
+
+
+header.scrolled nav {
+    margin-top: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    list-style-type: none;
+}
+
+
+/* HEADER A TAGS */
+header a {
+    color: #FAE8E0;
+    text-decoration: none;
+    margin-right: 30px;
+}
+
+header a:hover {
+    color: #30415D;
+    text-decoration: none;
+}
+
+header.scrolled a {
+    display:inline;
+}
+
+
+/* BODY OVERALL */
+body {
+    line-height: 1.6;
+
+}
+.spacer {
+    height: .25rem;
+}
+.bt-spacer {
+    height: 3vh;
+    box-shadow: 0 5px 5px rgba(0,0,0, 0.1);
+
+}
+
+
+
+main {
+    width:100%;
+    background-color: #5285AC;
+
+
+}
+
+.content-section {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5vw;
+    margin-bottom: 1.5vw;
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+    width:100%;
+
+}
+
+.content-section.reverse {
+    flex-direction: row-reverse;
+    width: 100%;
+
+}
+
+
+/* IMAGE CONTAINERS */
+
+.image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.image-container.reverse {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+img {
+    border: .3vw solid #EEEDE7;
+    max-width: 80%;
+    height: auto;
+    display: block;
+}
+
+
+/* TEXT CONTAINERS */
+.text-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding-right: 6vw; 
+
+}
+
+.text-container.reverse {
+    flex: 1;
+    display: flex;
+    padding-left: 6vw;
+}
+
+
+.tc-inner {
+    justify-content: center;
+
+}
+
+
+h2 {
+    font-family: 'ArvoBold';
+    font-size: 3vw;
+    margin-bottom: 10px;
+    color: #EEEDE7;
+}
+
+p {
+    font-family:'Neuz';
+    font-size: 2vw;
+    color: #EEEDE7;
+}
+
+
+
+/* LINK BUTTONS */
+.custom-button {
+    display: inline-block;
+    padding: 1vw 2vw;
+
+    margin-top: 1.3vw;
+    border: 6px solid #EEEDE7;
+
+    background: linear-gradient(90deg, #EEEDE7 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    color: #EEEDE7;
+    font-family: 'ArvoBold';
+    font-size: 1.5vw;
+    text-align: center;
+    cursor: pointer;
+    transition: all .4s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.custom-button:hover {
+    background-position: 0 0;
+    color: #000;
+}
+
+.custom-button span {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+
+.custom-button-lt {
+    display: inline-block;
+    padding: 1vw 2vw;
+
+    margin-top: 1.3vw;
+    border: 6px solid #14C494;
+
+    background: linear-gradient(90deg, #14C494 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    color: #14C494;
+    font-family: 'ArvoBold';
+    font-size: 1.5vw;
+    text-align: center;
+    cursor: pointer;
+    transition: all .4s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.custom-button-lt:hover {
+    background-position: 0 0;
+    color: #EEEDE7;
+}
+
+.custom-button-lt span {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+
+.kit-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding-top: 2vw;
+
+    background-color: #EEEDE7;
+    box-shadow: 0 4px 16px rgba(0,0,0, 0.2);
+    padding-bottom: 2vh;
+
+
+}
+
+.kit-section h2 {
+    justify-content: center;
+    color: #14C494;
+}
+
+.kit-section p {
+    color: #14C494;
+}

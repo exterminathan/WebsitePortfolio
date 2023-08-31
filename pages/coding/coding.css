@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Neuz';
+    src: url('fonts/Neuz.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    height: 100%;
+    margin: 0;
+    background-color: #5285AC;
+    color: #FAE8E0;
+    font-family: 'Neuz';
+    font-size: 3vw;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body a {
+
+    text-decoration: underline;
+    color: #FAE8E0;
+
+}

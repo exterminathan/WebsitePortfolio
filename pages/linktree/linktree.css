@@ -1,0 +1,181 @@
+@font-face {
+    font-family: 'Eina';
+    src: url('fonts/eina.woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ArvoBold';
+    src: url('fonts/Arvo-Bold.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Neuz';
+    src: url('fonts/Neuz.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+.linktree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vh;
+    width: 100%;
+    max-width: fit-content;
+    box-sizing: border-box;
+}
+
+.linktree-button {
+    text-decoration: none;
+    color: #4a6273;
+    background-color: transparent;
+    border: 2px solid #4a6273;
+    font-family: 'Eina';
+    font-size: 2vw;
+    text-align: center;
+    width: 50vw;
+    height: 5vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: background-color 0.3s, transform 0.3s, border-color 0.3s, color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.linktree-button:hover {
+    background-color: #E7625F;
+    border-color: #f2f2f2;
+    color: #f2f2f2;
+    transform: scale(1.1);
+    border:none;
+}
+
+.link-1:hover {
+    /* Instagram */
+    background-color: #E1306C;
+}
+.link-2:hover {
+    /* GitHub */
+    background-color: #333;
+}
+.link-3:hover {
+    /* ArtStation */
+    background-color: #2596be;
+}
+.link-4:hover {
+    background-color: #17e443;
+}
+.link-5:hover {
+    background-color: #29d5f3;
+}
+.link-6:hover {
+    background-color: #14a0f1;
+}
+.link-7:hover {
+    background-color: #bd14df;
+}
+
+
+
+.lt-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: .5vh;
+}
+
+
+
+
+.profile-picture {
+    width: 15vw;
+    height: 15vw;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.full-name {
+    font-family: 'Neuz';
+    font-size: 5vh;
+    color: #4a6273;
+    font-weight: bold;
+    margin-bottom: 1vh;
+}
+
+.contact-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+    text-align: center;
+    margin-bottom: 2vh;
+}
+
+.contact-info {
+    font-family: 'Neuz';
+    font-size: 2.5vh;
+    color: #4a6273;
+    font-weight: bold;
+    margin: 0;
+}
+
+.contact-link {
+    color: #4a6273;
+    text-decoration: none;
+}
+
+.contact-link:hover {
+    color: #E7625F;
+}
+
+.comingsoon-section h2 {
+    font-family: 'Neuz';
+    padding-top: 2vw;
+    justify-content: center;
+    text-align: center;
+    color: #4a6273;
+}
+
+
+
+
+
+
+.back-to-index {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4a6273;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: 'Eina';
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.back-to-index:hover {
+    background-color: #333333;
+}
