@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const toggleButton = document.getElementById('modeToggle');
+  const switchInput = document.getElementById('mySwitch');
 
   // Init Dark/Light Toggle 
-  toggleButton.textContent = '🌙';
+  //toggleButton.textContent = '🌙';
 
   // D/L Toggle Listener
-  toggleButton.addEventListener('click', () => {
+  switchInput.addEventListener('click', () => {
     const isLight = document.body.classList.toggle('light');
-    toggleButton.textContent = isLight ? '☀️' : '🌙';
+    //toggleButton.textContent = isLight ? '☀️' : '🌙';
   });
 
   // Toggle Main Project
@@ -20,11 +20,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Toggle Other Projects
   document.querySelectorAll('.project-row').forEach(row => {
     row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      detail.classList.toggle('visible');
+      const targetId = row.dataset.target;
+      const detail    = document.getElementById(targetId);
+      const isOpen    = !detail.classList.contains('visible');
+
+      // Close all open rows/details
+      document.querySelectorAll('.project-row.condensed').forEach(openRow => {
+        openRow.classList.remove('condensed');
+        document
+          .getElementById(openRow.dataset.target)
+          .classList.remove('visible');
+      });
+
+      // If the clicked one was closed, open it
+      if (isOpen) {
+        detail.classList.add('visible');
+        row.classList.add('condensed');
+      }
     });
   });
-
+  
   // Phone Popup Toggle 
     const phoneIcon = document.querySelector('.phone-icon');
     const phonePopup = phoneIcon.querySelector('.phone-popup');

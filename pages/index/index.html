@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nathan Shturm Portfolio</title>
+  <title>Nathan Shturm</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://use.typekit.net/hfp1oou.css">
   <link rel="stylesheet" href="index.css" />
@@ -14,26 +14,43 @@
       <div class="title-line">
         <h1>Nathan Shturm</h1>
         <span class="subtitle">
-          Game Developer&nbsp;|&nbsp;
-          <a class="linkedin" href="https://www.linkedin.com/in/nathan-shturm/" target="_blank">LinkedIn</a>
+          Game Developer
         </span>
       </div>
-      <button id="modeToggle" aria-label="Toggle light/dark mode">🌙</button>
+      <div class="header-links">
+        <a class="linkedin-link" href="https://www.linkedin.com/in/nathan-shturm/" target="_blank">LinkedIn</a>
+        <a class="resume-link" href="path/to/your_resume.pdf" target="_blank">Resume</a>
+      <label class="switch">
+        <input type="checkbox" id="mySwitch">
+        <span class="slider round"></span>
+      </label>
     </div>
   </header>
 
   <main>
+    <span class="spacer"></span>
+
     <!-- Main Project -->
     <div class="main-project-wrapper">
       <div class="main-project-container">
         <img src="../../images/steam_main_capsule.png" alt="Main Project">
         <div class="overlay">SENIOR CAPSTONE PROJECT</div>
+        <!-- <img src="../../images/out_on_steam.png" alt="Out on Steam" class="decorative-img"> -->
       </div>
+
     </div>
 
     <div id="main-project" class="project-detail">
-      <h2>Main Project Title</h2>
-      <p>Brief description of your biggest project. Highlight key features, technologies used, and impact.</p>
+      <h2>Quartermaster
+         <a href="https://store.steampowered.com/app/3673980/Quartermaster/" target="_blank" rel="noopener">
+          <img src="../../images/out_on_steam.png"
+              alt="Out on Steam"
+              class="mini-image">
+        </a>
+      </h2>
+      <div class="single-div"></div>
+      <p>An online PvE co-op action game for up to 4 players.</p>
+      <p>I was responsible for </p>
     </div>
 
     <!-- Stylized Divider -->
@@ -44,18 +61,19 @@
     <!-- Other Projects List -->
     <div class="projects-list">
       <div class="project-row" data-target="proj1">
-        <img src="images/project1.png" alt="Project 1">
+        <img src="../../images/quackbot_thumb.PNG" alt="Project 1">
         <div class="info">
-          <h3>Project One</h3>
-          <p>Short description of Project One.</p>
+          <h3>Duck Around</h3>
+          <p>You're a duck robot. In a factory. I wonder what kinda goofy stuff you can get up to...</p>
         </div>
       </div>
       <div id="proj1" class="project-detail">
-        <h4>Project One Details</h4>
-        <p>More detailed information about Project One, including features, your role, and technologies used.</p>
+        <h4>Duck Around</h4>
+        <p>Custom Two-Bone IK Player Movement.</p>
+        <p>All models, textures, audio created by me.</p>
       </div>
 
-      <div class="project-row" data-target="proj2">
+      <!-- <div class="project-row" data-target="proj2">
         <img src="images/project2.png" alt="Project 2">
         <div class="info">
           <h3>Project Two</h3>
@@ -65,7 +83,7 @@
       <div id="proj2" class="project-detail">
         <h4>Project Two Details</h4>
         <p>More detailed information about Project Two, including features, your role, and technologies used.</p>
-      </div>
+      </div> -->
     </div>
   </main>
 
