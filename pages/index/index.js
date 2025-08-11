@@ -12,43 +12,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Toggle Main Project
   const mainContainer = document.querySelector('.main-project-container');
-  const mainDetail    = document.getElementById('main-project');
+  const mainDetail = document.getElementById('main-project');
+
   mainContainer.addEventListener('click', () => {
-    mainDetail.classList.toggle('visible');
+    // close any open other-projects
+    document.querySelectorAll('.project-row.condensed').forEach(openRow => {
+      openRow.classList.remove('condensed');
+      document.getElementById(openRow.dataset.target).classList.remove('visible');
+    });
+
+    // toggle main project
+    const isOpen = !mainDetail.classList.contains('visible');
+    mainContainer.classList.toggle('condensed', isOpen);
+    mainDetail.classList.toggle('visible', isOpen);
   });
 
   // Toggle Other Projects
   document.querySelectorAll('.project-row').forEach(row => {
     row.addEventListener('click', () => {
-      const targetId = row.dataset.target;
-      const detail    = document.getElementById(targetId);
-      const isOpen    = !detail.classList.contains('visible');
+      // close main project if open
+      mainDetail.classList.remove('visible');
+      mainContainer.classList.remove('condensed');
 
-      // Close all open rows/details
+      // close any other open projects
       document.querySelectorAll('.project-row.condensed').forEach(openRow => {
         openRow.classList.remove('condensed');
-        document
-          .getElementById(openRow.dataset.target)
-          .classList.remove('visible');
+        document.getElementById(openRow.dataset.target).classList.remove('visible');
       });
 
-      // If the clicked one was closed, open it
-      if (isOpen) {
-        detail.classList.add('visible');
-        row.classList.add('condensed');
-      }
+      // now toggle this one
+      const targetId = row.dataset.target;
+      const detail = document.getElementById(targetId);
+      const isOpen = !detail.classList.contains('visible');
+      row.classList.toggle('condensed', isOpen);
+      detail.classList.toggle('visible', isOpen);
     });
   });
-  
+
   // Phone Popup Toggle 
-    const phoneIcon = document.querySelector('.phone-icon');
-    const phonePopup = phoneIcon.querySelector('.phone-popup');
+  const phoneIcon = document.querySelector('.phone-icon');
+  const phonePopup = phoneIcon.querySelector('.phone-popup');
 
-    phoneIcon.addEventListener('click', () => {
+  phoneIcon.addEventListener('click', () => {
     phonePopup.classList.toggle('visible');
-    });
-
+  });
 });
-
-
-

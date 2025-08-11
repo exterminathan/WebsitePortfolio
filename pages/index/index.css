@@ -35,7 +35,7 @@ a:hover { color: #ff5b6f; }
 
 /* LIGHT MODE */
 body.light {
-  background: #fffeee;
+  background: #feecf6;
   color: #161213;
 }
 body.light a { color: #ce0322; }
@@ -77,14 +77,10 @@ body.light header {
   text-decoration: underline;
   transform: scale(1.1);
 }
-
-
-
 body.light .title-line .subtitle a.linkedin:hover {
   color: #161213;
   text-decoration: underline;
   transform: scale(1.1);
-    font-weight: 700;
 }
 
 /* HEADER LINKS */
@@ -92,34 +88,16 @@ body.light .title-line .subtitle a.linkedin:hover {
   display: flex;
   align-items: center;
   gap: 3rem;
-  font-weight: 700;
+  font-weight: 600;
 }
-
-
-.mini-image {
-  height: 4.5rem;
-  width: auto;
-  vertical-align: text-bottom;
-  margin-left: 3rem;
-}
-
-.mini-image:hover {
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
-}
-
-
-
 .resume-link {
   font-size: 1.5rem;
   vertical-align: middle;
   color: #fc314f;
-
 }
 .resume-link:hover {
   color: #ff5b6f;
 }
-
 .linkedin-link {
   color: #0077b5;
   font-size: 1.5rem;
@@ -130,7 +108,6 @@ body.light .title-line .subtitle a.linkedin:hover {
   color: #ffffff;
   text-decoration: underline;
 }
-
 body.light .linkedin-link {
   color: #004a75;
 }
@@ -138,33 +115,26 @@ body.light .header-links a.linkedin-link:hover {
   color: #161213;
   text-decoration: underline;
 }
-
 body.light .resume-link {
-  color: #fc314f;
+  color: #ce0322;
 }
 body.light .resume-link:hover {
   color: #e04a49;
 }
-
 body.light .linkedin-link {
   color: #0077b5;
 }
 body.light .linkedin-link:hover {
   color: #e04a49;
 }
-
-
 .header-links a.resume-link:hover {
   color: #ffffff;
   text-decoration: underline;
 }
-
 body.light .header-links a.resume-link:hover {
   color: #161213;
   text-decoration: underline;
 }
-
-
 
 /* TOGGLE */
 .switch {
@@ -173,7 +143,6 @@ body.light .header-links a.resume-link:hover {
   width: 80px;
   height: 20px;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -186,7 +155,6 @@ body.light .header-links a.resume-link:hover {
   transition: .2s;
   border-radius: 20px;
 }
-
 .slider:before {
   position: absolute;
   content: "🌙";
@@ -202,28 +170,21 @@ body.light .header-links a.resume-link:hover {
   line-height: 36px;
   font-size: 14px;
 }
-
 .slider:hover:before {
-  background-color: #fc314f;
+  background-color: #ff5b6f;
 }
-
 input:checked + .slider {
   background-color: #fc314f;
 }
-
 input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
 }
-
 input:checked + .slider:before {
   -webkit-transform: translateX(50px);
   -ms-transform: translateX(50px);
   transform: translateX(60px);
   content: "☀️";
 }
-
-
-
 
 /* STYLIZED DIV */
 .secondary-header {
@@ -241,7 +202,7 @@ input:checked + .slider:before {
 }
 body.light .secondary-header::before,
 body.light .secondary-header::after {
-  background: #fc314f;
+  background: #ce0322;
 }
 .secondary-header::before { margin-right: 1rem; }
 .secondary-header::after { margin-left: 1rem; }
@@ -259,7 +220,6 @@ body.light .secondary-header::after {
   align-items: center;
   margin: 1rem 0rem 1rem;
 }
-
 .single-div::before,
 .single-div::after {
   content: '';
@@ -268,12 +228,10 @@ body.light .secondary-header::after {
   background: #fc314f;
   opacity: 0.8;
 }
-
 body.light .single-div::before,
 body.light .single-div::after {
   background: #ce0322;
 }
-
 
 /* MAIN PROJECT */
 .main-project-wrapper {
@@ -335,21 +293,18 @@ body.light .project-row:hover {
   border-radius: 8px;
   margin-right: 1rem;
 }
-
 .project-row.condensed {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   background: rgba(252,49,79,0.1);
 }
-
 .project-row.condensed img {
   width: 50px;
   height: auto;
   border-radius: 4px;
   margin-right: 0.75rem;
 }
-
 .project-row.condensed .info {
   display: flex;
   align-items: center;
@@ -361,8 +316,6 @@ body.light .project-row:hover {
 .project-row.condensed .info p {
   display: none;
 }
-
-
 
 /* DETAILS */
 .project-detail {
@@ -394,9 +347,9 @@ body.light .project-detail {
   align-items: center;
   transition: background 0.3s;
 }
-/* body.light .bottom-bar {
+body.light .bottom-bar {
   background: #fa95cd;
-} */
+}
 .bottom-bar a {
   margin: 0 1rem;
   display: flex;
@@ -409,9 +362,9 @@ body.light .project-detail {
   filter: invert(100%);
   transition: filter 0.3s, transform 0.25s ease;
 }
-/* body.light .bottom-bar img {
+body.light .bottom-bar img {
   filter: invert(0%);
-} */
+}
 .bottom-bar a:hover img {
   transform: scale(1.2);
 }
@@ -426,7 +379,7 @@ body.light .project-detail {
 }
 .phone-popup {
   position: absolute;
-  bottom: calc(100% + 1.75rem);
+  bottom: calc(100% + 0.75rem);
   left: 0;
   background: rgba(10,6,6,0.9);
   color: #ece8e9;
@@ -435,12 +388,12 @@ body.light .project-detail {
   white-space: nowrap;
   font-size: 1.1rem;
   display: none;
+  pointer-events: none;
   transition: opacity 0.2s, transform 0.2s ease;
-  user-select: text;
 }
 body.light .phone-popup {
-  background: #fc314f;
-  color: #ffffff;
+  background: rgba(249,245,245,0.9);
+  color: #161213;
 }
 .phone-icon img {
   transition: transform 0.2s ease, filter 0.3s;
@@ -452,4 +405,118 @@ body.light .phone-popup {
   display: block;
   opacity: 1;
   transform: scale(1.05);
+}
+
+/* wrap each project-detail with relative positioning */
+.project-section {
+  position: relative;
+  padding: 2rem 1rem;
+  overflow: hidden;
+}
+
+/* 2×2 grid gallery */
+.project-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.project-gallery img {
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.project-gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* floating “sticker” image */
+.sticker {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+}
+
+/* ===== Quartermaster carousel + bullets ===== */
+.project-carousel {
+  width: 100%;
+  margin: 1rem 0;
+}
+.swiper-container {
+  overflow: hidden;
+  position: relative;
+}
+.swiper-wrapper {
+  display: flex;
+}
+.swiper-slide {
+  flex: 0 0 50%;          /* 2 columns */
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+/* cards inside the swipe track */
+.swiper-slide img {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+/* pagination & arrows (you can tweak sizes/colors) */
+.swiper-pagination {
+  bottom: 0.5rem !important;
+}
+.swiper-button-prev,
+.swiper-button-next {
+  color: #fc314f;
+}
+
+/* container fills its parent exactly, no side-padding */
+.project-carousel {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  margin: 1rem 0;          /* vertical spacing only */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 0 1rem;         /* inset so cards don’t butt flush to edges */
+}
+.project-carousel::-webkit-scrollbar { display: none; }
+
+/* track gets the insets, cards stay inside the section */
+.carousel-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 45%;
+  gap: 1rem;
+  padding: 0 1rem;         /* inset so cards don’t butt flush to edges */
+  box-sizing: border-box;
+}
+
+/* cards */
+.carousel-track img {
+  width: 100%;
+  scroll-snap-align: start;
+  border-radius: 8px;
+  display: block;
+}
+.project-carousel::-webkit-scrollbar { display: none; }
+.carousel-track img:active {
+  cursor: grabbing;
+}
+.carousel-track img:hover {
+  transform: scale(1.03);
+}
+
+/* ensure bullets sit below it */
+.project-bullets {
+  list-style: disc inside;
+  margin-top: 1rem;
+  padding-left: 1rem;
+}
+.project-bullets li {
+  margin-bottom: 0.5rem;
 }

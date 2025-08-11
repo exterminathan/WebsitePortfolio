@@ -19,7 +19,7 @@
       </div>
       <div class="header-links">
         <a class="linkedin-link" href="https://www.linkedin.com/in/nathan-shturm/" target="_blank">LinkedIn</a>
-        <a class="resume-link" href="path/to/your_resume.pdf" target="_blank">Resume</a>
+        <a class="resume-link" href="resume.pdf" target="_blank">Resume</a>
       <label class="switch">
         <input type="checkbox" id="mySwitch">
         <span class="slider round"></span>
@@ -28,30 +28,43 @@
   </header>
 
   <main>
-    <span class="spacer"></span>
-
     <!-- Main Project -->
     <div class="main-project-wrapper">
       <div class="main-project-container">
         <img src="../../images/steam_main_capsule.png" alt="Main Project">
         <div class="overlay">SENIOR CAPSTONE PROJECT</div>
-        <!-- <img src="../../images/out_on_steam.png" alt="Out on Steam" class="decorative-img"> -->
+      </div>
+    </div>
+
+    <div id="main-project" class="project-detail project-section">
+      <h2>Quartermaster</h2>
+      <div class="single-div"></div>
+
+      <!-- swipeable 2×X carousel -->
+      <div class="project-carousel swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="../../images/quartermaster/" alt="Lobby UI"/></div>
+          <div class="swiper-slide"><img src="../../images/quartermaster/" alt="Level Design Tools"/></div>
+          <div class="swiper-slide"><img src="../../images/quartermaster/" alt="Performance Profiler"/></div>
+          <div class="swiper-slide"><img src="../../images/quartermaster/" alt="Steam Achievements"/></div>
+          <!-- add more slides as needed -->
+        </div>
+        <!-- pagination & nav -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
       </div>
 
+      <!-- bullet-point description -->
+      <ul class="project-bullets">
+        <li>Led Unity ↔ Steam lobby & matchmaking integration for multiplayer sessions</li>
+        <li>Authored end-to-end 3D asset pipeline in Blender & Substance Painter</li>
+        <li>Optimized runtime performance by 60%+ via memory profiling & draw-call batching</li>
+        <li>Deployed and configured Steam Achievements & Leaderboards</li>
+        <li>Built custom Unity Editor tools to accelerate level-design workflows</li>
+      </ul>
     </div>
 
-    <div id="main-project" class="project-detail">
-      <h2>Quartermaster
-         <a href="https://store.steampowered.com/app/3673980/Quartermaster/" target="_blank" rel="noopener">
-          <img src="../../images/out_on_steam.png"
-              alt="Out on Steam"
-              class="mini-image">
-        </a>
-      </h2>
-      <div class="single-div"></div>
-      <p>An online PvE co-op action game for up to 4 players.</p>
-      <p>I was responsible for </p>
-    </div>
 
     <!-- Stylized Divider -->
     <div class="secondary-header">
@@ -72,18 +85,6 @@
         <p>Custom Two-Bone IK Player Movement.</p>
         <p>All models, textures, audio created by me.</p>
       </div>
-
-      <!-- <div class="project-row" data-target="proj2">
-        <img src="images/project2.png" alt="Project 2">
-        <div class="info">
-          <h3>Project Two</h3>
-          <p>Short description of Project Two.</p>
-        </div>
-      </div>
-      <div id="proj2" class="project-detail">
-        <h4>Project Two Details</h4>
-        <p>More detailed information about Project Two, including features, your role, and technologies used.</p>
-      </div> -->
     </div>
   </main>
 
