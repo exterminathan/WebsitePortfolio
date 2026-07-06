@@ -1,0 +1,14 @@
+# OS / OneDrive cruft
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Deploy artifact — resume is added to the deploy source only, never committed (see CLAUDE.md)
+resume.pdf
