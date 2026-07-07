@@ -378,10 +378,47 @@ main { padding-top: var(--nav-height); }
 .tag-list li {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--accent-hover);
-  background: var(--accent-soft);
+  color: var(--tag-color, var(--accent-hover));
+  background: var(--tag-bg, var(--accent-soft));
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
+}
+
+/* per-project / per-game tag color themes.
+   put one of these classes on a .card or .row-item to recolor its tags.
+   to add a new color, copy a line and set your own text + background. */
+.tag-red    { --tag-color: #ff5b6f; --tag-bg: rgba(252, 49, 79, 0.12); }
+.tag-violet { --tag-color: #a583f7; --tag-bg: rgba(122, 63, 242, 0.16); }
+.tag-teal   { --tag-color: #3fd6c0; --tag-bg: rgba(31, 191, 168, 0.14); }
+.tag-orange { --tag-color: #f5b968; --tag-bg: rgba(242, 161, 63, 0.15); }
+.tag-blue   { --tag-color: #6fa8f7; --tag-bg: rgba(63, 143, 242, 0.15); }
+
+/* project / game detail sub-pages */
+.detail-section { display: flex; flex-direction: column; gap: 2.5rem; }
+.detail-hero {
+  min-height: 340px;
+  border-radius: var(--radius-lg);
+  align-items: flex-start;
+}
+.detail-block { max-width: 46rem; }
+.detail-block h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+.detail-block p { font-size: 1.05rem; margin-bottom: 1rem; }
+.detail-block p:last-child { margin-bottom: 0; }
+.detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.detail-gallery .placeholder-media {
+  aspect-ratio: 16 / 10;
+  min-height: 0;
+}
+.detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 /* project rows */
@@ -763,6 +800,7 @@ body:has(.lightbox:target) .lightbox-scrim {
 
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
+  .detail-gallery { grid-template-columns: 1fr; }
   .album-images { grid-template-columns: repeat(2, 1fr); height: 160px; }
   .album-images .placeholder-media:nth-child(3) { display: none; }
   .section { padding: 5rem 1.25rem; }

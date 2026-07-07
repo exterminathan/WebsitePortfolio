@@ -1,0 +1,9 @@
+{
+  "name": "website-portfolio",
+  "version": "1.0.0",
+  "description": "Nathan Shturm's portfolio — static site built from src/ into dist/ by a zero-dependency Node script.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  }
+}

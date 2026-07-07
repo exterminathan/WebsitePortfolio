@@ -12,3 +12,7 @@ desktop.ini
 
 # Deploy artifact — resume is added to the deploy source only, never committed (see CLAUDE.md)
 resume.pdf
+
+# Build output — generated from src/ by `node build.js`, deployed but not committed
+dist/
+node_modules/
