@@ -39,7 +39,7 @@ Pages are **not** hand-written at the repo root anymore. They are authored in `s
   - `archive/old-multipage/` — original blue/cream multi-page portfolio (photos/kenya/linktree pages).
   - `archive/live-single-page/` — the dark, game-dev-themed single-page design that was actually deployed to Hostinger before this redesign.
 - **`scripts/deploy.sh`** — rsync deploy helper (see Deployment below).
-- **`images/`** — real project/screenshot assets, organized per-project (`images/quartermaster/`, `images/duckaround/`, `images/icons/`).
+- **`images/`** — has three subfolders: `images/projects/` (per-project/game screenshot & primary assets, one folder per slug, e.g. `images/projects/quartermaster/`, `images/projects/duckaround/`), `images/photos/` (photography album assets), and `images/icons/` (UI/social icons plus site-level assets like `webicon.svg` favicon and `out_on_steam.png` badge). Nothing lives loose at the `images/` root.
 
 ## Site structure
 

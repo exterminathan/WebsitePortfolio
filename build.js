@@ -19,12 +19,21 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
+
+// short content hash of style.css → cache-busting token on the <link> so a
+// rebuilt stylesheet is never served from a stale browser cache.
+const cssVersion = crypto
+  .createHash('md5')
+  .update(read(path.join(ROOT, 'style.css')))
+  .digest('hex')
+  .slice(0, 8);
 
 // ---------------------------------------------------------------------------
 // tiny template engine: {{> partial }} includes, {{ var }} substitutions
@@ -75,7 +84,7 @@ const linkAnchor = (l) =>
   `                <a href="${l.href}"${l.external ? ' target="_blank"' : ''}>${l.label}</a>`;
 
 function gameCard(g) {
-  const cls = ['card', g.featured && 'card-featured', g.tag && `tag-${g.tag}`]
+  const cls = ['card', g.detail && 'card-linked', g.featured && 'card-featured', g.tag && `tag-${g.tag}`]
     .filter(Boolean)
     .join(' ');
   const badge = g.media.badge
@@ -83,6 +92,9 @@ function gameCard(g) {
     : '';
   const paras = g.body.map((p) => `              <p>${p}</p>`).join('\n');
   const tags = g.tags.map((t) => `                <li>${t}</li>`).join('\n');
+  const overlay = g.detail
+    ? `\n            <a class="card-overlay" href="game-${g.slug}.html" aria-label="${g.title}"></a>`
+    : '';
   const linkItems = (g.links || []).map(linkAnchor);
   if (g.detail)
     linkItems.push(
@@ -91,7 +103,7 @@ function gameCard(g) {
   const links = linkItems.length
     ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
     : '';
-  return `          <article class="${cls}" id="${g.slug}">
+  return `          <article class="${cls}" id="${g.slug}">${overlay}
             <div class="card-media placeholder-media">
               <img src="${g.media.img}" alt="${g.media.alt}" />${badge}
             </div>
@@ -106,7 +118,7 @@ ${tags}
 }
 
 function projectRow(p, i) {
-  const cls = ['row-item', i % 2 === 1 && 'reverse', p.tag && `tag-${p.tag}`]
+  const cls = ['row-item', p.detail && 'card-linked', i % 2 === 1 && 'reverse', p.tag && `tag-${p.tag}`]
     .filter(Boolean)
     .join(' ');
   let media;
@@ -120,6 +132,9 @@ function projectRow(p, i) {
   }
   const paras = p.body.map((x) => `              <p>${x}</p>`).join('\n');
   const tags = p.tags.map((t) => `                <li>${t}</li>`).join('\n');
+  const overlay = p.detail
+    ? `\n            <a class="card-overlay" href="project-${p.slug}.html" aria-label="${p.title}"></a>`
+    : '';
   const linkItems = (p.links || []).map(linkAnchor);
   if (p.detail)
     linkItems.push(
@@ -128,7 +143,7 @@ function projectRow(p, i) {
   const links = linkItems.length
     ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
     : '';
-  return `          <article class="${cls}">
+  return `          <article class="${cls}">${overlay}
 ${media}
             <div class="row-body">
               <h3>${p.title}</h3>
@@ -152,8 +167,12 @@ function gamePreview(g) {
 
 function projectPreview(p) {
   const href = p.detail ? `project-${p.slug}.html` : 'projects.html';
+  const media =
+    p.media && p.media.img
+      ? `<div class="placeholder-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" />\n            </div>`
+      : `<div class="placeholder-media ${p.mediaClass}"></div>`;
   return `          <a class="quick-card" href="${href}">
-            <div class="placeholder-media ${p.mediaClass}"></div>
+            ${media}
             <span class="quick-card-label">${p.title}</span>
           </a>`;
 }
@@ -224,12 +243,13 @@ function pageVars(meta, content) {
   const vars = {
     title: meta.title || 'Nathan Shturm',
     content,
+    cssVersion,
     mainAttrs: meta.mainAttrs ? ` ${meta.mainAttrs}` : '',
     footerSocial: meta.footerSocial === 'false' ? '' : FOOTER_SOCIAL,
     gamesCards: games.map(gameCard).join('\n\n'),
     projectsCards: projects.map(projectRow).join('\n\n'),
-    gamesPreview: games.slice(0, 2).map(gamePreview).join('\n'),
-    projectsPreview: projects.slice(0, 2).map(projectPreview).join('\n'),
+    gamesPreview: games.map(gamePreview).join('\n'),
+    projectsPreview: projects.map(projectPreview).join('\n'),
   };
   for (const k of NAV_KEYS) {
     vars[`nav${k[0].toUpperCase()}${k.slice(1)}`] =

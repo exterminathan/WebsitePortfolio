@@ -15,7 +15,7 @@ module.exports = [
     tag: 'teal', // tag color theme: red | violet | teal | orange | blue
     featured: true, // spans two columns on the games grid
     media: {
-      img: 'images/quartermaster/qm_primary.png',
+      img: 'images/projects/quartermaster/qm_primary.png',
       alt: 'Quartermaster',
       badge: 'Senior Capstone',
     },
@@ -34,7 +34,21 @@ module.exports = [
         external: true,
       },
     ],
-    detail: false, // sub-page OFF — flip to true and add detailBody to enable
+    detail: true, // sub-page ON
+    tagline:
+      'A cooperative multiplayer game and senior capstone — placeholder page for now.',
+    // Placeholder body — flesh out with real screenshots / writeup later.
+    detailBody: `
+      <div class="detail-block">
+        <h2>Overview</h2>
+        <p>
+          Quartermaster is my senior capstone: a cooperative multiplayer game
+          built in Unity. This page is a placeholder &mdash; a full writeup of
+          the Steam integration, 3D pipeline, and performance work is coming
+          soon.
+        </p>
+      </div>
+    `,
   },
 
   {
@@ -43,7 +57,7 @@ module.exports = [
     tag: 'orange',
     featured: false,
     media: {
-      img: 'images/duckaround/da_primary.png',
+      img: 'images/projects/duckaround/da_primary.png',
       alt: 'Duck Around',
       badge: 'WIP',
     },
@@ -80,7 +94,7 @@ module.exports = [
       </div>
 
       <!-- swap these placeholder blocks for real screenshots / gifs:
-           <div class="placeholder-media"><img src="images/duckaround/da_ik.gif" alt="IK demo" /></div> -->
+           <div class="placeholder-media"><img src="images/projects/duckaround/da_ik.gif" alt="IK demo" /></div> -->
       <div class="detail-gallery">
         <div class="placeholder-media media-d"></div>
         <div class="placeholder-media media-a"></div>
@@ -97,5 +111,27 @@ module.exports = [
         </p>
       </div>
     `,
+  },
+
+  {
+    slug: 'bleak',
+    title: 'Bleak',
+    tag: 'violet',
+    featured: false,
+    media: {
+      img: 'images/projects/bleak/bleak_placeholder.svg',
+      alt: 'Bleak — coming soon',
+      badge: 'Coming Soon',
+    },
+    // Placeholder entry — no repo/writeup yet. Card is intentionally NOT linked
+    // (detail: false ⇒ no bleak sub-page, no overlay/link). Flesh this out and
+    // set detail: true once the project has real content.
+    body: [
+      'A moody, atmospheric game in early development.',
+      'Writeup, media, and links coming soon.',
+    ],
+    tags: ['In Development'],
+    links: [],
+    detail: false, // sub-page OFF — card disabled
   },
 ];
