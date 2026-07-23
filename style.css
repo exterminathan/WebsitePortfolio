@@ -251,13 +251,13 @@ main { padding-top: var(--nav-height); }
     to   { transform: translateY(14%); }
   }
 }
+/* reduced motion = NO motion, not instant motion. Kill the parallax and
+   smooth scrolling here; hover-growth effects are neutralized next to their
+   own rules (search the file for prefers-reduced-motion). A universal
+   `transition-duration: 0.01ms` is a trap: hover targets snap and jump
+   under the cursor, which is harder to use, not calmer. */
 @media (prefers-reduced-motion: reduce) {
   html, .viewer-strip { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
   .section-bg::before { animation: none; transform: none; }
 }
 
@@ -332,7 +332,9 @@ main { padding-top: var(--nav-height); }
 .hero {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 9rem var(--gutter) 3rem;
+  /* taller stage for the name — extra room goes into the section's own
+     padding, never into the gaps between the hero's children */
+  padding: 10.5rem var(--gutter) 4.5rem;
 }
 .hero h1 {
   font-size: clamp(2.75rem, 7vw, 4.5rem);
@@ -1074,6 +1076,206 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   .about-grid { grid-template-columns: 1fr; }
 }
 
+/* starred items (localStorage quick-access, starred.js).
+   Everything here is invisible until the script tags <html class="js">, so a
+   no-JS visitor sees the exact site that existed before this feature. */
+.star-btn, .starred { display: none; }
+html.js .starred { display: block; }
+html.js .star-btn { display: inline-flex; }
+/* a starred item carries no marker — its star button simply disappears; the
+   item shows up (and can only be unstarred) in the floating list instead */
+html.js .star-btn.starred { display: none; }
+
+.star-btn {
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.star-btn svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+/* corner button over card / row media (media is position:relative already) */
+.star-btn-card {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2; /* above .card-overlay */
+  width: 2.25rem;
+  height: 2.25rem;
+  background: rgba(11, 9, 9, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--text-dim);
+}
+.star-btn-card:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+
+/* inline button beside a detail page's h1 (inside .section-heading's flex row) */
+.star-btn-detail {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  color: var(--text-dim);
+}
+.star-btn-detail:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* round button in the lightbox bar, matching .lightbox-nav */
+.star-btn-bar {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: none;
+  color: var(--text);
+}
+.star-btn-bar:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* floating quick-access menu: a round button pinned bottom-right; the list
+   pops up above it. Sits below the photo viewer + scrim (199+) and the nav
+   drawer/scrim (90+), so overlays still cover it. */
+.starred {
+  position: fixed;
+  right: calc(1.25rem + env(safe-area-inset-right));
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  z-index: 80;
+}
+.starred-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--text-dim);
+  cursor: pointer;
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.7);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.starred-toggle:hover, .starred.open .starred-toggle {
+  color: var(--accent-hover);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.starred-toggle svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.starred.has-items .starred-toggle { color: var(--accent); }
+.starred.has-items .starred-toggle svg { fill: currentColor; }
+.starred-count {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  line-height: 15px;
+  text-align: center;
+}
+
+.starred-panel {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 0.75rem);
+  right: 0;
+  width: min(21rem, calc(100vw - 2.5rem));
+  max-height: min(24rem, 60vh);
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+}
+.starred.open .starred-panel { display: block; }
+.starred-empty {
+  margin: 0;
+  padding: 0.9rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+.starred-list { display: flex; flex-direction: column; }
+.starred-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.starred-list a {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.starred-list a:hover { background: var(--accent-soft); color: var(--text); }
+.starred-list img {
+  flex: none;
+  width: 44px;
+  height: 33px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--bg-alt);
+}
+.starred-list span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.starred-remove {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-faint);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.starred-remove:hover { color: var(--accent-hover); background: var(--accent-soft); }
+
 @media (max-width: 760px) {
   :root {
     --nav-height: 4rem;  /* shorter chrome on phones; cascades to header, drawer, scroll offsets */
@@ -1118,7 +1320,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  .hero { padding: 5rem var(--gutter) 2.5rem; }
+  .hero { padding: 6rem var(--gutter) 3rem; }
   .page-header { padding: 4.5rem var(--gutter) 1rem; }
   .section { padding: 5rem var(--gutter); }
 

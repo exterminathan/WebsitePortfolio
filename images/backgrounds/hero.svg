@@ -1,41 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1200" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1c0710"/>
-      <stop offset="0.45" stop-color="#6e0f26"/>
-      <stop offset="1" stop-color="#12040a"/>
+      <stop offset="0" stop-color="#11131a"/>
+      <stop offset="0.5" stop-color="#1a1e2b"/>
+      <stop offset="1" stop-color="#0b0c11"/>
     </linearGradient>
     <radialGradient id="core" cx="0.72" cy="0.36" r="0.6">
-      <stop offset="0" stop-color="#fc314f" stop-opacity="0.9"/>
-      <stop offset="0.5" stop-color="#e11d48" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#e11d48" stop-opacity="0"/>
+      <stop offset="0" stop-color="#4a5a7d" stop-opacity="0.85"/>
+      <stop offset="0.5" stop-color="#303b55" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#303b55" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="ember" cx="0.16" cy="0.82" r="0.5">
-      <stop offset="0" stop-color="#ff7a5c" stop-opacity="0.5"/>
-      <stop offset="1" stop-color="#ff7a5c" stop-opacity="0"/>
+      <stop offset="0" stop-color="#3b4a68" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#3b4a68" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="1920" height="1200" fill="url(#base)"/>
   <rect width="1920" height="1200" fill="url(#core)"/>
   <rect width="1920" height="1200" fill="url(#ember)"/>
   <!-- aperture rings around the glow core -->
-  <circle cx="1382" cy="432" r="200" fill="none" stroke="#ffb3c0" stroke-opacity="0.35" stroke-width="2"/>
-  <circle cx="1382" cy="432" r="300" fill="none" stroke="#ff8a9b" stroke-opacity="0.24" stroke-width="2"/>
-  <circle cx="1382" cy="432" r="420" fill="none" stroke="#ff8a9b" stroke-opacity="0.16" stroke-width="2"/>
-  <circle cx="1382" cy="432" r="560" fill="none" stroke="#ff8a9b" stroke-opacity="0.1" stroke-width="2"/>
-  <circle cx="1382" cy="432" r="720" fill="none" stroke="#ff8a9b" stroke-opacity="0.06" stroke-width="2"/>
+  <circle cx="1382" cy="432" r="200" fill="none" stroke="#aebcd8" stroke-opacity="0.32" stroke-width="2"/>
+  <circle cx="1382" cy="432" r="300" fill="none" stroke="#8fa1c4" stroke-opacity="0.22" stroke-width="2"/>
+  <circle cx="1382" cy="432" r="420" fill="none" stroke="#8fa1c4" stroke-opacity="0.15" stroke-width="2"/>
+  <circle cx="1382" cy="432" r="560" fill="none" stroke="#8fa1c4" stroke-opacity="0.09" stroke-width="2"/>
+  <circle cx="1382" cy="432" r="720" fill="none" stroke="#8fa1c4" stroke-opacity="0.05" stroke-width="2"/>
   <!-- one broken ring, like an aperture blade opening -->
-  <path d="M 1382 132 A 300 300 0 0 1 1668 528" fill="none" stroke="#ffd7dd" stroke-opacity="0.5" stroke-width="3"/>
+  <path d="M 1382 132 A 300 300 0 0 1 1668 528" fill="none" stroke="#dde5f2" stroke-opacity="0.45" stroke-width="3"/>
   <!-- diagonal light beam -->
-  <polygon points="120,1200 560,0 700,0 300,1200" fill="#ffffff" opacity="0.05"/>
-  <polygon points="420,1200 830,0 890,0 500,1200" fill="#fc314f" opacity="0.1"/>
-  <!-- sparse pixel stars -->
-  <circle cx="240" cy="220" r="4" fill="#ffd7dd" opacity="0.5"/>
+  <polygon points="120,1200 560,0 700,0 300,1200" fill="#ffffff" opacity="0.04"/>
+  <polygon points="420,1200 830,0 890,0 500,1200" fill="#6d82ad" opacity="0.1"/>
+  <!-- sparse pixel stars (one accent-red, the rest cool) -->
+  <circle cx="240" cy="220" r="4" fill="#dde5f2" opacity="0.5"/>
   <circle cx="640" cy="140" r="3" fill="#ffffff" opacity="0.35"/>
-  <circle cx="1030" cy="330" r="3" fill="#ffb3c0" opacity="0.4"/>
-  <circle cx="1700" cy="150" r="4" fill="#ffd7dd" opacity="0.45"/>
+  <circle cx="1030" cy="330" r="3" fill="#aebcd8" opacity="0.4"/>
+  <circle cx="1700" cy="150" r="4" fill="#dde5f2" opacity="0.45"/>
   <circle cx="1820" cy="700" r="3" fill="#ffffff" opacity="0.3"/>
-  <circle cx="880" cy="760" r="3" fill="#ffb3c0" opacity="0.3"/>
-  <circle cx="1500" cy="1010" r="4" fill="#ff8a9b" opacity="0.35"/>
+  <circle cx="880" cy="760" r="3" fill="#aebcd8" opacity="0.3"/>
+  <circle cx="1500" cy="1010" r="4" fill="#fc314f" opacity="0.4"/>
   <circle cx="360" cy="560" r="3" fill="#ffffff" opacity="0.25"/>
 </svg>

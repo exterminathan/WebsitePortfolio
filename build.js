@@ -36,6 +36,21 @@ const cssVersion = crypto
   .slice(0, 8);
 
 // ---------------------------------------------------------------------------
+// feature flag: the localStorage star/favorites system (starred.js).
+// Flip to false and rebuild to ship a site with ZERO trace of the feature —
+// no star buttons, no floating widget, no <script> tag, no starred.js copied.
+// (Visitors' saved favorites survive in their localStorage for when it's back.)
+// ---------------------------------------------------------------------------
+const STARRED_ENABLED = false;
+
+// same cache-busting for starred.js (the localStorage star/favorites script)
+const jsVersion = crypto
+  .createHash('md5')
+  .update(read(path.join(ROOT, 'starred.js')))
+  .digest('hex')
+  .slice(0, 8);
+
+// ---------------------------------------------------------------------------
 // tiny template engine: {{> partial }} includes, {{ var }} substitutions
 // ---------------------------------------------------------------------------
 const partials = {};
@@ -84,6 +99,24 @@ const FOOTER_SOCIAL =
 const linkAnchor = (l) =>
   `                <a href="${l.href}"${l.external ? ' target="_blank"' : ''}>${l.label}</a>`;
 
+// star/favorite buttons (localStorage, starred.js) — display:none without JS.
+// data-star-* carries everything the nav panel needs to list the item later.
+const escAttr = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+const STAR_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2-4.6-4.4 6.3-.9z"/></svg>';
+
+function starButton(cls, id, title, href, img) {
+  if (!STARRED_ENABLED) return '';
+  return (
+    `<button type="button" class="star-btn ${cls}"` +
+    ` data-star-id="${escAttr(id)}" data-star-title="${escAttr(title)}"` +
+    ` data-star-href="${escAttr(href)}"${img ? ` data-star-img="${escAttr(img)}"` : ''}` +
+    ` aria-pressed="false" aria-label="Star ${escAttr(title)}">${STAR_SVG}</button>`
+  );
+}
+
 function gameCard(g) {
   const cls = ['card', g.detail && 'card-linked', g.featured && 'card-featured', g.tag && `tag-${g.tag}`]
     .filter(Boolean)
@@ -104,9 +137,17 @@ function gameCard(g) {
   const links = linkItems.length
     ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
     : '';
+  const star = starButton(
+    'star-btn-card',
+    `game:${g.slug}`,
+    g.title,
+    g.detail ? `game-${g.slug}.html` : `games.html#${g.slug}`,
+    g.media.img
+  );
   return `          <article class="${cls}" id="${g.slug}">${overlay}
             <div class="card-media placeholder-media">
               <img src="${g.media.img}" alt="${g.media.alt}" loading="lazy" />${badge}
+              ${star}
             </div>
             <div class="card-body">
               <h3>${g.title}</h3>
@@ -122,14 +163,21 @@ function projectRow(p, i) {
   const cls = ['row-item', p.detail && 'card-linked', i % 2 === 1 && 'reverse', p.tag && `tag-${p.tag}`]
     .filter(Boolean)
     .join(' ');
+  const star = starButton(
+    'star-btn-card',
+    `project:${p.slug}`,
+    p.title,
+    p.detail ? `project-${p.slug}.html` : `projects.html#${p.slug}`,
+    p.media && p.media.img
+  );
   let media;
   if (p.media && p.media.img) {
     const badge = p.media.badge
       ? `\n              <span class="media-tag">${p.media.badge}</span>`
       : '';
-    media = `            <div class="card-media placeholder-media row-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />${badge}\n            </div>`;
+    media = `            <div class="card-media placeholder-media row-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />${badge}\n              ${star}\n            </div>`;
   } else {
-    media = `            <div class="card-media placeholder-media ${p.mediaClass} row-media"></div>`;
+    media = `            <div class="card-media placeholder-media ${p.mediaClass} row-media">\n              ${star}\n            </div>`;
   }
   const paras = p.body.map((x) => `              <p>${x}</p>`).join('\n');
   const tags = p.tags.map((t) => `                <li>${t}</li>`).join('\n');
@@ -144,7 +192,7 @@ function projectRow(p, i) {
   const links = linkItems.length
     ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
     : '';
-  return `          <article class="${cls}">${overlay}
+  return `          <article class="${cls}" id="${p.slug}">${overlay}
 ${media}
             <div class="row-body">
               <h3>${p.title}</h3>
@@ -287,6 +335,8 @@ ${cards}
 // photo grid + CSS-only :target lightbox for one part (a day, or a flat album)
 function photoGridContent(album, part, day) {
   const files = part.files;
+  // this page's output filename (sans .html) — the stable id + href stem for stars
+  const pageName = day ? `photos-${album.slug}-${day.slug}` : `photos-${album.slug}`;
   const back = day
     ? { href: `photos-${album.slug}.html`, label: album.title }
     : { href: 'photos.html', label: 'All photos' };
@@ -303,6 +353,13 @@ function photoGridContent(album, part, day) {
       const n = i + 1;
       const prev = n === 1 ? files.length : n - 1;
       const next = n === files.length ? 1 : n + 1;
+      const star = starButton(
+        'star-btn-bar',
+        `photo:${pageName}:${n}`,
+        `${title} — photo ${n}`,
+        `${pageName}.html#photo-${n}`,
+        photoSrc(album, thumbOf(f))
+      );
       return `          <figure class="viewer-slide" id="photo-${n}">
             <a href="#_" class="slide-close" aria-label="Close image viewer"></a>
             <div class="lightbox-image"><img src="${photoSrc(album, f)}" alt="${title} photo ${n}" loading="lazy" /></div>
@@ -310,6 +367,7 @@ function photoGridContent(album, part, day) {
               <a href="#photo-${prev}" class="lightbox-nav" aria-label="Previous photo">&#8249;</a>
               <span class="lightbox-count">${n} / ${files.length}</span>
               <a href="#photo-${next}" class="lightbox-nav" aria-label="Next photo">&#8250;</a>
+              ${star}
             </div>
           </figure>`;
     })
@@ -396,10 +454,19 @@ function detailContent(item, type) {
   const links = linkItems.length
     ? `\n        <div class="detail-links">\n${linkItems.join('\n')}\n        </div>`
     : '';
+  // same star id as the listing card, so either page stars the same favorite
+  const star = starButton(
+    'star-btn-detail',
+    `${type}:${item.slug}`,
+    item.title,
+    `${type}-${item.slug}.html`,
+    item.media && item.media.img
+  );
   return `      <div class="page-header">
         <a href="${back.href}" class="back-link">&#8592; Back to ${back.label}</a>
         <div class="section-heading">
           <h1>${item.title}</h1>
+          ${star}
           <span class="section-line"></span>
         </div>${tagline}
       </div>
@@ -432,6 +499,12 @@ function pageVars(meta, content) {
     title: meta.title || 'Nathan Shturm',
     content,
     cssVersion,
+    // starred feature: the head <script> and the floating widget markup
+    // (src/partials/starred.html) drop out entirely when the flag is off
+    starredScript: STARRED_ENABLED
+      ? `<script src="starred.js?v=${jsVersion}" defer></script>`
+      : '',
+    starredWidget: STARRED_ENABLED ? partials.starred : '',
     // `robots:` front-matter → a per-page robots meta (e.g. hidden pages set
     // "noindex, nofollow"). Absent on normal pages, so the token drops out.
     robotsMeta: meta.robots
@@ -523,6 +596,8 @@ for (const album of albums) {
 
 // static assets
 fs.copyFileSync(path.join(ROOT, 'style.css'), path.join(DIST, 'style.css'));
+if (STARRED_ENABLED)
+  fs.copyFileSync(path.join(ROOT, 'starred.js'), path.join(DIST, 'starred.js'));
 fs.cpSync(path.join(ROOT, 'images'), path.join(DIST, 'images'), { recursive: true });
 if (fs.existsSync(path.join(ROOT, 'resume.pdf')))
   fs.copyFileSync(path.join(ROOT, 'resume.pdf'), path.join(DIST, 'resume.pdf'));

@@ -1,0 +1,12 @@
+<!-- floating starred quick-access menu (localStorage, starred.js).
+     Only emitted when STARRED_ENABLED is true in build.js; display:none without JS -->
+<div class="starred">
+  <button type="button" class="starred-toggle" aria-label="Starred items" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.1l2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2-4.6-4.4 6.3-.9z"/></svg>
+    <span class="starred-count" hidden></span>
+  </button>
+  <div class="starred-panel">
+    <p class="starred-empty">Nothing starred yet &mdash; hit the star on a project or photo.</p>
+    <ul class="starred-list"></ul>
+  </div>
+</div>
