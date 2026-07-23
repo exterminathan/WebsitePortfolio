@@ -16,3 +16,8 @@ resume.pdf
 # Build output — generated from src/ by `node build.js`, deployed but not committed
 dist/
 node_modules/
+
+# Photography assets — too large for git; live locally + on the server only.
+# The build copies them into dist/ and rsync deploys them like everything else.
+images/photos/*
+!images/photos/.gitkeep

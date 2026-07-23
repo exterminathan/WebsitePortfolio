@@ -74,6 +74,7 @@ function renderLoop(str, vars) {
 // ---------------------------------------------------------------------------
 const games = require(path.join(SRC, 'data', 'games.js'));
 const projects = require(path.join(SRC, 'data', 'projects.js'));
+const albums = require(path.join(SRC, 'data', 'albums.js'));
 
 const FOOTER_SOCIAL =
   '      <div class="footer-social">\n' +
@@ -178,6 +179,193 @@ function projectPreview(p) {
 }
 
 // ---------------------------------------------------------------------------
+// photo albums — src/data/albums.js names them; the actual photos are scanned
+// from images/photos/<album>[/<day>]/{full,thumb}/ (see scripts/ingest-photos.ps1).
+// Albums/days with no photos on disk are skipped, so a photo-less clone builds.
+// ---------------------------------------------------------------------------
+const PHOTOS = path.join(ROOT, 'images', 'photos');
+
+// each album is ONE flat folder: images/photos/<album>/<prefix><NNN>-FULL.jpg
+// plus a matching -THUMB.jpg. <prefix> is the day slug (day albums) or the
+// album's `prefix` (flat albums, e.g. kenya001-FULL.jpg). Grids use THUMB,
+// lightboxes use FULL. `files` below are the -FULL basenames, sorted.
+function partFiles(albumSlug, prefix) {
+  const dir = path.join(PHOTOS, albumSlug);
+  if (!fs.existsSync(dir)) return [];
+  const re = new RegExp(`^${prefix}\\d+-FULL\\.jpe?g$`, 'i');
+  return fs
+    .readdirSync(dir)
+    .filter((f) => re.test(f))
+    .sort();
+}
+
+// an album's renderable parts: its days (with photos), or itself as one part
+function albumParts(album) {
+  if (album.days)
+    return album.days
+      .map((d) => ({ ...d, files: partFiles(album.slug, d.slug) }))
+      .filter((d) => d.files.length);
+  return [{ files: partFiles(album.slug, album.prefix || album.slug) }].filter(
+    (p) => p.files.length
+  );
+}
+
+const thumbOf = (f) => f.replace(/-FULL(\.jpe?g)$/i, '-THUMB$1');
+const photoSrc = (album, file) => `images/photos/${album.slug}/${file}`;
+
+// resolve a hand-picked cover base name (e.g. 'hakone014') to its -THUMB url,
+// warning on typos so a broken cover never ships silently
+function coverThumb(album, base) {
+  const src = `images/photos/${album.slug}/${base}-THUMB.jpg`;
+  if (!fs.existsSync(path.join(ROOT, src)))
+    console.warn(`WARN: cover ${src} not found (album ${album.slug})`);
+  return src;
+}
+
+// photos.html row + home-page preview: title overlay over 3 cover thumbnails.
+// `covers` in albums.js picks them; default is first photo of the first 3
+// days / first 3 photos of a flat album.
+function albumRow(album) {
+  const parts = albumParts(album);
+  if (!parts.length) return '';
+  let covers;
+  if (album.covers) {
+    covers = album.covers.map((base) => coverThumb(album, base));
+  } else {
+    covers = [];
+    for (const p of parts) {
+      if (covers.length === 3) break;
+      covers.push(photoSrc(album, thumbOf(p.files[0])));
+    }
+    for (let i = 1; covers.length < 3 && i < parts[0].files.length; i++)
+      covers.push(photoSrc(album, thumbOf(parts[0].files[i])));
+  }
+  const imgs = covers
+    .map(
+      (src) =>
+        `              <div class="placeholder-media"><img src="${src}" alt="" loading="lazy" /></div>`
+    )
+    .join('\n');
+  return `          <a class="album-row" href="photos-${album.slug}.html">
+            <div class="album-images">
+${imgs}
+            </div>
+            <div class="album-overlay"><span>${album.title}</span></div>
+          </a>`;
+}
+
+// trip page for an album with days: one sub-album card per day
+function tripContent(album, parts) {
+  const cards = parts
+    .map((d) => {
+      const cover = d.cover
+        ? coverThumb(album, d.cover)
+        : photoSrc(album, thumbOf(d.files[0]));
+      return `          <a class="quick-card day-card" href="photos-${album.slug}-${d.slug}.html">
+            <div class="placeholder-media"><img src="${cover}" alt="${d.title}" loading="lazy" /></div>
+            <span class="quick-card-label">${d.title}</span>
+            <span class="day-card-meta">${d.date} &middot; ${d.files.length} photos</span>
+          </a>`;
+    })
+    .join('\n');
+  return `      <div class="page-header">
+        <a href="photos.html" class="back-link">&#8592; All photos</a>
+        <div class="section-heading">
+          <h1>${album.title}</h1>
+          <span class="section-line"></span>
+        </div>
+        <p class="page-intro">${album.blurb || ''}</p>
+      </div>
+
+      <section class="section">
+        <div class="quick-grid day-grid">
+${cards}
+        </div>
+      </section>`;
+}
+
+// photo grid + CSS-only :target lightbox for one part (a day, or a flat album)
+function photoGridContent(album, part, day) {
+  const files = part.files;
+  const back = day
+    ? { href: `photos-${album.slug}.html`, label: album.title }
+    : { href: 'photos.html', label: 'All photos' };
+  const title = day ? day.title : album.title;
+  const intro = day ? `${album.title} &mdash; ${day.date}` : album.blurb || '';
+  const items = files
+    .map(
+      (f, i) =>
+        `          <a href="#photo-${i + 1}" class="photo-item"><img src="${photoSrc(album, thumbOf(f))}" alt="${title} photo ${i + 1}" loading="lazy" /></a>`
+    )
+    .join('\n');
+  const slides = files
+    .map((f, i) => {
+      const n = i + 1;
+      const prev = n === 1 ? files.length : n - 1;
+      const next = n === files.length ? 1 : n + 1;
+      return `          <figure class="viewer-slide" id="photo-${n}">
+            <a href="#_" class="slide-close" aria-label="Close image viewer"></a>
+            <div class="lightbox-image"><img src="${photoSrc(album, f)}" alt="${title} photo ${n}" loading="lazy" /></div>
+            <div class="lightbox-bar">
+              <a href="#photo-${prev}" class="lightbox-nav" aria-label="Previous photo">&#8249;</a>
+              <span class="lightbox-count">${n} / ${files.length}</span>
+              <a href="#photo-${next}" class="lightbox-nav" aria-label="Next photo">&#8250;</a>
+            </div>
+          </figure>`;
+    })
+    .join('\n');
+  return `      <div class="page-header">
+        <a href="${back.href}" class="back-link">&#8592; ${back.label}</a>
+        <div class="section-heading">
+          <h1>${title}</h1>
+          <span class="section-line"></span>
+        </div>${intro ? `\n        <p class="page-intro">${intro}</p>` : ''}
+      </div>
+
+      <section class="section">
+        <div class="photo-grid">
+${items}
+        </div>
+      </section>
+
+      <!-- embedded image viewer — a thumbnail :targets its slide inside one
+           persistent overlay; prev/next glide the scroll-snap strip in place
+           instead of re-rendering anything -->
+      <div class="lightbox-scrim" aria-hidden="true"></div>
+      <div class="viewer">
+        <a href="#_" class="lightbox-close" aria-label="Close">&#10005;</a>
+        <div class="viewer-strip">
+${slides}
+        </div>
+      </div>
+
+      <!-- the site's one JS exception: keyboard nav + history-clean hash hops
+           for the viewer. Pure progressive enhancement — without it, clicks
+           still work, they just leave per-photo history entries -->
+      <script>
+        // location.replace instead of anchor-default pushState: browsing
+        // photos never stacks history — Back always leaves the album page
+        document.addEventListener('click', (e) => {
+          const a = e.target.closest('a[href^="#"]');
+          if (!a) return;
+          e.preventDefault();
+          location.replace(a.getAttribute('href'));
+        });
+        addEventListener('keydown', (e) => {
+          if (e.altKey || e.ctrlKey || e.metaKey) return;
+          const m = /^#photo-(\\d+)$/.exec(location.hash);
+          if (!m) return;
+          const total = ${files.length}, n = +m[1];
+          if (e.key === 'ArrowRight') location.replace('#photo-' + ((n % total) + 1));
+          else if (e.key === 'ArrowLeft') location.replace('#photo-' + (((n + total - 2) % total) + 1));
+          else if (e.key === 'Escape') location.replace('#_');
+          else return;
+          e.preventDefault();
+        });
+      </script>`;
+}
+
+// ---------------------------------------------------------------------------
 // detail (sub-page) renderer — one per item with detail: true
 // ---------------------------------------------------------------------------
 function detailContent(item, type) {
@@ -244,12 +432,18 @@ function pageVars(meta, content) {
     title: meta.title || 'Nathan Shturm',
     content,
     cssVersion,
+    // `robots:` front-matter → a per-page robots meta (e.g. hidden pages set
+    // "noindex, nofollow"). Absent on normal pages, so the token drops out.
+    robotsMeta: meta.robots
+      ? `\n<meta name="robots" content="${meta.robots}" />`
+      : '',
     mainAttrs: meta.mainAttrs ? ` ${meta.mainAttrs}` : '',
     footerSocial: meta.footerSocial === 'false' ? '' : FOOTER_SOCIAL,
     gamesCards: games.map(gameCard).join('\n\n'),
     projectsCards: projects.map(projectRow).join('\n\n'),
     gamesPreview: games.map(gamePreview).join('\n'),
     projectsPreview: projects.map(projectPreview).join('\n'),
+    photoAlbums: albums.map(albumRow).filter(Boolean).join('\n\n'),
   };
   for (const k of NAV_KEYS) {
     vars[`nav${k[0].toUpperCase()}${k.slice(1)}`] =
@@ -294,6 +488,38 @@ function writeDetails(items, type) {
 }
 writeDetails(games, 'game');
 writeDetails(projects, 'project');
+
+// photo album pages — trip page + one page per day, or one page per flat album
+for (const album of albums) {
+  const parts = albumParts(album);
+  if (!parts.length) continue;
+  const page = (name, title, content) => {
+    fs.writeFileSync(
+      path.join(DIST, name),
+      assemble(pageVars({ title, active: 'photos' }, content))
+    );
+    written.push(name);
+  };
+  if (album.days) {
+    page(
+      `photos-${album.slug}.html`,
+      `${album.title} — Nathan Shturm`,
+      tripContent(album, parts)
+    );
+    for (const d of parts)
+      page(
+        `photos-${album.slug}-${d.slug}.html`,
+        `${d.title} — ${album.title} — Nathan Shturm`,
+        photoGridContent(album, d, d)
+      );
+  } else {
+    page(
+      `photos-${album.slug}.html`,
+      `${album.title} — Nathan Shturm`,
+      photoGridContent(album, parts[0], null)
+    );
+  }
+}
 
 // static assets
 fs.copyFileSync(path.join(ROOT, 'style.css'), path.join(DIST, 'style.css'));

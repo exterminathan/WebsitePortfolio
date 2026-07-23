@@ -12,7 +12,7 @@ mainAttrs:  id="top"
       </section>
 
       <!-- games preview -->
-      <section id="games" class="section">
+      <section id="games" class="section section-bg">
         <a class="section-heading-link" href="games.html">
           <div class="section-heading">
             <span class="section-number">01.</span>
@@ -34,7 +34,7 @@ mainAttrs:  id="top"
       </section>
 
       <!-- projects preview -->
-      <section id="projects" class="section section-alt">
+      <section id="projects" class="section section-alt section-bg">
         <a class="section-heading-link" href="projects.html">
           <div class="section-heading">
             <span class="section-number">02.</span>
@@ -56,7 +56,7 @@ mainAttrs:  id="top"
       </section>
 
       <!-- design preview — coming soon (heading + "view all" link disabled) -->
-      <section id="design" class="section">
+      <section id="design" class="section section-bg">
         <div class="section-heading">
           <span class="section-number">03.</span>
           <h2>Graphic Design &amp; 3D</h2>
@@ -84,45 +84,24 @@ mainAttrs:  id="top"
         </div>
       </section>
 
-      <!-- photos preview — coming soon (heading + "view all" link disabled) -->
-      <section id="photos" class="section section-alt">
-        <div class="section-heading">
-          <span class="section-number">04.</span>
-          <h2>Photos</h2>
-          <span class="section-line"></span>
+      <!-- photos preview -->
+      <section id="photos" class="section section-alt section-bg">
+        <a class="section-heading-link" href="photos.html">
+          <div class="section-heading">
+            <span class="section-number">04.</span>
+            <h2>Photos</h2>
+            <span class="section-line"></span>
+            <span class="section-arrow" aria-hidden="true">&#8594;</span>
+          </div>
+        </a>
+
+        <div class="album-list">
+{{photoAlbums}}
         </div>
 
-        <div class="coming-soon">
-          <div class="coming-soon-content" aria-hidden="true">
-            <div class="album-list">
-              <div class="album-row">
-                <div class="album-images">
-                  <div class="placeholder-media media-c"></div>
-                  <div class="placeholder-media media-d"></div>
-                  <div class="placeholder-media media-a"></div>
-                </div>
-                <div class="album-overlay"><span>Album One</span></div>
-              </div>
-
-              <div class="album-row">
-                <div class="album-images">
-                  <div class="placeholder-media media-b"></div>
-                  <div class="placeholder-media media-e"></div>
-                  <div class="placeholder-media media-c"></div>
-                </div>
-                <div class="album-overlay"><span>Album Two</span></div>
-              </div>
-
-              <div class="album-row">
-                <div class="album-images">
-                  <div class="placeholder-media media-d"></div>
-                  <div class="placeholder-media media-a"></div>
-                  <div class="placeholder-media media-b"></div>
-                </div>
-                <div class="album-overlay"><span>Album Three</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="coming-soon-overlay"><span>Coming Soon</span></div>
+        <div class="section-footer">
+          <a class="view-all" href="photos.html"
+            >View all photos <span aria-hidden="true">&#8594;</span></a
+          >
         </div>
       </section>

@@ -180,6 +180,64 @@ main { padding-top: var(--nav-height); }
 .section-alt { background: var(--bg-alt); max-width: none; }
 .section-alt > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
 
+/* full-bleed background image behind a section, under a dark tint.
+   The image lives on a ::before layer (slightly taller than the section) that
+   drifts vertically as the section crosses the viewport — a subtle parallax.
+   Per-section image is set via the --section-bg custom property (see #ids).
+   TEMP: images live in images/backgrounds/ — swap for real photos later. */
+.section-bg {
+  --section-tint: rgba(11, 9, 9, 0.82);
+  position: relative;
+  max-width: none;
+  overflow: clip; /* contain the oversized/drifting background layer */
+  isolation: isolate;
+}
+.section-bg::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  bottom: -20%; /* extra height so the drift never reveals an edge */
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--section-tint), var(--section-tint)),
+    var(--section-bg);
+  background-size: cover;
+  background-position: center;
+}
+/* keep the content column constrained even though the section is full-bleed */
+.section-bg > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
+
+#games.section-bg    { --section-bg: url("images/backgrounds/games.svg"); }
+#projects.section-bg { --section-bg: url("images/backgrounds/projects.svg"); }
+#design.section-bg   { --section-bg: url("images/backgrounds/design.svg"); }
+#photos.section-bg   { --section-bg: url("images/backgrounds/photos.svg"); }
+
+/* pure-CSS scroll parallax: drift the background layer as the section travels
+   through the viewport. Scroll-driven view() timeline — no JS. Where the
+   feature is unsupported, the layer simply sits static (graceful fallback). */
+@supports (animation-timeline: view()) {
+  /* longhands only — the `animation` shorthand resets animation-timeline to
+     auto, which silently kills the scroll binding. Keeping duration at its
+     initial `auto` lets the animation fill the whole view() timeline. */
+  .section-bg::before {
+    animation-name: section-parallax;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+    will-change: transform;
+  }
+  @keyframes section-parallax {
+    from { transform: translateY(-14%); }
+    to   { transform: translateY(14%); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-bg::before { animation: none; transform: none; }
+}
+
 .section-heading {
   display: flex;
   align-items: center;
@@ -489,8 +547,15 @@ main { padding-top: var(--nav-height); }
   display: block;
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-sm);
+  overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
+}
+.photo-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .photo-item:hover {
   transform: scale(1.04);
@@ -501,25 +566,70 @@ main { padding-top: var(--nav-height); }
   outline-offset: 3px;
 }
 
-/* lightbox */
-.lightbox {
+/* image viewer — embedded in the page, no JS. Opening a thumbnail :targets a
+   slide inside ONE persistent overlay; the strip scroll-snaps horizontally, so
+   prev/next (anchor jumps within the scroller) and touch swipes glide between
+   photos in place — the overlay itself never re-mounts and the page never
+   navigates. Closed, the viewer is display:none so its lazy -FULL images have
+   no geometry and are NOT fetched; open, the browser only fetches slides near
+   the scrollport. */
+.viewer {
   position: fixed;
   inset: 0;
   z-index: 200;
+  display: none;
+}
+body:has(.viewer-slide:target) .viewer {
+  display: block;
+  animation: viewer-in 0.2s ease; /* plays on open only, not per photo */
+}
+@keyframes viewer-in {
+  from { opacity: 0; }
+}
+/* freeze the page behind an open viewer */
+body:has(.viewer-slide:target) {
+  overflow: hidden;
+}
+.viewer-strip {
+  height: 100%;
   display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.viewer-strip::-webkit-scrollbar { display: none; }
+.viewer-slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 4rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 1.5rem;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
+  gap: 1rem;
+  scroll-snap-align: center;
+  scroll-snap-stop: always; /* arrow/swipe can't skip past photos */
 }
-.lightbox:target {
-  opacity: 1;
-  visibility: visible;
+/* clicking the empty space around a photo closes the viewer */
+.slide-close {
+  position: absolute;
+  inset: 0;
 }
-/* stays mounted the whole time so switching photos doesn't flash the page underneath */
+.viewer-slide .lightbox-image,
+.viewer-slide .lightbox-bar {
+  position: relative;
+  z-index: 1;
+}
+/* the image stage fills all space above the bar, so the bar (and its arrows)
+   sits at the same spot on every slide no matter the photo's aspect ratio */
+.viewer-slide .lightbox-image {
+  flex: 1 1 0;
+  max-width: 900px;
+}
+/* backdrop — a sibling below the viewer, faded via the same :has hook */
 .lightbox-scrim {
   position: fixed;
   inset: 0;
@@ -530,31 +640,35 @@ main { padding-top: var(--nav-height); }
   visibility: hidden;
   transition: opacity 0.2s ease;
 }
-body:has(.lightbox:target) .lightbox-scrim {
+body:has(.viewer-slide:target) .lightbox-scrim {
   opacity: 1;
   visibility: visible;
 }
-.lightbox-content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  pointer-events: auto;
-}
+/* real <img> children size themselves (portrait vs landscape); the fixed 3/2
+   aspect only applies to legacy placeholder blocks */
 .lightbox-image {
   width: 100%;
-  aspect-ratio: 3 / 2;
   min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-image.placeholder-media {
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-md);
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
+}
+.lightbox-image img {
+  max-width: 100%;
+  max-height: 100%; /* contained by the fixed stage, not the viewport math */
   border-radius: var(--radius-md);
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
 }
 .lightbox-close {
   position: absolute;
-  top: -3rem;
-  right: 0;
+  top: 1.25rem;
+  right: 1.5rem;
+  z-index: 2;
   color: var(--text);
   font-size: 1.1rem;
   width: 2.5rem;
@@ -605,8 +719,8 @@ body:has(.lightbox:target) .lightbox-scrim {
 }
 
 @media (max-width: 600px) {
-  .lightbox { padding: 3.5rem 1.25rem; }
-  .lightbox-close { top: -2.75rem; }
+  .viewer-slide { padding: 3.5rem 1rem 1.5rem; }
+  .lightbox-close { top: 1rem; right: 1rem; }
 }
 
 /* homepage preview grid */
@@ -652,6 +766,7 @@ body:has(.lightbox:target) .lightbox-scrim {
   gap: 0.85rem;
   width: 100%;
   align-items: center; /* lets cards differ in height as they scale */
+  min-height: 300px; /* reserve the hovered height so hover never reflows the section */
 }
 .card-carousel .quick-card {
   flex: 1 1 0;
@@ -684,6 +799,7 @@ body:has(.lightbox:target) .lightbox-scrim {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
+    min-height: 0; /* no hover growth on touch, so no reserved height needed */
   }
   .card-carousel .quick-card {
     flex: 0 0 72%;
@@ -762,6 +878,21 @@ body:has(.lightbox:target) .lightbox-scrim {
 .album-row:hover .album-overlay { background: rgba(11, 9, 9, 0.55); }
 .album-row:hover .album-overlay span { opacity: 1; transform: translateY(0); }
 .album-row:hover .album-images .placeholder-media { transform: scale(1.03); }
+
+/* day sub-album cards (trip pages, e.g. Japan 2025) */
+.day-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.day-card .quick-card-label { padding-bottom: 1.9rem; }
+.day-card-meta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 1rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.75);
+}
 
 /* about page */
 .about-grid {
@@ -846,6 +977,15 @@ body:has(.lightbox:target) .lightbox-scrim {
   font-size: 0.8rem;
   color: var(--text-faint);
 }
+/* the tiny "+" is a hidden link to the colophon — blends into the credit line,
+   no underline/pointer, a faint accent tint only on hover for the curious. */
+.footer-plus {
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+  transition: color 0.2s ease;
+}
+.footer-plus:hover { color: var(--accent); }
 .footer-social {
   display: flex;
   justify-content: center;
