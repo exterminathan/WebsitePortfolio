@@ -106,7 +106,7 @@ function gameCard(g) {
     : '';
   return `          <article class="${cls}" id="${g.slug}">${overlay}
             <div class="card-media placeholder-media">
-              <img src="${g.media.img}" alt="${g.media.alt}" />${badge}
+              <img src="${g.media.img}" alt="${g.media.alt}" loading="lazy" />${badge}
             </div>
             <div class="card-body">
               <h3>${g.title}</h3>
@@ -127,7 +127,7 @@ function projectRow(p, i) {
     const badge = p.media.badge
       ? `\n              <span class="media-tag">${p.media.badge}</span>`
       : '';
-    media = `            <div class="card-media placeholder-media row-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" />${badge}\n            </div>`;
+    media = `            <div class="card-media placeholder-media row-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />${badge}\n            </div>`;
   } else {
     media = `            <div class="card-media placeholder-media ${p.mediaClass} row-media"></div>`;
   }
@@ -160,7 +160,7 @@ function gamePreview(g) {
   const href = g.detail ? `game-${g.slug}.html` : `games.html#${g.slug}`;
   return `          <a class="quick-card" href="${href}">
             <div class="placeholder-media">
-              <img src="${g.media.img}" alt="${g.media.alt}" />
+              <img src="${g.media.img}" alt="${g.media.alt}" loading="lazy" />
             </div>
             <span class="quick-card-label">${g.title}</span>
           </a>`;
@@ -170,7 +170,7 @@ function projectPreview(p) {
   const href = p.detail ? `project-${p.slug}.html` : 'projects.html';
   const media =
     p.media && p.media.img
-      ? `<div class="placeholder-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" />\n            </div>`
+      ? `<div class="placeholder-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />\n            </div>`
       : `<div class="placeholder-media ${p.mediaClass}"></div>`;
   return `          <a class="quick-card" href="${href}">
             ${media}

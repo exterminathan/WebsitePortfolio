@@ -24,6 +24,17 @@ reference this is based on.
     type/size rather than heavy chrome; anchored single-page sectioning is worth
     considering given the new multi-section IA below.
 
+- **Mobile standardization (2026-07-22).** The site is responsive down to 320px
+  with the same design language as desktop. Decisions made:
+  - Album titles (Photos page + home) are hover-revealed on desktop, but pinned
+    to a bottom-left gradient label on touch devices (`@media (hover: none)`).
+  - The lightbox's invisible tap-around-the-photo close area is disabled on
+    touch — only the ✕ (44px) closes, so swipes can't accidentally exit.
+  - Nav bar drops from 72px to 64px on ≤760px screens (via the `--nav-height`
+    token); horizontal gutters unified behind a `--gutter` token.
+  - Still zero JS: scroll lock behind the open drawer and all touch behavior is
+    pure CSS (`:has()`, `hover: none`).
+
 ## Under discussion
 
 - **Site sections/IA** — split the portfolio into distinct sections instead of

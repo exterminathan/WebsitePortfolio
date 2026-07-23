@@ -21,6 +21,7 @@
 
   --container: 1100px;
   --nav-height: 4.5rem;
+  --gutter: 1.5rem; /* one horizontal page gutter, used everywhere */
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -41,7 +42,11 @@ body {
   font-family: var(--font-sans);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word; /* inherited: long emails/URLs/headings never overflow */
 }
+
+img, svg, video { max-width: 100%; }
+code { overflow-wrap: anywhere; } /* long tokens like ProductConfig.cmake */
 
 h1, h2, h3, h4 {
   margin: 0;
@@ -69,8 +74,8 @@ ul { list-style: none; margin: 0; padding: 0; }
 /* mockup flag */
 .mockup-flag {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  right: calc(1rem + env(safe-area-inset-right));
   z-index: 999;
   background: var(--accent);
   color: #fff;
@@ -95,13 +100,15 @@ ul { list-style: none; margin: 0; padding: 0; }
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .nav-inner {
   max-width: var(--container);
   height: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--gutter);
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -149,10 +156,14 @@ ul { list-style: none; margin: 0; padding: 0; }
 .hamburger {
   display: none;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
+  width: 44px;  /* comfortable touch target */
+  height: 44px;
   cursor: pointer;
   margin-left: auto;
-  padding: 0.5rem;
+  margin-right: -11px; /* keep the 22px bars optically flush with the gutter */
 }
 .hamburger span {
   width: 22px;
@@ -175,7 +186,7 @@ main { padding-top: var(--nav-height); }
 .section {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 7rem 1.5rem;
+  padding: 7rem var(--gutter);
 }
 .section-alt { background: var(--bg-alt); max-width: none; }
 .section-alt > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
@@ -209,6 +220,12 @@ main { padding-top: var(--nav-height); }
 /* keep the content column constrained even though the section is full-bleed */
 .section-bg > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
 
+/* hero declares its bg here too, but needs max-width re-cleared because the
+   later .hero rule would otherwise win and clip the bleed to the container */
+.hero.section-bg {
+  --section-bg: url("images/backgrounds/hero.svg");
+  max-width: none;
+}
 #games.section-bg    { --section-bg: url("images/backgrounds/games.svg"); }
 #projects.section-bg { --section-bg: url("images/backgrounds/projects.svg"); }
 #design.section-bg   { --section-bg: url("images/backgrounds/design.svg"); }
@@ -235,6 +252,12 @@ main { padding-top: var(--nav-height); }
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  html, .viewer-strip { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   .section-bg::before { animation: none; transform: none; }
 }
 
@@ -249,9 +272,10 @@ main { padding-top: var(--nav-height); }
   color: var(--accent);
   font-size: 1.1rem;
 }
-.section-heading h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); white-space: nowrap; }
+.section-heading h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
 .section-line {
   flex: 1;
+  min-width: 1.5rem; /* the line shrinks to this before the heading wraps */
   height: 1px;
   background: var(--border-strong);
 }
@@ -285,7 +309,7 @@ main { padding-top: var(--nav-height); }
 .page-header {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 7rem 1.5rem 1rem;
+  padding: 7rem var(--gutter) 1rem;
 }
 .back-link {
   font-family: var(--font-mono);
@@ -308,7 +332,7 @@ main { padding-top: var(--nav-height); }
 .hero {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 9rem 1.5rem 3rem;
+  padding: 9rem var(--gutter) 3rem;
 }
 .hero h1 {
   font-size: clamp(2.75rem, 7vw, 4.5rem);
@@ -334,7 +358,7 @@ main { padding-top: var(--nav-height); }
 }
 /* hero CTA sits a touch smaller and flatter than the shared .btn */
 .hero-actions .btn {
-  padding: 0.55rem 1.15rem;
+  padding: 0.65rem 1.25rem; /* keeps ~44px height for touch */
   font-size: 0.85rem;
 }
 .hero-actions .btn-ghost:hover {
@@ -413,7 +437,7 @@ main { padding-top: var(--nav-height); }
 /* game cards */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr));
   gap: 2rem;
 }
 .card {
@@ -470,6 +494,33 @@ main { padding-top: var(--nav-height); }
 .tag-orange { --tag-color: #f5b968; --tag-bg: rgba(242, 161, 63, 0.15); }
 .tag-blue   { --tag-color: #6fa8f7; --tag-bg: rgba(63, 143, 242, 0.15); }
 
+/* per-section accent themes (home page): override the accent tokens for
+   everything inside the section — section number, heading hover, view-all link */
+.accent-rose {
+  --accent: #f8dcd3;
+  --accent-hover: #fdf0eb;
+  --accent-soft: rgba(248, 220, 211, 0.12);
+  --accent-soft-strong: rgba(248, 220, 211, 0.24);
+}
+.accent-yellow {
+  --accent: #ffe16d;
+  --accent-hover: #fff0a8;
+  --accent-soft: rgba(255, 225, 109, 0.12);
+  --accent-soft-strong: rgba(255, 225, 109, 0.24);
+}
+.accent-orange {
+  --accent: #f2a83f;
+  --accent-hover: #f6c375;
+  --accent-soft: rgba(242, 161, 63, 0.15);
+  --accent-soft-strong: rgba(242, 161, 63, 0.28);
+}
+.accent-violet {
+  --accent: #a583f7;
+  --accent-hover: #bfa5fa;
+  --accent-soft: rgba(122, 63, 242, 0.16);
+  --accent-soft-strong: rgba(122, 63, 242, 0.3);
+}
+
 /* project / game detail sub-pages */
 .detail-section { display: flex; flex-direction: column; gap: 2.5rem; }
 .detail-hero {
@@ -520,6 +571,7 @@ main { padding-top: var(--nav-height); }
 .gallery-item {
   margin: 0;
   aspect-ratio: 4 / 3;
+  min-height: 0; /* .placeholder-media's 180px min + this aspect would force a 240px min-WIDTH, overflowing narrow grids */
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
@@ -667,12 +719,12 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 .lightbox-close {
   position: absolute;
   top: 1.25rem;
-  right: 1.5rem;
+  right: calc(1.5rem + env(safe-area-inset-right));
   z-index: 2;
   color: var(--text);
   font-size: 1.1rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;  /* 44px touch minimum, matches .lightbox-nav */
+  height: 2.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -719,8 +771,8 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 }
 
 @media (max-width: 600px) {
-  .viewer-slide { padding: 3.5rem 1rem 1.5rem; }
-  .lightbox-close { top: 1rem; right: 1rem; }
+  .viewer-slide { padding: 3.5rem 1rem calc(1.5rem + env(safe-area-inset-bottom)); }
+  .lightbox-close { top: 1rem; right: calc(1rem + env(safe-area-inset-right)); }
 }
 
 /* homepage preview grid */
@@ -867,7 +919,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 }
 .album-overlay span {
   font-family: var(--font-mono);
-  font-size: 1.05rem;
+  font-size: clamp(1.3rem, 2.8vw, 1.9rem);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #fff;
@@ -878,6 +930,24 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 .album-row:hover .album-overlay { background: rgba(11, 9, 9, 0.55); }
 .album-row:hover .album-overlay span { opacity: 1; transform: translateY(0); }
 .album-row:hover .album-images .placeholder-media { transform: scale(1.03); }
+
+/* touch devices never hover: pin the album title to a bottom gradient,
+   drop the accidental-exit slide-close, grow the lightbox arrows */
+@media (hover: none) {
+  .album-overlay {
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0.9rem 1.15rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
+  }
+  .album-overlay span {
+    opacity: 1;
+    transform: none;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+  }
+  .slide-close { display: none; } /* a swipe ending in a stray tap must not exit the viewer */
+  .lightbox-nav { width: 3rem; height: 3rem; }
+}
 
 /* day sub-album cards (trip pages, e.g. Japan 2025) */
 .day-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
@@ -968,7 +1038,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 .site-footer {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
+  padding: 3rem var(--gutter) 4rem;
   text-align: center;
   border-top: 1px solid var(--border);
 }
@@ -1005,6 +1075,11 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --nav-height: 4rem;  /* shorter chrome on phones; cascades to header, drawer, scroll offsets */
+    --gutter: 1.25rem;   /* one consistent mobile gutter */
+  }
+
   .hamburger { display: flex; }
 
   .site-nav {
@@ -1012,6 +1087,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     top: var(--nav-height);
     right: 0;
     height: calc(100vh - var(--nav-height));
+    height: calc(100dvh - var(--nav-height)); /* tracks the collapsing URL bar */
     width: min(78vw, 320px);
     background: var(--bg-alt);
     border-left: 1px solid var(--border);
@@ -1019,7 +1095,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 1.75rem;
-    padding: 2.5rem 2rem;
+    padding: 2.5rem calc(2rem + env(safe-area-inset-right)) calc(2.5rem + env(safe-area-inset-bottom)) 2rem;
     transform: translateX(100%);
     transition: transform 0.3s ease;
     z-index: 95;
@@ -1027,7 +1103,12 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   .nav-toggle-input:checked + .site-header .site-nav {
     transform: translateX(0);
   }
+  /* scrim sits under the header (90 < 100) on purpose: the drawer lives inside
+     the header's stacking context, so a scrim above the header would cover the
+     drawer too. The undimmed header strip is acceptable. */
   .nav-toggle-input:checked ~ .nav-scrim { display: block; }
+  /* freeze the page behind the open drawer (parallel to the viewer lock) */
+  body:has(.nav-toggle-input:checked) { overflow: hidden; }
 
   .nav-toggle-input:checked + .site-header .hamburger span:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
@@ -1037,10 +1118,24 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     transform: translateY(-7px) rotate(-45deg);
   }
 
+  .hero { padding: 5rem var(--gutter) 2.5rem; }
+  .page-header { padding: 4.5rem var(--gutter) 1rem; }
+  .section { padding: 5rem var(--gutter); }
+
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-gallery { grid-template-columns: 1fr; }
+  .quick-grid.grid-2col { grid-template-columns: 1fr; }
   .album-images { grid-template-columns: repeat(2, 1fr); height: 160px; }
   .album-images .placeholder-media:nth-child(3) { display: none; }
-  .section { padding: 5rem 1.25rem; }
+
+  /* desktop-scaled sizes read huge in single-column layouts */
+  .detail-hero { min-height: 240px; }
+  .row-media { min-height: 200px; }
+  .card .card-media { min-height: 180px; }
+  .card-grid { gap: 1.25rem; }
+  .row-list { gap: 3rem; }
+  .card-body { padding: 1.25rem; }
+  .contact-card { padding: 1.75rem 1.25rem; }
+  .contact-section { margin-top: 4rem; }
 }

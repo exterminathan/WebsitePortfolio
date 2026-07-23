@@ -3,7 +3,7 @@ title: Nathan Shturm
 active:
 mainAttrs:  id="top"
 -->
-      <section class="hero">
+      <section class="hero section-bg">
         <h1>Nathan Shturm.</h1>
         <h2 class="hero-sub"><span class="hero-role">Developer.</span> Visual Artist.</h2>
         <div class="hero-actions">
@@ -12,7 +12,7 @@ mainAttrs:  id="top"
       </section>
 
       <!-- games preview -->
-      <section id="games" class="section section-bg">
+      <section id="games" class="section section-bg accent-rose">
         <a class="section-heading-link" href="games.html">
           <div class="section-heading">
             <span class="section-number">01.</span>
@@ -34,7 +34,7 @@ mainAttrs:  id="top"
       </section>
 
       <!-- projects preview -->
-      <section id="projects" class="section section-alt section-bg">
+      <section id="projects" class="section section-alt section-bg accent-yellow">
         <a class="section-heading-link" href="projects.html">
           <div class="section-heading">
             <span class="section-number">02.</span>
@@ -55,10 +55,32 @@ mainAttrs:  id="top"
         </div>
       </section>
 
-      <!-- design preview — coming soon (heading + "view all" link disabled) -->
-      <section id="design" class="section section-bg">
+      <!-- photos preview -->
+      <section id="photos" class="section section-bg accent-orange">
+        <a class="section-heading-link" href="photos.html">
+          <div class="section-heading">
+            <span class="section-number">03.</span>
+            <h2>Photos</h2>
+            <span class="section-line"></span>
+            <span class="section-arrow" aria-hidden="true">&#8594;</span>
+          </div>
+        </a>
+
+        <div class="album-list">
+{{photoAlbums}}
+        </div>
+
+        <div class="section-footer">
+          <a class="view-all" href="photos.html"
+            >View all photos <span aria-hidden="true">&#8594;</span></a
+          >
+        </div>
+      </section>
+
+      <!-- design preview — coming soon, hidden for now (uncomment to restore)
+      <section id="design" class="section section-alt section-bg accent-violet">
         <div class="section-heading">
-          <span class="section-number">03.</span>
+          <span class="section-number">04.</span>
           <h2>Graphic Design &amp; 3D</h2>
           <span class="section-line"></span>
         </div>
@@ -83,25 +105,4 @@ mainAttrs:  id="top"
           <div class="coming-soon-overlay"><span>Coming Soon</span></div>
         </div>
       </section>
-
-      <!-- photos preview -->
-      <section id="photos" class="section section-alt section-bg">
-        <a class="section-heading-link" href="photos.html">
-          <div class="section-heading">
-            <span class="section-number">04.</span>
-            <h2>Photos</h2>
-            <span class="section-line"></span>
-            <span class="section-arrow" aria-hidden="true">&#8594;</span>
-          </div>
-        </a>
-
-        <div class="album-list">
-{{photoAlbums}}
-        </div>
-
-        <div class="section-footer">
-          <a class="view-all" href="photos.html"
-            >View all photos <span aria-hidden="true">&#8594;</span></a
-          >
-        </div>
-      </section>
+      -->
