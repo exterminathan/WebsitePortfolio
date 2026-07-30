@@ -321,6 +321,31 @@ main { padding-top: var(--nav-height); }
   margin-bottom: 2rem;
 }
 .back-link:hover { color: var(--accent-hover); }
+
+/* themed sub-page headers: every section page gets the SAME dark header band
+   (the games/rose tint — deliberately not per-accent, so the band reads dark
+   everywhere). The accent class on the header still recolors that page's
+   section number + line via --accent. Full-bleed like .section-bg; scoped to
+   headers that carry an accent class, so plain detail-page headers are unaffected. */
+.page-header:is(.accent-rose, .accent-yellow, .accent-orange, .accent-violet, .accent-blue) {
+  --page-header-tint: rgba(248, 220, 211, 0.24);
+  max-width: none;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+.page-header:is(.accent-rose, .accent-yellow, .accent-orange, .accent-violet, .accent-blue) > * {
+  max-width: var(--container);
+  margin-left: auto;
+  margin-right: auto;
+}
+.page-header:is(.accent-rose, .accent-yellow, .accent-orange, .accent-violet, .accent-blue)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--page-header-tint), transparent 82%);
+}
 .page-header .section-heading { margin-bottom: 1.5rem; }
 .page-intro {
   max-width: 40rem;
@@ -522,6 +547,13 @@ main { padding-top: var(--nav-height); }
   --accent-soft: rgba(122, 63, 242, 0.16);
   --accent-soft-strong: rgba(122, 63, 242, 0.3);
 }
+/* About has no home-page card — give its header a cool blue of its own. */
+.accent-blue {
+  --accent: #6fa8f7;
+  --accent-hover: #9cc4fa;
+  --accent-soft: rgba(63, 143, 242, 0.15);
+  --accent-soft-strong: rgba(63, 143, 242, 0.28);
+}
 
 /* project / game detail sub-pages */
 .detail-section { display: flex; flex-direction: column; gap: 2.5rem; }
@@ -543,12 +575,89 @@ main { padding-top: var(--nav-height); }
   aspect-ratio: 16 / 10;
   min-height: 0;
 }
+/* captioned screenshot gallery (project detail pages) */
+.shot-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem 1.5rem;
+  align-items: start;
+}
+.shot-gallery figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.shot-gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+}
+.shot-gallery figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+.shot-gallery figcaption strong {
+  color: var(--text);
+  font-weight: 600;
+}
+/* click-to-play video embed. No JS: preload="none" means the browser fetches
+   nothing but the poster until the visitor actually presses play.
+   The <figcaption> is the FIRST child so the label sits above the player —
+   valid HTML, figcaption may be either the first or last child of a figure. */
+.detail-video {
+  margin: 0;
+  max-width: 56rem;
+}
+.detail-video figcaption {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* thin rule running off the label, matching .section-line */
+.detail-video figcaption::after {
+  content: "";
+  flex: 1;
+  min-width: 1.5rem;
+  height: 1px;
+  background: var(--border-strong);
+}
+.detail-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-md);
+  box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.75);
+}
 .detail-links {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   font-weight: 600;
   font-size: 0.95rem;
+}
+.detail-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.detail-links .brick-mark {
+  width: 46px;
+  height: 46px;
+  flex: none;
 }
 
 /* project rows */
@@ -1002,18 +1111,9 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   align-items: center;
   gap: 1.5rem;
 }
-.contact-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-.contact-row svg { color: var(--accent); flex-shrink: 0; }
-
-.phone-reveal { text-align: center; }
-.phone-reveal summary {
+/* click-to-reveal contact details (email + phone). Pure CSS via <details>. */
+.contact-reveal { text-align: center; }
+.contact-reveal summary {
   cursor: pointer;
   list-style: none;
   display: inline-flex;
@@ -1022,14 +1122,15 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   color: var(--accent);
   font-weight: 600;
 }
-.phone-reveal summary::-webkit-details-marker { display: none; }
-.phone-reveal summary:hover { color: var(--accent-hover); }
-.phone-reveal[open] summary { color: var(--text-dim); }
-.phone-reveal .phone-number {
+.contact-reveal summary::-webkit-details-marker { display: none; }
+.contact-reveal summary:hover { color: var(--accent-hover); }
+.contact-reveal[open] summary { color: var(--text-dim); }
+.contact-reveal .reveal-value {
   display: block;
   margin-top: 0.5rem;
   font-family: var(--font-mono);
   font-size: 1.1rem;
+  word-break: break-word; /* long email must not overflow the card on mobile */
 }
 
 .contact-social { display: flex; gap: 1.5rem; }
@@ -1049,8 +1150,8 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   font-size: 0.8rem;
   color: var(--text-faint);
 }
-/* the tiny "+" is a hidden link to the colophon — blends into the credit line,
-   no underline/pointer, a faint accent tint only on hover for the curious. */
+/* the tiny "+" is a hidden link to the disclaimer — blends into the credit
+   line, no underline/pointer, a faint accent tint only on hover. */
 .footer-plus {
   color: inherit;
   text-decoration: none;
@@ -1327,6 +1428,7 @@ html.js .star-btn.starred { display: none; }
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-gallery { grid-template-columns: 1fr; }
+  .shot-gallery { grid-template-columns: 1fr; }
   .quick-grid.grid-2col { grid-template-columns: 1fr; }
   .album-images { grid-template-columns: repeat(2, 1fr); height: 160px; }
   .album-images .placeholder-media:nth-child(3) { display: none; }

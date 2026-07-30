@@ -448,8 +448,8 @@ function detailContent(item, type) {
           .map((t) => `          <li>${t}</li>`)
           .join('\n')}\n        </ul>`
       : '';
-  const linkItems = (item.links || []).map(
-    (l) => `          <a href="${l.href}"${l.external ? ' target="_blank"' : ''}>${l.label}</a>`
+  const linkItems = (item.detailLinks || item.links || []).map(
+    (l) => `          <a href="${l.href}"${l.external ? ' target="_blank"' : ''}${l.ariaLabel ? ` aria-label="${l.ariaLabel}"` : ''}>${l.label}</a>`
   );
   const links = linkItems.length
     ? `\n        <div class="detail-links">\n${linkItems.join('\n')}\n        </div>`

@@ -24,6 +24,22 @@
  */
 module.exports = [
   {
+    slug: 'europe-2026',
+    title: 'Europe 2026',
+    blurb:
+      'Across Europe in 2026 &mdash; Switzerland, Prague, and more. Organized by leg &mdash; pick one below.',
+    // 3 sub-albums sharing one folder, images/photos/europe-2026/, named by day
+    // slug: switzerland001-FULL.jpg, prague001-FULL.jpg, other001-FULL.jpg (+ -THUMB).
+    // Waiting on edited exports (RAW only so far), so the album is skipped at
+    // build until photos land. Rename the 'other' leg once decided (update the
+    // slug here AND the on-disk filename prefix + ingest-photos.ps1 together).
+    days: [
+      { slug: 'switzerland', title: 'Switzerland', date: 'TBD' },
+      { slug: 'prague', title: 'Prague', date: 'TBD' },
+      { slug: 'other', title: 'Other', date: 'TBD' },
+    ],
+  },
+  {
     slug: 'japan-2025',
     title: 'Japan 2025',
     blurb:
@@ -57,7 +73,4 @@ module.exports = [
       'Safari across Kenya, 2022 &mdash; wildlife and landscapes from the savanna.',
     covers: ['kenya005', 'kenya011', 'kenya026'],
   },
-
-  // Europe 2026 (Zurich, Prague, Czech bike tour) — waiting on edited exports;
-  // the source folders only have RAWs so far. Add here + in ingest-photos.ps1.
 ];

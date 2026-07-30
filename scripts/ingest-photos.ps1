@@ -10,8 +10,8 @@
 #
 # Idempotent: re-running overwrites existing output. Slugs/prefixes must match
 # src/data/albums.js — the build scans these folders to generate album pages.
-# Europe 2026 is absent on purpose: its output/ folders are still empty (RAW
-# only) — add a mapping here once edited exports exist.
+# Europe 2026 is scaffolded (see the commented block at the bottom) but still
+# RAW-only — fill in the source folder names and uncomment once exports exist.
 
 $ErrorActionPreference = 'Stop'
 $ffmpeg = 'C:\ffmpeg\ffmpeg.exe'
@@ -67,5 +67,23 @@ foreach ($day in $japanDays) {
     Where-Object { $_.Extension -match '^\.jpe?g$' } | Sort-Object Name
   Convert-Album -Files $files -OutDir (Join-Path $destRoot 'japan-2025') -Prefix $day.slug
 }
+
+# --- Europe 2026: 3 legs into one folder (slugs match src/data/albums.js) -----
+# RAW only so far — set each $src to its curated-export folder under
+# "$srcRoot\Europe 2026", rename the 'other' leg to match albums.js, then
+# uncomment. Same one-folder/day-slug-prefix scheme as Japan above.
+# $europeLegs = @(
+#   @{ src = 'Switzerland'; slug = 'switzerland' },
+#   @{ src = 'Prague';      slug = 'prague' },
+#   @{ src = 'Other';       slug = 'other' }
+# )
+# foreach ($leg in $europeLegs) {
+#   $legDir = Join-Path "$srcRoot\Europe 2026" $leg.src
+#   $outFolder = Get-ChildItem $legDir -Directory | Where-Object { $_.Name -match '^outputs?$' }
+#   if (-not $outFolder) { Write-Output "SKIP (no outputs): $($leg.src)"; continue }
+#   $files = Get-ChildItem $outFolder.FullName -File -Recurse |
+#     Where-Object { $_.Extension -match '^\.jpe?g$' } | Sort-Object Name
+#   Convert-Album -Files $files -OutDir (Join-Path $destRoot 'europe-2026') -Prefix $leg.slug
+# }
 
 Write-Output 'INGEST DONE'

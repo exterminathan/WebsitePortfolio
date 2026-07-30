@@ -36,16 +36,97 @@ module.exports = [
     ],
     detail: true, // sub-page ON
     tagline:
-      'A cooperative multiplayer game and senior capstone — placeholder page for now.',
-    // Placeholder body — flesh out with real screenshots / writeup later.
+      'A cooperative multiplayer game built in Unity — my senior capstone, shipped on Steam.',
+    // DRAFT BODY — real trailer + scaffolded sections. Replace the prose in each
+    // .detail-block with the real story; drop screenshots/gifs into the galleries.
     detailBody: `
+      <figure class="detail-video">
+        <figcaption>Release Trailer</figcaption>
+        <video
+          controls
+          preload="none"
+          playsinline
+          poster="images/projects/quartermaster/qm_primary.png"
+          width="1280"
+          height="720"
+        >
+          <source src="https://video.akamai.steamstatic.com/store_trailers/257165521/movie_max_vp9.webm" type="video/webm" />
+          <source src="https://video.akamai.steamstatic.com/store_trailers/257165521/movie_max.mp4" type="video/mp4" />
+          <a href="https://store.steampowered.com/app/3673980/Quartermaster/" target="_blank">Watch the trailer on Steam &#8594;</a>
+        </video>
+      </figure>
+
       <div class="detail-block">
         <h2>Overview</h2>
         <p>
-          Quartermaster is my senior capstone: a cooperative multiplayer game
-          built in Unity. This page is a placeholder &mdash; a full writeup of
-          the Steam integration, 3D pipeline, and performance work is coming
-          soon.
+          DRAFT &mdash; replace this paragraph. Quartermaster is my senior
+          capstone: a cooperative multiplayer game built in Unity and shipped on
+          Steam. Say what the player actually does here, how many players a
+          session holds, how long a run takes, and what makes it worth playing.
+        </p>
+        <p>
+          Then add the team context: how many people, what your role as lead
+          covered, and how long the project ran.
+        </p>
+      </div>
+
+      <div class="detail-block">
+        <h2>Steam Lobbies &amp; Matchmaking</h2>
+        <p>
+          DRAFT &mdash; the Unity &#8596; Steamworks integration you owned:
+          lobby creation and join flow, matchmaking, and how session state stays
+          in sync. Name the hard part and how you solved it. Screenshot of the
+          lobby UI or a gif of two clients connecting goes below.
+        </p>
+      </div>
+
+      <!-- DROP MEDIA HERE. Replace each placeholder div with a real figure:
+           <figure><img src="images/projects/quartermaster/qm_lobby.png"
+             alt="Lobby screen" loading="lazy" />
+             <figcaption><strong>Label.</strong> One line of context.</figcaption>
+           </figure>
+           ...and change the wrapper class to "shot-gallery" once captions exist. -->
+      <div class="detail-gallery">
+        <div class="placeholder-media media-c"></div>
+        <div class="placeholder-media media-a"></div>
+      </div>
+
+      <div class="detail-block">
+        <h2>3D Asset Pipeline</h2>
+        <p>
+          DRAFT &mdash; the end-to-end Blender &#8594; Substance Painter &#8594;
+          Unity pipeline you authored. Cover the naming/export conventions, the
+          texturing setup, and how you kept it consistent across a whole team.
+          Turntable gifs or before/after shots belong here.
+        </p>
+      </div>
+
+      <div class="detail-gallery">
+        <div class="placeholder-media media-b"></div>
+        <div class="placeholder-media media-e"></div>
+      </div>
+
+      <div class="detail-block">
+        <h2>Performance &amp; Editor Tooling</h2>
+        <p>
+          DRAFT &mdash; the 60%+ optimization: what you profiled, what the
+          bottleneck actually was, what draw-call batching and memory work you
+          did, and the before/after numbers. A screenshot of the Unity Profiler
+          before and after would carry this section.
+        </p>
+        <p>
+          Then the custom Editor tools you built for the level designers &mdash;
+          what they automated and how much time they saved. A gif of a tool in
+          use is the strongest possible evidence here.
+        </p>
+      </div>
+
+      <div class="detail-block">
+        <h2>Shipping</h2>
+        <p>
+          DRAFT &mdash; Steam Achievements and Leaderboards setup, the store
+          page, and anything you learned about actually shipping to a storefront
+          that you would not have learned otherwise.
         </p>
       </div>
     `,
@@ -71,44 +152,60 @@ module.exports = [
     detail: true, // sub-page ON
     tagline:
       "A physics-driven sandbox where you're a duck robot loose in a factory — a solo project I build every part of.",
-    // Freeform HTML for the sub-page body. Add/replace blocks freely.
+    // DRAFT BODY — structure is real, prose is scaffolding. Replace each
+    // paragraph and swap the placeholder tiles for gifs/screenshots.
     // `.detail-block` = a text section. `.detail-gallery` = an image/gif grid.
     detailBody: `
       <div class="detail-block">
         <h2>Overview</h2>
         <p>
-          Duck Around is a solo game project: a goofy physics sandbox where you
-          control a duck-shaped robot wandering a factory. Every model, texture,
-          and sound is made by me. Replace this copy with the real story of the
-          project.
+          DRAFT &mdash; replace this paragraph. Duck Around is a solo project: a
+          physics sandbox where you play a duck-shaped robot loose in a factory.
+          Say what the player is actually doing minute to minute, what the
+          factory is for, and where the comedy comes from.
         </p>
+        <p>
+          Then say where it stands: what's playable now, what's next, and
+          whether it's headed for a release anywhere.
+        </p>
+      </div>
+
+      <!-- DROP GIF HERE — a 6-10s loop of the duck moving is the single most
+           convincing asset on this page. Replace the tiles below with:
+           <div class="placeholder-media"><img src="images/projects/duckaround/da_ik.gif" alt="IK demo" /></div> -->
+      <div class="detail-gallery">
+        <div class="placeholder-media media-d"></div>
+        <div class="placeholder-media media-a"></div>
       </div>
 
       <div class="detail-block">
         <h2>Custom Two-Bone IK Movement</h2>
         <p>
-          The player uses a custom two-bone inverse-kinematics system so the
-          legs plant and react to uneven factory geometry. Drop a gif of it in
-          action below.
+          DRAFT &mdash; the technical centerpiece. Explain the two-bone
+          inverse-kinematics rig: how the legs find footing on uneven factory
+          geometry, why you wrote it yourself instead of using Unity's animation
+          rigging package, and what broke along the way. This is the section a
+          gameplay programmer will actually read.
         </p>
-      </div>
-
-      <!-- swap these placeholder blocks for real screenshots / gifs:
-           <div class="placeholder-media"><img src="images/projects/duckaround/da_ik.gif" alt="IK demo" /></div> -->
-      <div class="detail-gallery">
-        <div class="placeholder-media media-d"></div>
-        <div class="placeholder-media media-a"></div>
-        <div class="placeholder-media media-e"></div>
-        <div class="placeholder-media media-c"></div>
+        <p>
+          DROP GIF HERE &mdash; the legs planting on stairs or a slope, ideally
+          with the IK targets visualized.
+        </p>
       </div>
 
       <div class="detail-block">
         <h2>Made From Scratch</h2>
         <p>
-          All assets &mdash; models, textures, and audio &mdash; are authored by
-          me. This section is a good place to break down the art and audio
-          pipeline with supporting images.
+          DRAFT &mdash; every model, texture, and sound is yours. Break down the
+          pipeline: modelling and texturing tools, the look you were going for,
+          and how the audio was made. Show the duck in Blender next to the duck
+          in-engine.
         </p>
+      </div>
+
+      <div class="detail-gallery">
+        <div class="placeholder-media media-e"></div>
+        <div class="placeholder-media media-c"></div>
       </div>
     `,
   },

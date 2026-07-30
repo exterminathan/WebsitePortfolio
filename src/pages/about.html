@@ -3,10 +3,10 @@ title: About &#8212; Nathan Shturm
 active: about
 footerSocial: false
 -->
-      <div class="page-header">
+      <div class="page-header accent-blue">
         <a href="index.html" class="back-link">&#8592; Back to home</a>
         <div class="section-heading">
-          <span class="section-number">05.</span>
+          <span class="section-number">04.</span>
           <h1>About Me</h1>
           <span class="section-line"></span>
         </div>
@@ -21,7 +21,10 @@ footerSocial: false
         </div>
 
         <!-- ============= CONTACT ============= -->
-        <div class="contact-section">
+        <!-- id is the scroll target for the home page's "Get in touch" button
+             (about.html#contact). The nav/footer "About" links intentionally
+             still land at the top of the page. -->
+        <div class="contact-section" id="contact">
           <div class="section-heading">
             <h2>Get In Touch</h2>
             <span class="section-line"></span>
@@ -32,17 +35,25 @@ footerSocial: false
           </p>
 
           <div class="contact-card">
-            <a class="contact-row" href="mailto:placeholder@example.com">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path
-                  fill="currentColor"
-                  d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.3 7.8 6.2 7.8-6.2H4.2ZM20 7.1l-8 6.4-8-6.4v11.2h16V7.1Z"
-                />
-              </svg>
-              placeholder@example.com
-            </a>
+            <!-- Both contact details sit behind a <details> click-to-reveal so
+                 they aren't on screen for casual visitors. Note this is visual
+                 only — the values are still in the page source. -->
+            <details class="contact-reveal">
+              <summary>
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    fill="currentColor"
+                    d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.3 7.8 6.2 7.8-6.2H4.2ZM20 7.1l-8 6.4-8-6.4v11.2h16V7.1Z"
+                  />
+                </svg>
+                Show email address
+              </summary>
+              <a class="reveal-value" href="mailto:nathanlshturm@gmail.com"
+                >nathanlshturm@gmail.com</a
+              >
+            </details>
 
-            <details class="phone-reveal">
+            <details class="contact-reveal">
               <summary>
                 <svg viewBox="0 0 24 24" width="18" height="18">
                   <path
@@ -52,23 +63,14 @@ footerSocial: false
                 </svg>
                 Show phone number
               </summary>
-              <span class="phone-number">+1 (408) 800-7215</span>
+              <a class="reveal-value" href="tel:+14088007215"
+                >+1 (408) 800-7215</a
+              >
             </details>
 
+            <!-- Order is deliberate: LinkedIn, GitHub, Brick OSINT, ArtStation,
+                 Steam. Keep it in sync if you add another. -->
             <div class="contact-social">
-              <a
-                href="https://github.com/exterminathan"
-                target="_blank"
-                aria-label="GitHub"
-                title="GitHub"
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22">
-                  <path
-                    fill="currentColor"
-                    d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.72-4.04-1.6-4.04-1.6-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.82 2.8 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.53.12-3.19 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.89.12 3.19.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"
-                  />
-                </svg>
-              </a>
               <a
                 href="https://www.linkedin.com/in/nathan-shturm/"
                 target="_blank"
@@ -83,6 +85,33 @@ footerSocial: false
                 </svg>
               </a>
               <a
+                href="https://github.com/exterminathan"
+                target="_blank"
+                aria-label="GitHub"
+                title="GitHub"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                  <path
+                    fill="currentColor"
+                    d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.72-4.04-1.6-4.04-1.6-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.82 2.8 1.3 3.49.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.53.12-3.19 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.89.12 3.19.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://brick-osint.games"
+                target="_blank"
+                aria-label="Brick OSINT"
+                title="brick-osint.games"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                  <path
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4ZM9 6.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Zm0 .9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM15 6.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Zm0 .9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM9 12.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Zm0 .9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM15 12.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Zm0 .9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"
+                  />
+                </svg>
+              </a>
+              <a
                 href="https://www.artstation.com/nathanshturm"
                 target="_blank"
                 aria-label="ArtStation"
@@ -92,6 +121,19 @@ footerSocial: false
                   <path
                     fill="currentColor"
                     d="M13.87 3H10.1L18.4 17.7l1.9-3.3L13.87 3ZM8.4 6.1 1.3 18.4h5.6l2.1-3.7H16l-2-3.5H9.7l2.2-3.9L8.4 6.1ZM2.9 20.4l-1.1 1.9h17.9l-1.1-1.9H2.9Z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://store.steampowered.com/app/3673980/Quartermaster/"
+                target="_blank"
+                aria-label="Quartermaster on Steam"
+                title="Quartermaster on Steam"
+              >
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                  <path
+                    fill="currentColor"
+                    d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273-.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"
                   />
                 </svg>
               </a>
