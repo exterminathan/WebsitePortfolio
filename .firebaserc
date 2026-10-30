@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "project-a89ff80d-7ecd-456f-aee"
+  },
+  "targets": {
+    "project-a89ff80d-7ecd-456f-aee": {
+      "hosting": {
+        "portfolio": ["nathanshturm"]
+      }
+    }
+  }
+}
