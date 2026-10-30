@@ -155,10 +155,13 @@ const listing = (kind, items) =>
 
 function gamePreview(g) {
   const href = g.detail ? `game-${g.slug}.html` : `games.html#${g.slug}`;
-  return `          <a class="quick-card" href="${href}">
-            <div class="placeholder-media">
+  const media = g.media
+    ? `<div class="placeholder-media">
               <img src="${g.media.img}" alt="${g.media.alt}" loading="lazy" />
-            </div>
+            </div>`
+    : `<div class="placeholder-media ${g.mediaClass}"></div>`;
+  return `          <a class="quick-card" href="${href}">
+            ${media}
             <span class="quick-card-label">${g.title}</span>
           </a>`;
 }
