@@ -1,0 +1,936 @@
+<title>N:S Site Tracker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* One narrow working column: the site's page tree, each page opening onto its own todo list. Tokens follow nathanshturm.com's style.css. */
+:root {
+  --bg: #f5f1ef;
+  --surface: #fffdfc;
+  --surface-2: #efe9e7;
+  --ink: #1e1618;
+  --ink-dim: #655a5c;
+  --ink-faint: #968a8c;
+  --line: rgba(30, 22, 24, 0.1);
+  --line-strong: rgba(30, 22, 24, 0.2);
+  --accent: #d81e3c;
+  --accent-soft: rgba(216, 30, 60, 0.1);
+  --ok: #2f8a4f;
+  --warn: #a46a00;
+  --info: #2f6fc4;
+  --sec-site: #d81e3c;
+  --sec-games: #b15a4b;
+  --sec-projects: #8f7200;
+  --sec-photos: #2f6fc4;
+  --sec-innate: #7a4fd6;
+  --k-media: #2f6fc4;
+  --k-copy: #7a4fd6;
+  --k-link: #12807a;
+  --k-build: #b05f00;
+  --k-design: #b15a4b;
+  --k-decision: #847000;
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0909; --surface: #141010; --surface-2: #1c1616;
+    --ink: #ece8e9; --ink-dim: #a39a9a; --ink-faint: #7a7070;
+    --line: rgba(236, 232, 233, 0.09); --line-strong: rgba(236, 232, 233, 0.18);
+    --accent: #fc314f; --accent-soft: rgba(252, 49, 79, 0.14);
+    --ok: #5fc285; --warn: #f2c14f; --info: #6fa8f7;
+    --sec-site: #fc314f; --sec-games: #f8dcd3; --sec-projects: #ffe16d; --sec-photos: #6fa8f7; --sec-innate: #a583f7;
+    --k-media: #6fa8f7; --k-copy: #a583f7; --k-link: #4fd1c5; --k-build: #f2a83f; --k-design: #f4b8a8; --k-decision: #ffe16d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0909; --surface: #141010; --surface-2: #1c1616;
+  --ink: #ece8e9; --ink-dim: #a39a9a; --ink-faint: #7a7070;
+  --line: rgba(236, 232, 233, 0.09); --line-strong: rgba(236, 232, 233, 0.18);
+  --accent: #fc314f; --accent-soft: rgba(252, 49, 79, 0.14);
+  --ok: #5fc285; --warn: #f2c14f; --info: #6fa8f7;
+  --sec-site: #fc314f; --sec-games: #f8dcd3; --sec-projects: #ffe16d; --sec-photos: #6fa8f7; --sec-innate: #a583f7;
+  --k-media: #6fa8f7; --k-copy: #a583f7; --k-link: #4fd1c5; --k-build: #f2a83f; --k-design: #f4b8a8; --k-decision: #ffe16d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 72px;
+  display: grid;
+  gap: 22px;
+}
+
+/* header */
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px 24px; }
+.brand { display: grid; gap: 4px; min-width: 0; }
+.mark { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.04em; }
+.mark b { color: var(--accent); }
+h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; text-wrap: balance; }
+.sub { margin: 0; color: var(--ink-dim); font-size: 0.9rem; }
+.sub code { font-family: var(--font-mono); font-size: 0.82rem; }
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.btn {
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--ink-faint); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { filter: brightness(1.08); border-color: var(--accent); }
+.btn-quiet { background: transparent; border-color: transparent; color: var(--ink-dim); padding-inline: 8px; }
+.btn-quiet:hover { color: var(--ink); border-color: var(--line); }
+.btn-danger { color: var(--accent); }
+.btn-danger.armed { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* summary */
+.summary { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.9rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.summary strong { color: var(--ink); font-weight: 700; font-size: 1.05rem; margin-right: 4px; }
+.summary .s-doing strong { color: var(--warn); }
+.summary .s-done strong { color: var(--ok); }
+
+/* filters */
+.controls { display: grid; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  --kc: var(--ink-dim);
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--kc) 35%, transparent);
+  background: transparent;
+  color: var(--kc);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.chip .n { font-family: var(--font-mono); font-size: 0.74rem; opacity: 0.8; }
+.chip[aria-pressed="true"] { background: color-mix(in srgb, var(--kc) 16%, transparent); border-color: var(--kc); }
+.row-tools { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.search {
+  flex: 1 1 220px; min-width: 0;
+  border: 1px solid var(--line-strong); background: var(--surface);
+  border-radius: var(--radius-sm); padding: 7px 11px;
+}
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; font-size: 0.82rem; font-weight: 600; color: var(--ink-dim); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); }
+.check { display: inline-flex; gap: 7px; align-items: center; font-size: 0.86rem; color: var(--ink-dim); cursor: pointer; }
+
+/* quick add */
+.quick {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 2fr) auto;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.quick-label { grid-column: 1 / -1; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+.field {
+  min-width: 0;
+  border: 1px solid var(--line-strong); background: var(--bg);
+  border-radius: var(--radius-sm); padding: 7px 10px;
+}
+textarea.field { resize: vertical; min-height: 64px; line-height: 1.5; }
+
+/* sections */
+.section { display: grid; gap: 8px; }
+.sec-head {
+  display: flex; align-items: center; gap: 10px;
+  border: 0; background: none; padding: 0; cursor: pointer; text-align: left;
+  color: var(--ink);
+}
+.sec-head h2 { margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.sec-head .swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--sc); flex: none; }
+.sec-head .meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-faint); }
+.sec-head .line { flex: 1; height: 1px; background: var(--line-strong); }
+.sec-head .chev { color: var(--ink-faint); transition: transform 0.15s ease; }
+.section.collapsed .sec-head .chev { transform: rotate(-90deg); }
+.tree { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+.tree .tree { border: 0; border-radius: 0; background: none; border-left: 1px solid var(--line-strong); margin-left: 22px; }
+.node + .node, .tree .tree > .node:first-child { border-top: 1px solid var(--line); }
+
+.page-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 0; background: none; text-align: left; cursor: pointer;
+}
+.page-row:hover { background: var(--surface-2); }
+.page-row .chev { color: var(--ink-faint); font-size: 0.75rem; transition: transform 0.15s ease; }
+.node.open > .page-row .chev { transform: rotate(90deg); }
+.title-wrap { min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.page-title { font-weight: 600; }
+.slug { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); overflow-wrap: anywhere; }
+.pill {
+  --pc: var(--ink-faint);
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--pc);
+  border: 1px solid color-mix(in srgb, var(--pc) 40%, transparent);
+  border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+}
+.pill.live { --pc: var(--ok); }
+.pill.draft { --pc: var(--warn); }
+.pill.planned { --pc: var(--info); }
+.pill.hidden, .pill.sunset { --pc: var(--ink-faint); border-style: dashed; }
+.progress { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bar { width: 56px; height: 4px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ok); }
+.progress.clear { color: var(--ok); }
+.dots { display: inline-flex; gap: 3px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--kc); }
+
+.page-body { padding: 4px 14px 16px 44px; display: grid; gap: 12px; }
+.page-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-dim); }
+.page-meta span { overflow-wrap: anywhere; user-select: all; }
+.page-meta em { font-style: normal; color: var(--ink-faint); user-select: none; }
+
+.todos { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.todo {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+.todo:hover { background: var(--surface-2); }
+.todo-text { padding-top: 2px; overflow-wrap: anywhere; }
+.todo.done .todo-text { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+.todo.doing .todo-text::before { content: "Now"; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn); margin-right: 8px; }
+.state {
+  width: 22px; height: 22px; margin-top: 1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-faint);
+  background: transparent;
+  display: grid; place-items: center;
+  cursor: pointer; padding: 0;
+  color: var(--surface);
+  font-size: 0.75rem; font-weight: 700;
+}
+.state:hover { border-color: var(--ok); }
+.todo.doing .state { border-color: var(--warn); background: linear-gradient(90deg, var(--warn) 50%, transparent 50%); }
+.todo.done .state { border-color: var(--ok); background: var(--ok); }
+.kind {
+  --kc: var(--ink-dim);
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--kc);
+  background: color-mix(in srgb, var(--kc) 13%, transparent);
+  border-radius: 6px; padding: 2px 7px; margin-top: 2px; white-space: nowrap;
+}
+.k-media { --kc: var(--k-media); }
+.k-copy { --kc: var(--k-copy); }
+.k-link { --kc: var(--k-link); }
+.k-build { --kc: var(--k-build); }
+.k-design { --kc: var(--k-design); }
+.k-decision { --kc: var(--k-decision); }
+.icon-btn { border: 0; background: none; color: var(--ink-faint); cursor: pointer; padding: 2px 6px; border-radius: 6px; font-size: 0.85rem; }
+.icon-btn:hover { color: var(--ink); background: var(--line); }
+
+.editor { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; padding: 6px 8px; background: var(--surface-2); border-radius: var(--radius-sm); }
+.editor .field { background: var(--surface); }
+.editor .actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.editor .actions .spacer { flex: 1; }
+.add-todo { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 6px; }
+.note { width: 100%; }
+.page-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.empty-todos { color: var(--ink-faint); font-size: 0.88rem; margin: 0; }
+
+.notice, .empty {
+  padding: 22px; border: 1px dashed var(--line-strong); border-radius: var(--radius-md);
+  color: var(--ink-dim); text-align: center;
+}
+.empty strong { display: block; color: var(--ink); margin-bottom: 4px; }
+
+/* page form */
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(3px);
+  display: grid; place-items: start center;
+  overflow-y: auto;
+  padding: max(24px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.sheet {
+  width: min(560px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: grid; gap: 14px;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.45);
+}
+.sheet h3 { margin: 0; font-size: 1.1rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid label { display: grid; gap: 5px; font-size: 0.78rem; font-weight: 600; color: var(--ink-dim); min-width: 0; }
+.form-grid .wide { grid-column: 1 / -1; }
+.form-grid .hint { font-weight: 400; color: var(--ink-faint); }
+.form-error { color: var(--accent); font-size: 0.86rem; margin: 0; }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg);
+  padding: 9px 16px; border-radius: 999px; font-size: 0.86rem; font-weight: 600; z-index: 30;
+  max-width: calc(100% - 32px);
+}
+
+@media (max-width: 640px) {
+  .quick { grid-template-columns: minmax(0, 1fr) auto; }
+  .quick .q-text { grid-column: 1 / -1; grid-row: 3; }
+  .quick .q-add { grid-row: 4; grid-column: 1 / -1; }
+  .page-row { grid-template-columns: 14px minmax(0, 1fr) auto; }
+  .page-row .progress .bar { display: none; }
+  .page-row .pill { display: none; }
+  .page-body { padding-left: 14px; }
+  .tree .tree { margin-left: 10px; }
+  .todo { grid-template-columns: 26px minmax(0, 1fr) auto; }
+  .todo .kind { grid-column: 2; grid-row: 2; justify-self: start; margin-top: 0; }
+  .add-todo, .editor { grid-template-columns: minmax(0, 1fr) auto; }
+  .add-todo .field:first-child, .editor .e-text { grid-column: 1 / -1; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chev, .sec-head .chev { transition-duration: 0.01s; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">N<b>:</b>S</span>
+      <h1>Site Tracker</h1>
+      <p class="sub">Every page of nathanshturm.com and what each one still needs. Sources live in <code>src/content/</code> and <code>src/pages/</code>.</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="toggle-all" type="button">Expand all</button>
+      <button class="btn btn-primary" id="new-page" type="button">New page</button>
+    </div>
+  </header>
+
+  <div class="summary" id="summary" aria-live="polite"></div>
+
+  <div class="controls">
+    <div class="chips" id="kind-chips" role="group" aria-label="Filter by kind"></div>
+    <div class="row-tools">
+      <input class="search" id="search" type="search" placeholder="Search pages and todos" aria-label="Search pages and todos">
+      <div class="seg" role="group" aria-label="Which todos to show">
+        <button type="button" data-show="active" aria-pressed="true">Open</button>
+        <button type="button" data-show="all" aria-pressed="false">All</button>
+        <button type="button" data-show="done" aria-pressed="false">Done</button>
+      </div>
+      <label class="check"><input type="checkbox" id="hide-clear"> Hide finished pages</label>
+    </div>
+  </div>
+
+  <form class="quick" id="quick" autocomplete="off">
+    <span class="quick-label">Add a todo</span>
+    <select class="field" id="q-page" aria-label="Page"></select>
+    <select class="field" id="q-kind" aria-label="Kind"></select>
+    <input class="field q-text" id="q-text" placeholder="What still needs doing?" aria-label="Todo text">
+    <button class="btn btn-primary q-add" type="submit">Add</button>
+  </form>
+
+  <main id="list"></main>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <form class="sheet" id="page-form" autocomplete="off">
+    <h3 id="form-title">New page</h3>
+    <div class="form-grid">
+      <label class="wide">Title
+        <input class="field" id="f-title" required>
+      </label>
+      <label>Page id <span class="hint">built filename, no .html</span>
+        <input class="field" id="f-slug" pattern="[a-z0-9][a-z0-9-]*" required>
+      </label>
+      <label>Status
+        <select class="field" id="f-status"></select>
+      </label>
+      <label>Parent page
+        <select class="field" id="f-parent"></select>
+      </label>
+      <label>Section <span class="hint">subpages follow their parent</span>
+        <select class="field" id="f-section"></select>
+      </label>
+      <label>Source file
+        <input class="field" id="f-file" placeholder="src/content/projects/slug.md">
+      </label>
+      <label>Built page
+        <input class="field" id="f-url" placeholder="project-slug.html">
+      </label>
+      <label>Sort order
+        <input class="field" id="f-order" type="number" step="1">
+      </label>
+      <label class="wide">Notes
+        <textarea class="field" id="f-note" rows="3"></textarea>
+      </label>
+    </div>
+    <p class="form-error" id="form-error" hidden></p>
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="form-cancel">Cancel</button>
+      <button class="btn btn-primary" type="submit" id="form-save">Save page</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const SECTIONS = [
+  { id: 'site', label: 'Site pages', color: 'var(--sec-site)' },
+  { id: 'games', label: 'Games', color: 'var(--sec-games)' },
+  { id: 'projects', label: 'Projects', color: 'var(--sec-projects)' },
+  { id: 'photos', label: 'Photos', color: 'var(--sec-photos)' },
+  { id: 'innate', label: 'innate sites', color: 'var(--sec-innate)' },
+];
+const KINDS = { media: 'Media', copy: 'Copy', link: 'Link', build: 'Build', design: 'Design', decision: 'Decision' };
+const STATUSES = { live: 'Live', draft: 'Draft', planned: 'Planned', hidden: 'Hidden', sunset: 'Sunset' };
+const STATE_RANK = { doing: 0, open: 1, done: 2 };
+
+const store = { pages: new Map(), todos: new Map(), ready: { pages: false, todos: false } };
+let db = null;
+let canWrite = true;
+let unavailable = false;
+let pendingRender = false;
+
+function load(key, fallback) {
+  try { const v = localStorage.getItem('ns-tracker:' + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+}
+function save(key, value) {
+  try { localStorage.setItem('ns-tracker:' + key, JSON.stringify(value)); } catch {}
+}
+
+const ui = {
+  open: new Set(load('open', [])),
+  collapsed: new Set(load('collapsed', [])),
+  kind: 'all',
+  show: 'active',
+  search: '',
+  hideClear: false,
+  editing: null,
+  armed: null,
+  form: null,
+};
+
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'text') el.textContent = v;
+    else if (k === 'style') el.style.cssText = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'value') el.value = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) {
+    if (c == null || c === false) continue;
+    el.append(c.nodeType ? c : document.createTextNode(String(c)));
+  }
+  return el;
+}
+
+const byOrder = (a, b) => (a[1].order ?? 999) - (b[1].order ?? 999) || String(a[1].title).localeCompare(String(b[1].title));
+const pagesSorted = () => [...store.pages].sort(byOrder);
+const childrenOf = id => pagesSorted().filter(([, p]) => p.parent === id);
+const isRoot = p => !p.parent || !store.pages.has(p.parent);
+function todosOf(id) {
+  return [...store.todos].filter(([, t]) => t.page === id)
+    .sort((a, b) => (STATE_RANK[a[1].state] ?? 1) - (STATE_RANK[b[1].state] ?? 1) || String(a[1].created).localeCompare(String(b[1].created)));
+}
+function sectionOf(id) {
+  let p = store.pages.get(id), guard = 0;
+  while (p && p.parent && store.pages.has(p.parent) && guard++ < 20) p = store.pages.get(p.parent);
+  return p?.section || 'site';
+}
+function descendants(id, acc = new Set()) {
+  for (const [cid] of childrenOf(id)) if (!acc.has(cid)) { acc.add(cid); descendants(cid, acc); }
+  return acc;
+}
+const filtersActive = () => ui.kind !== 'all' || ui.show === 'done' || ui.search !== '';
+function todoMatches(t) {
+  if (ui.kind !== 'all' && t.kind !== ui.kind) return false;
+  if (ui.show === 'active' && t.state === 'done') return false;
+  if (ui.show === 'done' && t.state !== 'done') return false;
+  if (ui.search && !String(t.text).toLowerCase().includes(ui.search)) {
+    const p = store.pages.get(t.page);
+    if (!p || !pageMatchesSearch(t.page, p)) return false;
+  }
+  return true;
+}
+const pageMatchesSearch = (id, p) => !!ui.search && (String(p.title).toLowerCase().includes(ui.search) || id.includes(ui.search));
+const openCount = id => todosOf(id).filter(([, t]) => t.state !== 'done').length;
+
+function pageVisible(id, p) {
+  const kidsVisible = childrenOf(id).some(([cid, c]) => pageVisible(cid, c));
+  if (kidsVisible) return true;
+  if (ui.hideClear && openCount(id) === 0) return false;
+  if (!filtersActive()) return true;
+  if (pageMatchesSearch(id, p) && ui.kind === 'all' && ui.show !== 'done') return true;
+  return todosOf(id).some(([, t]) => todoMatches(t));
+}
+
+function isTyping() {
+  const a = document.activeElement;
+  return !!a && document.getElementById('list').contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
+}
+function schedule() {
+  if (isTyping()) { pendingRender = true; return; }
+  render();
+}
+document.addEventListener('focusout', () => setTimeout(() => {
+  if (pendingRender && !isTyping()) { pendingRender = false; render(); }
+}, 0));
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+function errorText(e) {
+  if (e?.code === 'quota_exceeded') return 'The tracker is full. Delete some finished todos and try again.';
+  if (e?.code === 'resource_exhausted') return 'Too many changes at once. Wait a moment and try again.';
+  return 'That change did not save. Check your connection and try again.';
+}
+async function write(fn, okMsg) {
+  if (!db || !canWrite) return false;
+  try { await fn(); if (okMsg) toast(okMsg); return true; }
+  catch (e) {
+    if (e?.code === 'invalid_argument' || e?.code === 'not_granted') { canWrite = false; toast('You can view this tracker but not change it.'); render(); }
+    else toast(errorText(e));
+    return false;
+  }
+}
+const now = () => new Date().toISOString();
+
+function addTodo(page, kind, text) {
+  text = text.trim();
+  if (!text || !store.pages.has(page)) return;
+  const ref = db.collection('todos').doc();
+  return write(() => ref.set({ page, kind, text, state: 'open', created: now(), doneAt: null }));
+}
+function setTodoState(id, state) {
+  return write(() => db.doc('todos/' + id).update({ state, doneAt: state === 'done' ? now() : null }));
+}
+
+function renderSummary() {
+  const todos = [...store.todos.values()];
+  const open = todos.filter(t => t.state === 'open').length;
+  const doing = todos.filter(t => t.state === 'doing').length;
+  const done = todos.filter(t => t.state === 'done').length;
+  const pages = [...store.pages.keys()];
+  const clear = pages.filter(id => openCount(id) === 0).length;
+  const s = document.getElementById('summary');
+  s.replaceChildren(
+    h('span', null, h('strong', { text: open }), 'open'),
+    h('span', { class: 's-doing' }, h('strong', { text: doing }), 'in progress'),
+    h('span', { class: 's-done' }, h('strong', { text: done }), 'done'),
+    h('span', null, h('strong', { text: `${clear}/${pages.length}` }), 'pages with nothing left'),
+  );
+
+  const counts = {};
+  for (const t of todos) if (t.state !== 'done') counts[t.kind] = (counts[t.kind] || 0) + 1;
+  const chips = document.getElementById('kind-chips');
+  const chip = (id, label, n, cls) => h('button', {
+    type: 'button', class: 'chip ' + (cls || ''), 'aria-pressed': String(ui.kind === id),
+    onclick: () => { ui.kind = ui.kind === id && id !== 'all' ? 'all' : id; render(); },
+  }, label, h('span', { class: 'n', text: n }));
+  chips.replaceChildren(
+    chip('all', 'All kinds', open + doing),
+    ...Object.entries(KINDS).map(([k, label]) => chip(k, label, counts[k] || 0, 'k-' + k)),
+  );
+}
+
+function renderQuickPages() {
+  const sel = document.getElementById('q-page');
+  const keep = sel.value || load('quickPage', '');
+  sel.replaceChildren();
+  for (const sec of SECTIONS) {
+    const group = h('optgroup', { label: sec.label });
+    const walk = (id, p, depth) => {
+      group.append(h('option', { value: id, text: ' '.repeat(depth) + p.title }));
+      for (const [cid, c] of childrenOf(id)) walk(cid, c, depth + 1);
+    };
+    for (const [id, p] of pagesSorted()) if (isRoot(p) && (p.section || 'site') === sec.id) walk(id, p, 0);
+    if (group.children.length) sel.append(group);
+  }
+  if (keep && store.pages.has(keep)) sel.value = keep;
+  sel.disabled = !store.pages.size || !canWrite;
+  document.querySelector('#quick .q-add').disabled = !store.pages.size || !canWrite;
+  document.getElementById('q-text').disabled = !store.pages.size || !canWrite;
+}
+
+function todoRow(id, t) {
+  if (ui.editing === id) return todoEditor(id, t);
+  const done = t.state === 'done';
+  return h('li', { class: 'todo ' + (t.state || 'open') },
+    h('button', {
+      type: 'button', class: 'state', disabled: !canWrite,
+      'aria-label': done ? 'Mark as not done' : 'Mark as done',
+      title: done ? 'Mark as not done' : 'Mark as done',
+      onclick: () => setTodoState(id, done ? 'open' : 'done'),
+    }, done ? '✓' : ''),
+    h('span', { class: 'todo-text', text: t.text }),
+    h('span', { class: 'kind k-' + t.kind, text: KINDS[t.kind] || t.kind }),
+    canWrite && h('button', {
+      type: 'button', class: 'icon-btn', 'aria-label': 'Edit todo', title: 'Edit',
+      onclick: () => { ui.editing = id; ui.armed = null; render(); document.getElementById('edit-' + id)?.focus(); },
+    }, '✎'),
+  );
+}
+
+function todoEditor(id, t) {
+  const text = h('input', { class: 'field e-text', id: 'edit-' + id, value: t.text, 'aria-label': 'Todo text' });
+  const kind = h('select', { class: 'field', 'aria-label': 'Kind' }, Object.entries(KINDS).map(([k, l]) => h('option', { value: k, text: l })));
+  kind.value = t.kind;
+  const state = h('select', { class: 'field', 'aria-label': 'State' },
+    h('option', { value: 'open', text: 'Open' }), h('option', { value: 'doing', text: 'In progress' }), h('option', { value: 'done', text: 'Done' }));
+  state.value = t.state || 'open';
+  const armed = ui.armed === 'todo:' + id;
+  const commit = async () => {
+    const v = text.value.trim();
+    if (!v) return;
+    const patch = { text: v, kind: kind.value, state: state.value };
+    if (state.value !== t.state) patch.doneAt = state.value === 'done' ? now() : null;
+    ui.editing = null;
+    await write(() => db.doc('todos/' + id).update(patch));
+    render();
+  };
+  const form = h('form', { class: 'editor', onsubmit: e => { e.preventDefault(); commit(); } },
+    text, kind, state,
+    h('div', { class: 'actions' },
+      h('button', { type: 'submit', class: 'btn btn-primary' }, 'Save'),
+      h('button', { type: 'button', class: 'btn', onclick: () => { ui.editing = null; render(); } }, 'Cancel'),
+      h('span', { class: 'spacer' }),
+      h('button', {
+        type: 'button', class: 'btn btn-danger' + (armed ? ' armed' : ''),
+        onclick: async () => {
+          if (!armed) { ui.armed = 'todo:' + id; render(); document.getElementById('edit-' + id)?.focus(); return; }
+          ui.editing = null; ui.armed = null;
+          await write(() => db.doc('todos/' + id).delete(), 'Todo deleted');
+          render();
+        },
+      }, armed ? 'Confirm delete' : 'Delete'),
+    ),
+  );
+  form.addEventListener('keydown', e => { if (e.key === 'Escape') { ui.editing = null; ui.armed = null; render(); } });
+  return h('li', null, form);
+}
+
+function pageNode(id, p, depth) {
+  const all = todosOf(id);
+  const open = all.filter(([, t]) => t.state !== 'done');
+  const shown = all.filter(([, t]) => todoMatches(t));
+  const expanded = ui.open.has(id) || (filtersActive() && shown.length > 0);
+  const kids = childrenOf(id).filter(([cid, c]) => pageVisible(cid, c));
+  const doneN = all.length - open.length;
+  const pct = all.length ? Math.round((doneN / all.length) * 100) : 100;
+  const openKinds = [...new Set(open.map(([, t]) => t.kind))];
+
+  const row = h('button', {
+    type: 'button', class: 'page-row', 'aria-expanded': String(expanded),
+    onclick: () => {
+      if (ui.open.has(id)) ui.open.delete(id); else ui.open.add(id);
+      save('open', [...ui.open]); render();
+    },
+  },
+    h('span', { class: 'chev', 'aria-hidden': 'true' }, '▶'),
+    h('span', { class: 'title-wrap' },
+      h('span', { class: 'page-title', text: p.title }),
+      h('span', { class: 'slug', text: id }),
+    ),
+    h('span', { class: 'pill ' + (p.status || 'draft'), text: STATUSES[p.status] || p.status || 'Draft' }),
+    h('span', { class: 'progress' + (open.length ? '' : ' clear') },
+      openKinds.length ? h('span', { class: 'dots', 'aria-hidden': 'true' }, openKinds.map(k => h('i', { class: 'k-' + k, title: KINDS[k] }))) : null,
+      all.length ? h('span', { class: 'bar', 'aria-hidden': 'true' }, h('i', { style: `width:${pct}%` })) : null,
+      all.length ? `${doneN}/${all.length}` : 'no todos',
+    ),
+  );
+
+  const li = h('li', { class: 'node' + (expanded ? ' open' : '') }, row);
+  if (expanded) li.append(pageBody(id, p, shown));
+  if (kids.length) li.append(h('ul', { class: 'tree' }, kids.map(([cid, c]) => pageNode(cid, c, depth + 1))));
+  return li;
+}
+
+function pageBody(id, p, shown) {
+  const body = h('div', { class: 'page-body' });
+  const meta = h('div', { class: 'page-meta' });
+  if (p.file) meta.append(h('div', null, h('em', { text: 'source ' }), h('span', { text: p.file })));
+  if (p.url) meta.append(h('div', null, h('em', { text: 'built ' }), h('span', { text: p.url })));
+  if (meta.children.length) body.append(meta);
+
+  if (canWrite) {
+    const note = h('textarea', { class: 'field note', rows: '2', placeholder: 'Notes for this page', 'aria-label': 'Notes for ' + p.title });
+    note.value = p.note || '';
+    note.addEventListener('change', () => {
+      const v = note.value.trim();
+      if (v !== (p.note || '')) write(() => db.doc('pages/' + id).update({ note: v }));
+    });
+    body.append(note);
+  } else if (p.note) {
+    body.append(h('p', { class: 'empty-todos', text: p.note }));
+  }
+
+  if (shown.length) body.append(h('ul', { class: 'todos' }, shown.map(([tid, t]) => todoRow(tid, t))));
+  else body.append(h('p', { class: 'empty-todos', text: todosOf(id).length ? 'Nothing matches the current filter.' : 'No todos yet.' }));
+
+  if (canWrite) {
+    const text = h('input', { class: 'field', placeholder: 'Add a todo for ' + p.title, 'aria-label': 'New todo for ' + p.title });
+    const kind = h('select', { class: 'field', 'aria-label': 'Kind' }, Object.entries(KINDS).map(([k, l]) => h('option', { value: k, text: l })));
+    kind.value = load('lastKind', 'media');
+    body.append(h('form', {
+      class: 'add-todo', autocomplete: 'off',
+      onsubmit: async e => {
+        e.preventDefault();
+        if (!text.value.trim()) return;
+        save('lastKind', kind.value);
+        const v = text.value; text.value = '';
+        await addTodo(id, kind.value, v);
+        render();
+        document.querySelector(`[aria-label="New todo for ${CSS.escape(p.title)}"]`)?.focus();
+      },
+    }, text, kind, h('button', { type: 'submit', class: 'btn' }, 'Add')));
+
+    const armed = ui.armed === 'page:' + id;
+    const n = todosOf(id).length;
+    body.append(h('div', { class: 'page-actions' },
+      h('button', { type: 'button', class: 'btn btn-quiet', onclick: () => openForm(null, id) }, '+ Add subpage'),
+      h('button', { type: 'button', class: 'btn btn-quiet', onclick: () => openForm(id) }, 'Edit page'),
+      h('button', {
+        type: 'button', class: 'btn btn-quiet btn-danger' + (armed ? ' armed' : ''),
+        onclick: () => {
+          if (!armed) { ui.armed = 'page:' + id; render(); return; }
+          ui.armed = null; deletePage(id);
+        },
+      }, armed ? `Confirm: delete page and ${n} todo${n === 1 ? '' : 's'}` : 'Delete page'),
+    ));
+  }
+  return body;
+}
+
+async function deletePage(id) {
+  const p = store.pages.get(id);
+  const ok = await write(async () => {
+    for (const [tid] of todosOf(id)) await db.doc('todos/' + tid).delete();
+    for (const [cid] of childrenOf(id)) await db.doc('pages/' + cid).update({ parent: p?.parent || null });
+    await db.doc('pages/' + id).delete();
+  }, 'Page deleted');
+  if (ok) { ui.open.delete(id); save('open', [...ui.open]); }
+  render();
+}
+
+function render() {
+  pendingRender = false;
+  renderSummary();
+  renderQuickPages();
+  document.getElementById('new-page').disabled = !db || !canWrite;
+  for (const b of document.querySelectorAll('.seg button')) b.setAttribute('aria-pressed', String(b.dataset.show === ui.show));
+  document.getElementById('toggle-all').textContent = ui.open.size ? 'Collapse all' : 'Expand all';
+
+  const list = document.getElementById('list');
+  if (unavailable) {
+    list.replaceChildren(h('div', { class: 'notice' }, 'The tracker data can only be loaded inside Claude. Open this page from claude.ai while signed in.'));
+    return;
+  }
+  if (!store.ready.pages || !store.ready.todos) {
+    list.replaceChildren(h('div', { class: 'notice' }, 'Loading pages and todos…'));
+    return;
+  }
+  if (!store.pages.size) {
+    list.replaceChildren(h('div', { class: 'empty' }, h('strong', { text: 'No pages yet' }), 'Use New page to add the first page of the site, then add todos under it.'));
+    return;
+  }
+
+  const out = [];
+  for (const sec of SECTIONS) {
+    const roots = pagesSorted().filter(([id, p]) => isRoot(p) && (p.section || 'site') === sec.id);
+    if (!roots.length) continue;
+    const ids = roots.flatMap(([id]) => [id, ...descendants(id)]);
+    const secOpen = ids.reduce((n, id) => n + openCount(id), 0);
+    const visible = roots.filter(([id, p]) => pageVisible(id, p));
+    if (!visible.length && filtersActive()) continue;
+    const collapsed = ui.collapsed.has(sec.id);
+    out.push(h('section', { class: 'section' + (collapsed ? ' collapsed' : ''), style: `--sc:${sec.color}` },
+      h('button', {
+        type: 'button', class: 'sec-head', 'aria-expanded': String(!collapsed),
+        onclick: () => { collapsed ? ui.collapsed.delete(sec.id) : ui.collapsed.add(sec.id); save('collapsed', [...ui.collapsed]); render(); },
+      },
+        h('span', { class: 'swatch', 'aria-hidden': 'true' }),
+        h('h2', { text: sec.label }),
+        h('span', { class: 'meta', text: `${ids.length} page${ids.length === 1 ? '' : 's'} · ${secOpen} open` }),
+        h('span', { class: 'line', 'aria-hidden': 'true' }),
+        h('span', { class: 'chev', 'aria-hidden': 'true' }, '▾'),
+      ),
+      collapsed ? null : (visible.length
+        ? h('ul', { class: 'tree' }, visible.map(([id, p]) => pageNode(id, p, 0)))
+        : h('p', { class: 'empty-todos', text: 'Every page here is finished.' })),
+    ));
+  }
+  list.replaceChildren(...(out.length ? out : [h('div', { class: 'notice' }, 'Nothing matches these filters.')]));
+}
+
+/* page form */
+const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-');
+let slugTouched = false;
+
+function openForm(editId, parentId) {
+  ui.form = editId || null;
+  slugTouched = !!editId;
+  const p = editId ? store.pages.get(editId) : null;
+  const $ = id => document.getElementById(id);
+  $('form-title').textContent = editId ? 'Edit page' : (parentId ? 'New subpage of ' + store.pages.get(parentId).title : 'New page');
+  $('f-title').value = p?.title || '';
+  $('f-slug').value = editId || '';
+  $('f-slug').readOnly = !!editId;
+  $('f-status').replaceChildren(...Object.entries(STATUSES).map(([k, l]) => h('option', { value: k, text: l })));
+  $('f-status').value = p?.status || 'draft';
+  const blocked = editId ? new Set([editId, ...descendants(editId)]) : new Set();
+  const parentSel = $('f-parent');
+  parentSel.replaceChildren(h('option', { value: '', text: 'None (top level)' }));
+  for (const [id, pg] of pagesSorted()) if (!blocked.has(id)) parentSel.append(h('option', { value: id, text: `${pg.title} (${id})` }));
+  parentSel.value = editId ? (p.parent || '') : (parentId || '');
+  $('f-section').replaceChildren(...SECTIONS.map(s => h('option', { value: s.id, text: s.label })));
+  $('f-section').value = p?.section || (parentId ? sectionOf(parentId) : 'projects');
+  syncSection();
+  $('f-file').value = p?.file || '';
+  $('f-url').value = p?.url || '';
+  $('f-order').value = p?.order ?? '';
+  $('f-note').value = p?.note || '';
+  $('form-error').hidden = true;
+  $('overlay').hidden = false;
+  $('f-title').focus();
+}
+function syncSection() {
+  const parent = document.getElementById('f-parent').value;
+  const sec = document.getElementById('f-section');
+  sec.disabled = !!parent;
+  if (parent) sec.value = sectionOf(parent);
+}
+function closeForm() { document.getElementById('overlay').hidden = true; ui.form = null; }
+
+document.getElementById('f-title').addEventListener('input', e => {
+  if (!slugTouched) document.getElementById('f-slug').value = slugify(e.target.value);
+});
+document.getElementById('f-slug').addEventListener('input', () => { slugTouched = true; });
+document.getElementById('f-parent').addEventListener('change', syncSection);
+document.getElementById('form-cancel').addEventListener('click', closeForm);
+document.getElementById('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') closeForm(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('overlay').hidden) closeForm(); });
+
+document.getElementById('page-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const $ = id => document.getElementById(id);
+  const err = msg => { $('form-error').textContent = msg; $('form-error').hidden = false; };
+  const title = $('f-title').value.trim();
+  const slug = $('f-slug').value.trim();
+  if (!title) return err('Give the page a title.');
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) return err('The page id can only use lowercase letters, digits and hyphens.');
+  if (!ui.form && store.pages.has(slug)) return err(`A page with the id "${slug}" already exists.`);
+  const parent = $('f-parent').value || null;
+  const siblings = pagesSorted().filter(([, p]) => (p.parent || null) === parent);
+  const orderRaw = $('f-order').value;
+  const order = orderRaw === '' ? (ui.form ? store.pages.get(ui.form).order ?? 999 : Math.max(0, ...siblings.map(([, p]) => p.order || 0)) + 1) : Number(orderRaw);
+  const data = {
+    title, parent,
+    section: parent ? sectionOf(parent) : $('f-section').value,
+    status: $('f-status').value,
+    file: $('f-file').value.trim(),
+    url: $('f-url').value.trim(),
+    order,
+    note: $('f-note').value.trim(),
+  };
+  const editing = ui.form;
+  const ok = await write(() => editing ? db.doc('pages/' + editing).update(data) : db.doc('pages/' + slug).set({ ...data, created: now() }), editing ? 'Page saved' : 'Page added');
+  if (!ok) return err('The page did not save. Try again.');
+  closeForm();
+  if (parent) ui.open.add(parent);
+  ui.open.add(slug);
+  save('open', [...ui.open]);
+  render();
+});
+
+/* toolbar */
+document.getElementById('new-page').addEventListener('click', () => openForm(null, null));
+document.getElementById('toggle-all').addEventListener('click', () => {
+  ui.open = ui.open.size ? new Set() : new Set(store.pages.keys());
+  save('open', [...ui.open]); render();
+});
+let searchTimer;
+document.getElementById('search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { ui.search = e.target.value.trim().toLowerCase(); render(); }, 120);
+});
+for (const b of document.querySelectorAll('.seg button')) b.addEventListener('click', () => { ui.show = b.dataset.show; render(); });
+document.getElementById('hide-clear').addEventListener('change', e => { ui.hideClear = e.target.checked; render(); });
+
+const qKind = document.getElementById('q-kind');
+qKind.replaceChildren(...Object.entries(KINDS).map(([k, l]) => h('option', { value: k, text: l })));
+qKind.value = load('lastKind', 'media');
+document.getElementById('quick').addEventListener('submit', async e => {
+  e.preventDefault();
+  const page = document.getElementById('q-page').value;
+  const input = document.getElementById('q-text');
+  if (!page || !input.value.trim()) return;
+  save('quickPage', page); save('lastKind', qKind.value);
+  const v = input.value; input.value = '';
+  const ok = await addTodo(page, qKind.value, v);
+  if (ok) { toast('Added to ' + store.pages.get(page).title); ui.open.add(page); save('open', [...ui.open]); }
+  render();
+  input.focus();
+});
+
+render();
+
+(async () => {
+  try { db = await window.claude?.use?.('db'); } catch { db = null; }
+  if (!db) { unavailable = true; render(); return; }
+  try {
+    const user = await window.claude.use('user');
+    if (user && (await user.can('data.write')) === false) canWrite = false;
+  } catch {}
+  const onErr = e => { if (e?.code === 'revoked') { unavailable = true; } else toast(errorText(e)); render(); };
+  db.collection('pages').onSnapshot(s => {
+    store.pages = new Map(s.docs.map(d => [d.id, d.data()]));
+    store.ready.pages = true; schedule();
+  }, onErr);
+  db.collection('todos').onSnapshot(s => {
+    store.todos = new Map(s.docs.map(d => [d.id, d.data()]));
+    store.ready.todos = true; schedule();
+  }, onErr);
+})();
+</script>
