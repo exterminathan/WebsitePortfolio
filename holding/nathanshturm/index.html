@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nathan Shturm</title>
+  <meta name="description" content="Nathan Shturm: games, tools and photography. New site coming soon.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f1ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0909" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Caveat:wght@600&family=Fraunces:ital,wght@0,400;1,400&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@0;1&family=Josefin+Sans:wght@700&family=Major+Mono+Display&family=Monoton&family=Silkscreen&family=Unbounded:wght@300;700&display=swap">
+  <style>
+    :root {
+      --bg: #f5f1ef;
+      --ink: #1e1618;
+      --dim: #6a5f61;
+      --line: rgba(30, 22, 24, 0.16);
+      --red: #e0233f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0b0909; --ink: #ece8e9; --dim: #8f8585; --line: rgba(236, 232, 233, 0.16); --red: #fc314f; }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      padding: env(safe-area-inset-top, 0px) max(20px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(20px, env(safe-area-inset-left, 0px));
+    }
+    main { display: grid; place-content: center; justify-items: center; gap: 22px; text-align: center; padding-block: 40px; }
+    .lockup { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 18px; }
+    .mark { width: clamp(64px, 14vw, 96px); height: auto; color: var(--ink); overflow: visible; }
+    .mark-accent { fill: var(--red); }
+    .mark-accent-s { stroke: var(--red); }
+    .mark .lid { transform-origin: 32px 32px; }
+    .mark .lid.blink { animation: blink 0.3s ease-in-out; }
+    h1 { margin: 0; font-weight: 600; font-size: clamp(2rem, 6.5vw, 3.2rem); letter-spacing: -0.03em; line-height: 1.05; }
+    .soon { margin: 0; color: var(--dim); font-size: 1.05rem; }
+    .resume {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 999px;
+      border: 1px solid var(--red); color: var(--red);
+      font-weight: 600; text-decoration: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .resume:hover { background: var(--red); color: #fff; }
+    .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; max-width: 34rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.82rem; }
+    .links a { color: var(--dim); text-decoration: none; border-bottom: 1px solid var(--line); }
+    .links a:hover { color: var(--red); border-color: currentColor; }
+    footer { padding: 24px 0 28px; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8rem; color: var(--dim); }
+    @keyframes blink {
+      0%, 100% { transform: scaleY(1); }
+      45% { transform: scaleY(0.08); }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="c01" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 28 V53"/>
+        <path d="M30 53 V37.5 a9.5 9.5 0 0 1 19 0 V53"/>
+      </g>
+      <circle class="mark-accent" cx="16" cy="13.5" r="5.5"/></symbol>
+      <symbol id="c02" viewBox="0 0 64 64"><path d="M29.5 50 V29 a11 11 0 0 1 22 0 V50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <circle class="mark-accent" cx="13.5" cy="25" r="5.5"/>
+      <circle class="mark-accent" cx="13.5" cy="46" r="5.5"/></symbol>
+      <symbol id="c03" viewBox="0 0 64 64"><path d="M14 56 V32 a18 18 0 0 1 36 0 V56" fill="none" stroke="currentColor" stroke-width="8"/>
+      <circle class="mark-accent" cx="32" cy="41" r="6.5"/></symbol>
+      <symbol id="c04" viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="14" fill="none" stroke="currentColor" stroke-width="6"/>
+      <circle class="mark-accent" cx="32" cy="32" r="8"/></symbol>
+      <symbol id="c05" viewBox="0 0 64 64"><path d="M26.5 31 V54" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+      <path class="mark-accent" d="M26.5 22 C26.5 12 32.5 6 42.5 6 C42.5 16 36.5 22 26.5 22 Z"/></symbol>
+      <symbol id="c06" viewBox="0 0 64 64"><g fill="currentColor">
+        <rect x="9" y="17" width="7" height="7"/><rect x="9" y="25" width="7" height="7"/><rect x="9" y="33" width="7" height="7"/><rect x="9" y="41" width="7" height="7"/><rect x="9" y="49" width="7" height="7"/>
+        <rect x="25" y="17" width="7" height="7"/><rect x="33" y="17" width="7" height="7"/><rect x="41" y="17" width="7" height="7"/>
+        <rect x="25" y="25" width="7" height="7"/><rect x="49" y="25" width="7" height="7"/>
+        <rect x="25" y="33" width="7" height="7"/><rect x="49" y="33" width="7" height="7"/>
+        <rect x="25" y="41" width="7" height="7"/><rect x="49" y="41" width="7" height="7"/>
+        <rect x="25" y="49" width="7" height="7"/><rect x="49" y="49" width="7" height="7"/>
+      </g>
+      <rect class="mark-accent" x="9" y="5" width="7" height="7"/></symbol>
+      <symbol id="c07" viewBox="0 0 64 64"><rect class="mark-accent" x="2" y="2" width="60" height="60" rx="16"/>
+      <g fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round">
+        <path d="M19 30 V48"/>
+        <path d="M30 48 V37 a8 8 0 0 1 16 0 V48"/>
+      </g>
+      <circle cx="19" cy="19" r="5" fill="#fff"/></symbol>
+      <symbol id="c08" viewBox="0 0 64 64"><text x="32" y="44" text-anchor="middle" font-family="Unbounded, Inter, sans-serif" font-weight="700" font-size="30" letter-spacing="-1"><tspan fill="currentColor" font-weight="400">i</tspan><tspan class="mark-accent">N</tspan></text></symbol>
+      <symbol id="c09" viewBox="0 0 64 64"><path d="M32 9 C47 9 56 21 56 37 C56 51 49 56 32 56 C15 56 8 51 8 37 C8 21 17 9 32 9 Z" fill="currentColor"/>
+      <rect class="mark-accent" x="21" y="28" width="7" height="12" rx="3.5"/>
+      <rect class="mark-accent" x="36" y="28" width="7" height="12" rx="3.5"/></symbol>
+      <symbol id="c10" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+        <circle cx="32" cy="32" r="12" stroke-dasharray="56 19.4" transform="rotate(35 32 32)"/>
+        <circle cx="32" cy="32" r="19" stroke-dasharray="94 25.4" transform="rotate(165 32 32)"/>
+        <circle cx="32" cy="32" r="26" stroke-dasharray="128 35.4" transform="rotate(275 32 32)"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="32" r="4.5"/></symbol>
+      <symbol id="c11" viewBox="0 0 64 64"><path fill="currentColor" fill-rule="evenodd" d="M32 8 a24 24 0 1 0 0.01 0 Z M39 15 a12 12 0 1 0 0.01 0 Z"/>
+      <circle class="mark-accent" cx="39" cy="27" r="5.5"/></symbol>
+      <symbol id="c12" viewBox="0 0 64 64"><path d="M17 49 V19 L47 45 V15" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="17" cy="51" r="6" fill="currentColor"/>
+      <circle class="mark-accent" cx="47" cy="13" r="6.5"/></symbol>
+      <symbol id="c13" viewBox="0 0 64 64"><circle class="mark-accent" cx="32" cy="14" r="8"/>
+      <path fill="currentColor" d="M25.5 25 H38.5 L36.5 33 C36.5 39 44 44 46 50 H18 C20 44 27.5 39 27.5 33 Z"/>
+      <rect x="14" y="51" width="36" height="7" rx="3.5" fill="currentColor"/></symbol>
+      <symbol id="c14" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round">
+        <path d="M9 24 a23 23 0 0 0 46 0"/>
+        <path d="M18 24 a14 14 0 0 0 28 0"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="21" r="6.5"/></symbol>
+      <symbol id="c15" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="100 25.66" transform="rotate(-8.2 32 32)"/>
+      <circle class="mark-accent" cx="46.1" cy="17.9" r="6"/></symbol>
+      <symbol id="c16" viewBox="0 0 64 64"><path d="M32 7 L53.7 19.5 V44.5 L32 57 L10.3 44.5 V19.5 Z" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round"/>
+      <path class="mark-accent" d="M32 23 L39.8 27.5 V36.5 L32 41 L24.2 36.5 V27.5 Z"/></symbol>
+      <symbol id="c17" viewBox="0 0 64 64"><text x="32" y="54" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="66" class="mark-accent">i</text></symbol>
+      <symbol id="c18" viewBox="0 0 64 64"><circle class="mark-accent" cx="11" cy="34" r="5.5"/><text x="38" y="50" text-anchor="middle" font-family="Fraunces" font-size="56" fill="currentColor">n</text></symbol>
+      <symbol id="c19" viewBox="0 0 64 64"><text x="32" y="51" text-anchor="middle" font-family="Josefin Sans" font-weight="700" font-size="54" fill="currentColor">N</text></symbol>
+      <symbol id="c20" viewBox="0 0 64 64"><circle class="mark-accent" cx="32" cy="19" r="8"/><circle class="mark-accent" cx="32" cy="45" r="8"/></symbol>
+      <symbol id="c21" viewBox="0 0 64 64"><text x="32" y="52" text-anchor="middle" font-family="Major Mono Display" font-size="60" class="mark-accent">i</text></symbol>
+      <symbol id="c22" viewBox="0 0 64 64"><text x="25" y="54" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="64" fill="currentColor">i</text><circle class="mark-accent" cx="45" cy="48" r="6.5"/></symbol>
+      <symbol id="c23" viewBox="0 0 64 64"><text x="32" y="48" text-anchor="middle" font-family="Unbounded" font-weight="300" font-size="46" class="mark-accent">N</text></symbol>
+      <symbol id="c24" viewBox="0 0 64 64"><text x="32" y="48" text-anchor="middle" font-family="Caveat" font-weight="600" font-size="70" fill="currentColor">i</text><path class="mark-accent-s" d="M14 56 q6 -5 12 0 t12 0 t12 0" fill="none" stroke-width="3.5" stroke-linecap="round"/></symbol>
+      <symbol id="c25" viewBox="0 0 64 64"><text x="22" y="48" text-anchor="middle" font-family="Silkscreen" font-size="42" fill="currentColor">I</text><rect class="mark-accent" x="36" y="18" width="13" height="30"/></symbol>
+      <symbol id="c26" viewBox="0 0 64 64"><text x="32" y="45" text-anchor="middle" font-family="IBM Plex Mono" font-weight="500" font-size="34"><tspan class="mark-accent">[</tspan><tspan fill="currentColor">i</tspan><tspan class="mark-accent">]</tspan></text></symbol>
+      <symbol id="c27" viewBox="0 0 64 64"><text x="32" y="52" text-anchor="middle" font-family="Monoton" font-size="52" class="mark-accent">I</text></symbol>
+      <symbol id="c28" viewBox="0 0 64 64"><text x="32" y="47" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="60" class="mark-accent">n</text></symbol>
+      <symbol id="c29" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 54 H50"/><path d="M32 54 V31"/><path d="M32 40 C24 40 18 34 18 26 C26 26 32 32 32 40 Z"/>
+      </g>
+      <path class="mark-accent" d="M32 32 C32 22 38 15 48 15 C48 25 41 32 32 32 Z"/></symbol>
+      <symbol id="c30" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5">
+        <ellipse cx="32" cy="32" rx="25" ry="23" transform="rotate(12 32 32)"/>
+        <ellipse cx="32.5" cy="32" rx="18" ry="16" transform="rotate(-10 32 32)"/>
+        <ellipse cx="33" cy="31.5" rx="11" ry="10" transform="rotate(20 32 32)"/>
+      </g>
+      <circle class="mark-accent" cx="33.5" cy="31" r="4"/></symbol>
+      <symbol id="c31" viewBox="0 0 64 64"><path d="M32 8 C44 8 52 26 52 39 C52 50 43 57 32 57 C21 57 12 50 12 39 C12 26 20 8 32 8 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path class="mark-accent-s" d="M31 49 V35" fill="none" stroke-width="3" stroke-linecap="round"/>
+      <path class="mark-accent" d="M31 37 C31 30 35 26 41 26 C41 32 37 37 31 37 Z"/></symbol>
+      <symbol id="c32" viewBox="0 0 64 64"><path d="M6 36 H20 L25 26 L31 46 L37 16 L42 36 H58" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle class="mark-accent" cx="37" cy="16" r="4.5"/></symbol>
+      <symbol id="c33" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <path d="M12 48 C12 26 21 12 32 12 C43 12 52 26 52 42"/>
+        <path d="M19 52 C19 30 24 19 32 19 C40 19 45 30 45 46"/>
+        <path d="M26 54 C26 34 28 26 32 26 C36 26 38 34 38 50"/>
+      </g>
+      <path class="mark-accent-s" d="M32 33 V54" fill="none" stroke-width="3" stroke-linecap="round"/></symbol>
+      <symbol id="c34" viewBox="0 0 64 64"><g transform="translate(32 33) scale(1.35) translate(-41 -27.5)">
+        <path d="M34 30 a3 3 0 0 1 3 3 a5 5 0 0 1 -5 5 a8 8 0 0 1 -8 -8 a13 13 0 0 1 13 -13 a21 21 0 0 1 21 21" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
+        <circle class="mark-accent" cx="34" cy="30" r="2.4"/>
+      </g></symbol>
+      <symbol id="c35" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+        <path d="M22 12 C11 22 11 42 22 52"/><path d="M42 12 C53 22 53 42 42 52"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="32" r="6"/></symbol>
+      <symbol id="c36" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path class="mark-accent" d="M32 11 L38 32 H26 Z"/>
+      <path d="M32 53 L38 32 H26 Z" fill="currentColor"/></symbol>
+      <symbol id="c37" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <path d="M32 8 C45 14 45 26 32 32 C19 38 19 50 32 56"/>
+        <path d="M32 8 C19 14 19 26 32 32 C45 38 45 50 32 56"/>
+      </g>
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M25.5 14 H38.5"/><path d="M25.5 26 H38.5"/><path d="M25.5 38 H38.5"/><path d="M24 44 H40"/><path d="M25.5 50 H38.5"/>
+      </g>
+      <path class="mark-accent-s" d="M24 20 H40" stroke-width="2.6" stroke-linecap="round"/></symbol>
+      <symbol id="c38" viewBox="0 0 64 64"><path d="M10 46 C14 46 16 24 21 24 C26 24 25 44 29 44 C33 44 34 24 39 24 C44 24 43 44 47 44 C51 44 53 38 55 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle class="mark-accent" cx="12" cy="30" r="3.5"/></symbol>
+      <symbol id="c39" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="36" cy="28" r="8"/>
+      <circle cx="22" cy="40" r="2.5" fill="currentColor"/><circle cx="29" cy="46" r="2" fill="currentColor"/><circle cx="43" cy="43" r="2.5" fill="currentColor"/></symbol>
+      <symbol id="c40" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="32" cy="27" r="7"/>
+      <path class="mark-accent" d="M28.5 31 L26 46 H38 L35.5 31 Z"/></symbol>
+      <symbol id="c41" viewBox="0 0 64 64"><path d="M6 32 C16 17 48 17 58 32 C48 47 16 47 6 32 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="32" cy="32" r="9.5" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="32" cy="32" r="4.5"/></symbol>
+    </defs>
+  </svg>
+  <main>
+    <div class="lockup">
+      <svg class="mark" id="mark" viewBox="0 0 64 64" aria-hidden="true"><g class="lid"><use id="mark-use" href="#c41"/></g></svg>
+      <h1>Nathan Shturm</h1>
+    </div>
+    <p class="soon">New site coming soon.</p>
+    <a class="resume" href="/resume.pdf">Resume</a>
+    <nav class="links" aria-label="Elsewhere">
+      <a href="https://innate.games">innate.games</a>
+      <a href="https://innate.tools">innate.tools</a>
+      <a href="https://brick-osint.games">brick-osint.games</a>
+      <a href="https://store.steampowered.com/app/3673980/Quartermaster/">Quartermaster on Steam</a>
+      <a href="https://github.com/exterminathan">GitHub</a>
+      <a href="https://www.linkedin.com/in/nathan-shturm/">LinkedIn</a>
+      <a href="https://www.artstation.com/nathanshturm">ArtStation</a>
+      <a href="mailto:nathanlshturm@gmail.com">Email</a>
+    </nav>
+  </main>
+  <footer>nathanshturm.com</footer>
+  <script>
+    const ids = ['c01', 'c02', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20', 'c21', 'c22', 'c23', 'c24', 'c25', 'c26', 'c27', 'c28', 'c29', 'c30', 'c31', 'c32', 'c33', 'c34', 'c35', 'c36', 'c37', 'c38', 'c39', 'c40', 'c41'];
+    const pick = ids[Math.floor(Math.random() * ids.length)];
+    document.getElementById('mark-use').setAttribute('href', '#' + pick);
+
+    if (pick === 'c41') {
+      const lid = document.querySelector('.mark .lid');
+      const rand = (a, b) => a + Math.random() * (b - a);
+      const calm = matchMedia('(prefers-reduced-motion: reduce)').matches ? 2 : 1;
+      let blinking = false, timer;
+      let pressure = 0, threshold = rand(18, 36), lastClick = performance.now();
+
+      const blink = () => {
+        if (blinking) return;
+        blinking = true;
+        lid.classList.add('blink');
+      };
+      lid.addEventListener('animationend', () => { lid.classList.remove('blink'); blinking = false; });
+
+      const idle = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { blink(); idle(); }, rand(15000, 35000) * calm);
+      };
+
+      document.addEventListener('pointerdown', () => {
+        const now = performance.now();
+        pressure = Math.max(0, pressure - (now - lastClick) / 1000 * 0.4) + rand(0.4, 1.6);
+        lastClick = now;
+        if (pressure >= threshold) {
+          pressure = 0;
+          threshold = rand(18, 36);
+          blink();
+          idle();
+        }
+      });
+
+      idle();
+    }
+  </script>
+</body>
+</html>

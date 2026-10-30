@@ -18,6 +18,8 @@ dist/
 node_modules/
 .firebase/
 firebase-debug.log
+holding/nathanshturm/resume.pdf
+holding/nathanshturm/favicon.svg
 
 # Photography assets — too large for git; live locally + on the server only.
 # The build copies them into dist/ and rsync deploys them like everything else.

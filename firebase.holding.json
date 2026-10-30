@@ -1,0 +1,11 @@
+{
+  "hosting": [
+    {
+      "target": "portfolio",
+      "public": "holding/nathanshturm",
+      "predeploy": ["node holding/prepare.js"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }],
+      "headers": [{ "source": "**", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }]
+    }
+  ]
+}
