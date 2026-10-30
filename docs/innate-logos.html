@@ -1,0 +1,443 @@
+<title>innate Logo Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Caveat:wght@600&family=Fraunces:ital,wght@0,400;1,400&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&family=Josefin+Sans:wght@200;700&family=Major+Mono+Display&family=Monoton&family=Silkscreen&family=Unbounded:wght@300;400;700&display=swap">
+<style>
+/* Specimen sheet: one card per mark, each shown big on paper and on ink, then at real tab size. */
+:root {
+  --bg: #f3efed;
+  --card: #fffdfc;
+  --ink: #1e1618;
+  --dim: #6a5f61;
+  --line: rgba(30, 22, 24, 0.11);
+  --accent: #e0233f;
+  --spec-paper: #f5f1ef;
+  --spec-paper-ink: #1e1618;
+  --spec-night: #0b0909;
+  --spec-night-ink: #ece8e9;
+  --spec-red: #fc314f;
+  --font-ui: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-word: 'Unbounded', 'Inter', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0b0b; --card: #161111; --ink: #ece8e9; --dim: #a39a9a; --line: rgba(236, 232, 233, 0.1); --accent: #fc314f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e0b0b; --card: #161111; --ink: #ece8e9; --dim: #a39a9a; --line: rgba(236, 232, 233, 0.1); --accent: #fc314f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+  display: grid; gap: 28px;
+}
+header { display: grid; gap: 8px; max-width: 62ch; }
+.kicker { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }
+.kicker b { color: var(--accent); }
+h1 { margin: 0; font-family: var(--font-word); font-weight: 700; font-size: clamp(1.7rem, 4.5vw, 2.4rem); letter-spacing: -0.01em; text-wrap: balance; }
+h1 span { color: var(--accent); }
+header p { margin: 0; color: var(--dim); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
+.spec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.spec > div { aspect-ratio: 1 / 0.8; display: grid; place-items: center; }
+.paper { background: var(--spec-paper); color: var(--spec-paper-ink); }
+.night { background: var(--spec-night); color: var(--spec-night-ink); }
+.spec svg { width: 44%; height: auto; max-width: 100%; }
+.mark-accent { fill: var(--spec-red); }
+.info { padding: 14px 16px 16px; display: grid; gap: 10px; }
+.title { display: flex; align-items: baseline; gap: 10px; }
+.num { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-size: 0.85rem; }
+.title h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+.info p { margin: 0; color: var(--dim); font-size: 0.88rem; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 10px; border-radius: 8px 8px 3px 3px;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  background: var(--spec-paper); color: var(--spec-paper-ink);
+  border: 1px solid var(--line);
+}
+.tab.dark { background: var(--spec-night); color: var(--spec-night-ink); border-color: rgba(236, 232, 233, 0.12); }
+.tab svg { width: 16px; height: 16px; flex: none; }
+.sizes { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; color: var(--ink); }
+.sizes svg { display: block; }
+.sizes .s48 { width: 48px; height: 48px; }
+.sizes .s32 { width: 32px; height: 32px; }
+.sizes .s16 { width: 16px; height: 16px; }
+.wordmark { font-family: var(--font-word); font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+.wordmark .n { color: var(--accent); }
+footer { color: var(--dim); font-size: 0.88rem; }
+.round { display: grid; gap: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.spec3 { display: grid; }
+.spec3 > div { aspect-ratio: 2 / 1; display: grid; place-items: center; container-type: inline-size; overflow: hidden; }
+.lock { display: flex; align-items: center; gap: 4cqi; white-space: nowrap; }
+.lock svg { width: 24cqi; height: 24cqi; }
+.lock .lw { font: 600 8cqi/1 var(--font-ui); letter-spacing: -0.01em; }
+.word { font-size: 13cqi; line-height: 1.1; white-space: nowrap; }
+.r { color: var(--spec-red); }
+.mark-accent-s { stroke: var(--spec-red); }
+.it { font-style: italic; }
+.f-inst { font-family: 'Instrument Serif', Georgia, serif; font-size: 17cqi; }
+.f-fraun { font-family: 'Fraunces', Georgia, serif; font-size: 14cqi; }
+.f-josefin { font-family: 'Josefin Sans', sans-serif; }
+.f-josefin .w200 { font-weight: 200; }
+.f-josefin .w700 { font-weight: 700; letter-spacing: 0.06em; }
+.f-jb { font-family: var(--font-mono); font-weight: 500; font-size: 11.5cqi; }
+.f-major { font-family: 'Major Mono Display', monospace; font-size: 11cqi; }
+.f-brico { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; letter-spacing: -0.045em; font-size: 15cqi; }
+.f-unb300 { font-family: 'Unbounded', sans-serif; font-weight: 300; letter-spacing: 0.26em; font-size: 7.5cqi; padding-left: 0.26em; }
+.dim { opacity: 0.38; }
+.f-caveat { font-family: 'Caveat', cursive; font-weight: 600; font-size: 19cqi; text-decoration: underline wavy var(--spec-red); text-decoration-thickness: 0.05em; text-underline-offset: 0.16em; }
+.f-silk { font-family: 'Silkscreen', monospace; font-size: 10.5cqi; }
+.cur { display: inline-block; width: 0.55em; height: 0.8em; background: var(--spec-red); margin-left: 0.15em; vertical-align: -0.05em; }
+.f-plex { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 11cqi; }
+.f-monoton { font-family: 'Monoton', sans-serif; font-size: 12cqi; }
+.icons { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--ink); }
+.icons .s32 { width: 32px; height: 32px; }
+.icons .s16 { width: 16px; height: 16px; }
+details.older { border-top: 1px solid var(--line); padding-top: 18px; }
+details.older > summary { cursor: pointer; font-family: var(--font-word); font-weight: 700; font-size: 1rem; }
+details.older[open] > summary { margin-bottom: 18px; }
+details.older .round + .round { margin-top: 28px; }
+.round-head { margin: 0; font-family: var(--font-word); font-size: 1.1rem; font-weight: 700; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.round-head span { font-family: var(--font-ui); font-size: 0.86rem; font-weight: 400; color: var(--dim); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="m1" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 28 V53"/>
+        <path d="M30 53 V37.5 a9.5 9.5 0 0 1 19 0 V53"/>
+      </g>
+      <circle class="mark-accent" cx="16" cy="13.5" r="5.5"/>
+    </symbol>
+    <symbol id="m2" viewBox="0 0 64 64">
+      <path d="M29.5 50 V29 a11 11 0 0 1 22 0 V50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+      <circle class="mark-accent" cx="13.5" cy="25" r="5.5"/>
+      <circle class="mark-accent" cx="13.5" cy="46" r="5.5"/>
+    </symbol>
+    <symbol id="m3" viewBox="0 0 64 64">
+      <path d="M14 56 V32 a18 18 0 0 1 36 0 V56" fill="none" stroke="currentColor" stroke-width="8"/>
+      <circle class="mark-accent" cx="32" cy="41" r="6.5"/>
+    </symbol>
+    <symbol id="m4" viewBox="0 0 64 64">
+      <rect x="10" y="10" width="44" height="44" rx="14" fill="none" stroke="currentColor" stroke-width="6"/>
+      <circle class="mark-accent" cx="32" cy="32" r="8"/>
+    </symbol>
+    <symbol id="m5" viewBox="0 0 64 64">
+      <path d="M26.5 31 V54" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+      <path class="mark-accent" d="M26.5 22 C26.5 12 32.5 6 42.5 6 C42.5 16 36.5 22 26.5 22 Z"/>
+    </symbol>
+    <symbol id="m6" viewBox="0 0 64 64">
+      <g fill="currentColor">
+        <rect x="9" y="17" width="7" height="7"/><rect x="9" y="25" width="7" height="7"/><rect x="9" y="33" width="7" height="7"/><rect x="9" y="41" width="7" height="7"/><rect x="9" y="49" width="7" height="7"/>
+        <rect x="25" y="17" width="7" height="7"/><rect x="33" y="17" width="7" height="7"/><rect x="41" y="17" width="7" height="7"/>
+        <rect x="25" y="25" width="7" height="7"/><rect x="49" y="25" width="7" height="7"/>
+        <rect x="25" y="33" width="7" height="7"/><rect x="49" y="33" width="7" height="7"/>
+        <rect x="25" y="41" width="7" height="7"/><rect x="49" y="41" width="7" height="7"/>
+        <rect x="25" y="49" width="7" height="7"/><rect x="49" y="49" width="7" height="7"/>
+      </g>
+      <rect class="mark-accent" x="9" y="5" width="7" height="7"/>
+    </symbol>
+    <symbol id="m7" viewBox="0 0 64 64">
+      <rect class="mark-accent" x="2" y="2" width="60" height="60" rx="16"/>
+      <g fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round">
+        <path d="M19 30 V48"/>
+        <path d="M30 48 V37 a8 8 0 0 1 16 0 V48"/>
+      </g>
+      <circle cx="19" cy="19" r="5" fill="#fff"/>
+    </symbol>
+    <symbol id="m9" viewBox="0 0 64 64">
+      <path d="M32 9 C47 9 56 21 56 37 C56 51 49 56 32 56 C15 56 8 51 8 37 C8 21 17 9 32 9 Z" fill="currentColor"/>
+      <rect class="mark-accent" x="21" y="28" width="7" height="12" rx="3.5"/>
+      <rect class="mark-accent" x="36" y="28" width="7" height="12" rx="3.5"/>
+    </symbol>
+    <symbol id="m10" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+        <circle cx="32" cy="32" r="12" stroke-dasharray="56 19.4" transform="rotate(35 32 32)"/>
+        <circle cx="32" cy="32" r="19" stroke-dasharray="94 25.4" transform="rotate(165 32 32)"/>
+        <circle cx="32" cy="32" r="26" stroke-dasharray="128 35.4" transform="rotate(275 32 32)"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="32" r="4.5"/>
+    </symbol>
+    <symbol id="m11" viewBox="0 0 64 64">
+      <path fill="currentColor" fill-rule="evenodd" d="M32 8 a24 24 0 1 0 0.01 0 Z M39 15 a12 12 0 1 0 0.01 0 Z"/>
+      <circle class="mark-accent" cx="39" cy="27" r="5.5"/>
+    </symbol>
+    <symbol id="m12" viewBox="0 0 64 64">
+      <path d="M17 49 V19 L47 45 V15" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="17" cy="51" r="6" fill="currentColor"/>
+      <circle class="mark-accent" cx="47" cy="13" r="6.5"/>
+    </symbol>
+    <symbol id="m13" viewBox="0 0 64 64">
+      <circle class="mark-accent" cx="32" cy="14" r="8"/>
+      <path fill="currentColor" d="M25.5 25 H38.5 L36.5 33 C36.5 39 44 44 46 50 H18 C20 44 27.5 39 27.5 33 Z"/>
+      <rect x="14" y="51" width="36" height="7" rx="3.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="m14" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round">
+        <path d="M9 24 a23 23 0 0 0 46 0"/>
+        <path d="M18 24 a14 14 0 0 0 28 0"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="21" r="6.5"/>
+    </symbol>
+    <symbol id="m15" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="100 25.66" transform="rotate(-8.2 32 32)"/>
+      <circle class="mark-accent" cx="46.1" cy="17.9" r="6"/>
+    </symbol>
+    <symbol id="m16" viewBox="0 0 64 64">
+      <path d="M32 7 L53.7 19.5 V44.5 L32 57 L10.3 44.5 V19.5 Z" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round"/>
+      <path class="mark-accent" d="M32 23 L39.8 27.5 V36.5 L32 41 L24.2 36.5 V27.5 Z"/>
+    </symbol>
+    <symbol id="s29" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 54 H50"/><path d="M32 54 V31"/><path d="M32 40 C24 40 18 34 18 26 C26 26 32 32 32 40 Z"/>
+      </g>
+      <path class="mark-accent" d="M32 32 C32 22 38 15 48 15 C48 25 41 32 32 32 Z"/>
+    </symbol>
+    <symbol id="s30" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="2.5">
+        <ellipse cx="32" cy="32" rx="25" ry="23" transform="rotate(12 32 32)"/>
+        <ellipse cx="32.5" cy="32" rx="18" ry="16" transform="rotate(-10 32 32)"/>
+        <ellipse cx="33" cy="31.5" rx="11" ry="10" transform="rotate(20 32 32)"/>
+      </g>
+      <circle class="mark-accent" cx="33.5" cy="31" r="4"/>
+    </symbol>
+    <symbol id="s31" viewBox="0 0 64 64">
+      <path d="M32 8 C44 8 52 26 52 39 C52 50 43 57 32 57 C21 57 12 50 12 39 C12 26 20 8 32 8 Z" fill="none" stroke="currentColor" stroke-width="3"/>
+      <path class="mark-accent-s" d="M31 49 V35" fill="none" stroke-width="3" stroke-linecap="round"/>
+      <path class="mark-accent" d="M31 37 C31 30 35 26 41 26 C41 32 37 37 31 37 Z"/>
+    </symbol>
+    <symbol id="s32" viewBox="0 0 64 64">
+      <path d="M6 36 H20 L25 26 L31 46 L37 16 L42 36 H58" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle class="mark-accent" cx="37" cy="16" r="4.5"/>
+    </symbol>
+    <symbol id="s33" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <path d="M12 48 C12 26 21 12 32 12 C43 12 52 26 52 42"/>
+        <path d="M19 52 C19 30 24 19 32 19 C40 19 45 30 45 46"/>
+        <path d="M26 54 C26 34 28 26 32 26 C36 26 38 34 38 50"/>
+      </g>
+      <path class="mark-accent-s" d="M32 33 V54" fill="none" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="s34" viewBox="0 0 64 64">
+      <g transform="translate(32 33) scale(1.35) translate(-41 -27.5)">
+        <path d="M34 30 a3 3 0 0 1 3 3 a5 5 0 0 1 -5 5 a8 8 0 0 1 -8 -8 a13 13 0 0 1 13 -13 a21 21 0 0 1 21 21" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
+        <circle class="mark-accent" cx="34" cy="30" r="2.4"/>
+      </g>
+    </symbol>
+    <symbol id="s35" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+        <path d="M22 12 C11 22 11 42 22 52"/><path d="M42 12 C53 22 53 42 42 52"/>
+      </g>
+      <circle class="mark-accent" cx="32" cy="32" r="6"/>
+    </symbol>
+    <symbol id="s36" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <path class="mark-accent" d="M32 11 L38 32 H26 Z"/>
+      <path d="M32 53 L38 32 H26 Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="s37" viewBox="0 0 64 64">
+      <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <path d="M32 8 C45 14 45 26 32 32 C19 38 19 50 32 56"/>
+        <path d="M32 8 C19 14 19 26 32 32 C45 38 45 50 32 56"/>
+      </g>
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M25.5 14 H38.5"/><path d="M25.5 26 H38.5"/><path d="M25.5 38 H38.5"/><path d="M24 44 H40"/><path d="M25.5 50 H38.5"/>
+      </g>
+      <path class="mark-accent-s" d="M24 20 H40" stroke-width="2.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="s38" viewBox="0 0 64 64">
+      <path d="M10 46 C14 46 16 24 21 24 C26 24 25 44 29 44 C33 44 34 24 39 24 C44 24 43 44 47 44 C51 44 53 38 55 34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle class="mark-accent" cx="12" cy="30" r="3.5"/>
+    </symbol>
+    <symbol id="s39" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="36" cy="28" r="8"/>
+      <circle cx="22" cy="40" r="2.5" fill="currentColor"/><circle cx="29" cy="46" r="2" fill="currentColor"/><circle cx="43" cy="43" r="2.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="s40" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="32" cy="27" r="7"/>
+      <path class="mark-accent" d="M28.5 31 L26 46 H38 L35.5 31 Z"/>
+    </symbol>
+    <symbol id="s41" viewBox="0 0 64 64">
+      <path d="M6 32 C16 17 48 17 58 32 C48 47 16 47 6 32 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="32" cy="32" r="9.5" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle class="mark-accent" cx="32" cy="32" r="4.5"/>
+    </symbol>
+    <symbol id="m8" viewBox="0 0 64 64">
+      <text x="32" y="44" text-anchor="middle" font-family="Unbounded, Inter, sans-serif" font-weight="700" font-size="30" letter-spacing="-1"><tspan fill="currentColor" font-weight="400">i</tspan><tspan class="mark-accent">N</tspan></text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <span class="kicker">N<b>:</b>S &rarr; innate</span>
+    <h1>innate <span>marks</span></h1>
+    <p>Options for the mark on the innate.games and innate.tools holding pages. Each one is shown large on light and dark, at real favicon sizes, and in a browser tab. Pick a number. The red can change later.</p>
+  </header>
+
+  <section class="round">
+    <h2 class="round-head">Round 3 <span>12 wordmarks and 13 fine-line symbols, numbered 17 to 41</span></h2>
+    <div class="grid3" id="grid3"></div>
+  </section>
+
+  <details class="older">
+    <summary>Rounds 1 and 2 (options 1 to 16)</summary>
+    <section class="round">
+      <h2 class="round-head">Round 2 <span>no letters</span></h2>
+      <div class="grid" id="grid2"></div>
+    </section>
+    <section class="round">
+      <h2 class="round-head">Round 1 <span>letterforms</span></h2>
+      <div class="grid" id="grid"></div>
+    </section>
+  </details>
+
+  <footer>All eight are drawn as plain shapes, so the one you pick ships as a single small SVG file that stays sharp at every size.</footer>
+</div>
+
+<script>
+const MARKS = [
+  { id: 'm1', name: 'Ligature', note: 'A lowercase "in" drawn as one joined stroke, with the i-dot in red. Plain and legible at 16px.' },
+  { id: 'm2', name: 'Colon', note: 'A colon and an "n", borrowing the red colon from your N:S logo, so innate reads as part of the same family.' },
+  { id: 'm3', name: 'Doorway', note: 'An arch with a dot inside it: something already in there. Reads as "n" and as a way in.' },
+  { id: 'm4', name: 'Kernel', note: 'A rounded square holding a red core. The most abstract option, and a natural app icon.' },
+  { id: 'm5', name: 'Sprout', note: 'An "i" whose dot is a leaf. Innate as in inborn, something that grows.' },
+  { id: 'm6', name: 'Pixel', note: 'A blocky "in" on an 8-pixel grid, nodding to the games. Crisp at small sizes by nature.' },
+  { id: 'm7', name: 'Tile', note: 'The ligature knocked out of a red rounded tile. Strongest presence as a favicon or app icon.' },
+  { id: 'm8', name: 'iN', note: 'A type monogram, a small "i" and a capital red "N", pointing at the NATE inside innate.' },
+];
+const MARKS2 = [
+  { id: 'm9', num: 9, name: 'Critter', note: 'A soft little body with two red pill eyes. A character, not a letter, so it fits games and gives the brand a face.' },
+  { id: 'm10', num: 10, name: 'Whorl', note: 'Broken rings around a red core, like a fingerprint. Innate as in identity, the thing that is only yours.' },
+  { id: 'm11', num: 11, name: 'Seed', note: 'A solid round form with an off-center hollow and a red kernel inside. Reads as a seed or a glancing eye.' },
+  { id: 'm12', num: 12, name: 'Trace', note: 'An N drawn as one circuit trace between two pads, the end pad red. N for Nate, wiring for tools.' },
+  { id: 'm13', num: 13, name: 'Piece', note: 'A game pawn with a red head. Board games are what innate.games actually hosts.' },
+  { id: 'm14', num: 14, name: 'Cradle', note: 'Two cupped arcs holding a red ball. Something carried inside, kept safe.' },
+  { id: 'm15', num: 15, name: 'Orbit', note: 'An open ring with a red body closing the gap. Motion and a finished loop.' },
+  { id: 'm16', num: 16, name: 'Hex', note: 'A hex tile with a red core, the shape of the Island Game board. Tiles and pieces in one shape.' },
+];
+const use = (id, cls) => `<svg class="${cls || ''}" viewBox="0 0 64 64" aria-hidden="true"><use href="#${id}"/></svg>`;
+const card = (m, n) => `
+  <article class="card" aria-label="Option ${n}: ${m.name}">
+    <div class="spec">
+      <div class="paper">${use(m.id)}</div>
+      <div class="night">${use(m.id)}</div>
+    </div>
+    <div class="info">
+      <div class="title"><span class="num">${String(n).padStart(2, '0')}</span><h2>${m.name}</h2></div>
+      <p>${m.note}</p>
+      <div class="sizes">${use(m.id, 's48')}${use(m.id, 's32')}${use(m.id, 's16')}<span class="wordmark">in<span class="n">nate</span></span></div>
+      <div class="tabs">
+        <span class="tab">${use(m.id)}innate.games</span>
+        <span class="tab dark">${use(m.id)}innate.tools</span>
+      </div>
+    </div>
+  </article>`;
+document.getElementById('grid2').innerHTML = MARKS2.map(m => card(m, m.num)).join('');
+
+const txt = (s) => `<svg viewBox="0 0 64 64" aria-hidden="true">${s}</svg>`;
+const R3 = [
+  { name: 'Italic', note: 'Light italic serif with a red i. Quiet and personal, like a signature on the work.',
+    word: '<span class="word f-inst it"><span class="r">i</span>nnate</span>',
+    icon: txt('<text x="32" y="54" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="66" class="mark-accent">i</text>') },
+  { name: 'Middle dot', note: 'in·nate, split the way a dictionary splits it, which leaves "nate" standing on its own.',
+    word: '<span class="word f-fraun">in<span class="r">&middot;</span>nate</span>',
+    icon: txt('<circle class="mark-accent" cx="11" cy="34" r="5.5"/><text x="38" y="50" text-anchor="middle" font-family="Fraunces" font-size="56" fill="currentColor">n</text>') },
+  { name: 'NATE', note: 'A whisper of "in" and a solid NATE. The pun is the logo.',
+    word: '<span class="word f-josefin"><span class="r w200">in</span><span class="w700">NATE</span></span>',
+    icon: txt('<text x="32" y="51" text-anchor="middle" font-family="Josefin Sans" font-weight="700" font-size="54" fill="currentColor">N</text>') },
+  { name: 'Colon', note: 'in:nate with the red colon from N:S, so it reads as the same family as your portfolio.',
+    word: '<span class="word f-jb">in<span class="r">:</span>nate</span>',
+    icon: txt('<circle class="mark-accent" cx="32" cy="19" r="8"/><circle class="mark-accent" cx="32" cy="45" r="8"/>') },
+  { name: 'Odd mono', note: 'Major Mono\'s strange letter shapes. Feels homemade and experimental.',
+    word: '<span class="word f-major"><span class="r">i</span>nnate</span>',
+    icon: txt('<text x="32" y="52" text-anchor="middle" font-family="Major Mono Display" font-size="60" class="mark-accent">i</text>') },
+  { name: 'Full stop', note: 'Heavy and tight, finished with a red period. Says it like a fact.',
+    word: '<span class="word f-brico">innate<span class="r">.</span></span>',
+    icon: txt('<text x="25" y="54" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="64" fill="currentColor">i</text><circle class="mark-accent" cx="45" cy="48" r="6.5"/>') },
+  { name: 'Spaced', note: 'Thin, wide capitals with IN faded, so NATE comes forward.',
+    word: '<span class="word f-unb300"><span class="dim">IN</span>NATE</span>',
+    icon: txt('<text x="32" y="48" text-anchor="middle" font-family="Unbounded" font-weight="300" font-size="46" class="mark-accent">N</text>') },
+  { name: 'Hand', note: 'Handwritten with a red squiggle under it. Innate as in human, made by hand.',
+    word: '<span class="word f-caveat">innate</span>',
+    icon: txt('<text x="32" y="48" text-anchor="middle" font-family="Caveat" font-weight="600" font-size="70" fill="currentColor">i</text><path class="mark-accent-s" d="M14 56 q6 -5 12 0 t12 0 t12 0" fill="none" stroke-width="3.5" stroke-linecap="round"/>') },
+  { name: 'Cursor', note: 'Pixel type with a red block cursor. Games and tools both start at a prompt.',
+    word: '<span class="word f-silk">innate<span class="cur"></span></span>',
+    icon: txt('<text x="22" y="48" text-anchor="middle" font-family="Silkscreen" font-size="42" fill="currentColor">I</text><rect class="mark-accent" x="36" y="18" width="13" height="30"/>') },
+  { name: 'Brackets', note: 'innate inside red brackets, like a slot waiting to be filled. Suits the tools side.',
+    word: '<span class="word f-plex"><span class="r">[</span>innate<span class="r">]</span></span>',
+    icon: txt('<text x="32" y="45" text-anchor="middle" font-family="IBM Plex Mono" font-weight="500" font-size="34"><tspan class="mark-accent">[</tspan><tspan fill="currentColor">i</tspan><tspan class="mark-accent">]</tspan></text>') },
+  { name: 'Neon', note: 'Arcade-sign lettering in red. Loud and a little retro, for the games side.',
+    word: '<span class="word f-monoton r">INNATE</span>',
+    icon: txt('<text x="32" y="52" text-anchor="middle" font-family="Monoton" font-size="52" class="mark-accent">I</text>') },
+  { name: 'Signed', note: '"in" set upright and "nate" in red italic, as if you signed it.',
+    word: '<span class="word f-fraun">in<span class="r it">nate</span></span>',
+    icon: txt('<text x="32" y="47" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="60" class="mark-accent">n</text>') },
+  { sym: 's29', name: 'Seedling', note: 'A thin sprout with one red leaf. Innate: what grows from within.' },
+  { sym: 's30', name: 'Rings', note: 'Tree rings around a red heartwood. Who you are at the core, built up over time.' },
+  { sym: 's31', name: 'Egg', note: 'A thin egg with a red curl starting inside. Inborn, there before anything else.' },
+  { sym: 's32', name: 'Pulse', note: 'A heartbeat with a red peak. Instinct, something alive.' },
+  { sym: 's33', name: 'Ridges', note: 'Fingerprint ridges with a red center line. The identity you are born with.' },
+  { sym: 's34', name: 'Spiral', note: 'A growth spiral from a red point, the pattern shells and plants follow without being taught.' },
+  { sym: 's35', name: 'Held', note: 'A red point held between two curves. Something kept inside.' },
+  { sym: 's36', name: 'Compass', note: 'A compass with a red north needle. Innate as in an inner sense of direction.' },
+  { sym: 's37', name: 'Helix', note: 'Thin DNA strands with one red rung. Literally what is innate.' },
+  { sym: 's38', name: 'Flourish', note: 'A pen stroke that reads like a cursive "nn", started with a red dot.' },
+  { sym: 's39', name: 'Cell', note: 'A cell with a red nucleus. The smallest thing that carries what is innate.' },
+  { sym: 's40', name: 'Keyhole', note: 'A red keyhole in a ring. What is inside, waiting to be opened.' },
+  { sym: 's41', name: 'Eye', note: 'A thin eye with a red pupil. Insight and gut feeling.' },
+];
+const iconSvg = (o, cls) => (o.sym ? use(o.sym, cls) : o.icon.replace('<svg ', `<svg class="${cls || ''}" `));
+const lockup = o => (o.sym ? `<span class="lock">${use(o.sym)}<span class="lw">innate</span></span>` : o.word);
+document.getElementById('grid3').innerHTML = R3.map((o, i) => {
+  const n = 17 + i;
+  return `
+  <article class="card" aria-label="Option ${n}: ${o.name}">
+    <div class="spec3">
+      <div class="paper">${lockup(o)}</div>
+      <div class="night">${lockup(o)}</div>
+    </div>
+    <div class="info">
+      <div class="title"><span class="num">${n}</span><h2>${o.name}</h2></div>
+      <p>${o.note}</p>
+      <div class="icons">${iconSvg(o, 's32')}${iconSvg(o, 's16')}
+        <span class="tab">${iconSvg(o)}innate.games</span>
+        <span class="tab dark">${iconSvg(o)}innate.tools</span>
+      </div>
+    </div>
+  </article>`;
+}).join('');
+document.getElementById('grid').innerHTML = MARKS.map((m, i) => `
+  <article class="card" aria-label="Option ${i + 1}: ${m.name}">
+    <div class="spec">
+      <div class="paper">${use(m.id)}</div>
+      <div class="night">${use(m.id)}</div>
+    </div>
+    <div class="info">
+      <div class="title"><span class="num">${String(i + 1).padStart(2, '0')}</span><h2>${m.name}</h2></div>
+      <p>${m.note}</p>
+      <div class="sizes">${use(m.id, 's48')}${use(m.id, 's32')}${use(m.id, 's16')}<span class="wordmark">in<span class="n">nate</span></span></div>
+      <div class="tabs">
+        <span class="tab">${use(m.id)}innate.games</span>
+        <span class="tab dark">${use(m.id)}innate.tools</span>
+      </div>
+    </div>
+  </article>`).join('');
+</script>

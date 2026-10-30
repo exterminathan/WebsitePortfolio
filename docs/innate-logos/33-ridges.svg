@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" color="#1e1618"><style>.mark-accent{fill:#fc314f}.mark-accent-s{stroke:#fc314f}</style><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <path d="M12 48 C12 26 21 12 32 12 C43 12 52 26 52 42"/>
+        <path d="M19 52 C19 30 24 19 32 19 C40 19 45 30 45 46"/>
+        <path d="M26 54 C26 34 28 26 32 26 C36 26 38 34 38 50"/>
+      </g>
+      <path class="mark-accent-s" d="M32 33 V54" fill="none" stroke-width="3" stroke-linecap="round"/></svg>

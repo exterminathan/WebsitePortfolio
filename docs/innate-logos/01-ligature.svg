@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" color="#1e1618"><style>.mark-accent{fill:#fc314f}.mark-accent-s{stroke:#fc314f}</style><g fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 28 V53"/>
+        <path d="M30 53 V37.5 a9.5 9.5 0 0 1 19 0 V53"/>
+      </g>
+      <circle class="mark-accent" cx="16" cy="13.5" r="5.5"/></svg>

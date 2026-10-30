@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" color="#1e1618"><style>.mark-accent{fill:#fc314f}.mark-accent-s{stroke:#fc314f}</style><path d="M17 49 V19 L47 45 V15" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="17" cy="51" r="6" fill="currentColor"/>
+      <circle class="mark-accent" cx="47" cy="13" r="6.5"/></svg>
