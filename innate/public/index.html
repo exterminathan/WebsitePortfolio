@@ -32,12 +32,16 @@
       -webkit-font-smoothing: antialiased;
       display: grid;
       grid-template-rows: 1fr auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
       padding: env(safe-area-inset-top, 0px) max(20px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(20px, env(safe-area-inset-left, 0px));
     }
     main { display: grid; place-content: center; justify-items: center; gap: 22px; text-align: center; }
     .lockup { display: flex; align-items: center; gap: 18px; }
     .eye { width: clamp(64px, 14vw, 96px); height: auto; overflow: visible; }
-    .eye .lid { animation: blink 7s infinite; transform-origin: 32px 32px; }
+    .eye .lid { transform-origin: 32px 32px; }
+    .eye .lid.blink { animation: blink 0.3s ease-in-out; }
     .eye .stroke { stroke: var(--ink); }
     .eye .pupil { fill: var(--red); }
     .word { margin: 0; font-weight: 600; font-size: clamp(2.2rem, 7vw, 3.4rem); letter-spacing: -0.03em; line-height: 1; }
@@ -46,11 +50,8 @@
     footer a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
     footer a:hover { color: var(--red); }
     @keyframes blink {
-      0%, 93%, 100% { transform: scaleY(1); }
-      95% { transform: scaleY(0.08); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .eye .lid { animation-duration: 14s; }
+      0%, 100% { transform: scaleY(1); }
+      45% { transform: scaleY(0.08); }
     }
   </style>
 </head>
@@ -71,6 +72,38 @@
   <footer><span id="host">innate</span> &middot; by <a href="https://nathanshturm.com">Nathan Shturm</a></footer>
   <script>
     if (/^(www\.)?innate\.(games|tools)$/.test(location.hostname)) document.getElementById('host').textContent = location.hostname.replace(/^www\./, '');
+
+    const lid = document.querySelector('.eye .lid');
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches ? 2 : 1;
+    let blinking = false, timer;
+    let pressure = 0, threshold = rand(18, 36), lastClick = performance.now();
+
+    function blink() {
+      if (blinking) return;
+      blinking = true;
+      lid.classList.add('blink');
+    }
+    lid.addEventListener('animationend', () => { lid.classList.remove('blink'); blinking = false; });
+
+    function idle() {
+      clearTimeout(timer);
+      timer = setTimeout(() => { blink(); idle(); }, rand(15000, 35000) * calm);
+    }
+
+    document.addEventListener('pointerdown', () => {
+      const now = performance.now();
+      pressure = Math.max(0, pressure - (now - lastClick) / 1000 * 0.4) + rand(0.4, 1.6);
+      lastClick = now;
+      if (pressure >= threshold) {
+        pressure = 0;
+        threshold = rand(18, 36);
+        blink();
+        idle();
+      }
+    });
+
+    idle();
   </script>
 </body>
 </html>
