@@ -18,6 +18,18 @@
           "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
         }
       ]
+    },
+    {
+      "target": "innate-games",
+      "public": "innate/public",
+      "rewrites": [{ "source": "**", "destination": "/index.html" }],
+      "headers": [{ "source": "**", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }]
+    },
+    {
+      "target": "innate-tools",
+      "public": "innate/public",
+      "rewrites": [{ "source": "**", "destination": "/index.html" }],
+      "headers": [{ "source": "**", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }]
     }
   ]
 }

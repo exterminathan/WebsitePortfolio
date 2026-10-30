@@ -5,7 +5,9 @@
   "targets": {
     "project-a89ff80d-7ecd-456f-aee": {
       "hosting": {
-        "portfolio": ["nathanshturm"]
+        "portfolio": ["nathanshturm"],
+        "innate-games": ["innate-games"],
+        "innate-tools": ["innate-tools"]
       }
     }
   }

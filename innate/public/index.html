@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>innate</title>
+  <meta name="description" content="innate, home of games and tools by Nathan Shturm. More coming soon.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f1ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0909" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+  <style>
+    :root {
+      --bg: #f5f1ef;
+      --ink: #1e1618;
+      --dim: #6a5f61;
+      --red: #e0233f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0b0909; --ink: #ece8e9; --dim: #8f8585; --red: #fc314f; }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: env(safe-area-inset-top, 0px) max(20px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(20px, env(safe-area-inset-left, 0px));
+    }
+    main { display: grid; place-content: center; justify-items: center; gap: 22px; text-align: center; }
+    .lockup { display: flex; align-items: center; gap: 18px; }
+    .eye { width: clamp(64px, 14vw, 96px); height: auto; overflow: visible; }
+    .eye .lid { animation: blink 7s infinite; transform-origin: 32px 32px; }
+    .eye .stroke { stroke: var(--ink); }
+    .eye .pupil { fill: var(--red); }
+    .word { margin: 0; font-weight: 600; font-size: clamp(2.2rem, 7vw, 3.4rem); letter-spacing: -0.03em; line-height: 1; }
+    .soon { margin: 0; color: var(--dim); font-size: 1.05rem; }
+    footer { padding: 24px 0 28px; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8rem; color: var(--dim); }
+    footer a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
+    footer a:hover { color: var(--red); }
+    @keyframes blink {
+      0%, 93%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.08); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .eye .lid { animation-duration: 14s; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="lockup">
+      <svg class="eye" viewBox="0 0 64 64" aria-hidden="true">
+        <g class="lid">
+          <path class="stroke" d="M6 32 C16 17 48 17 58 32 C48 47 16 47 6 32 Z" fill="none" stroke-width="3" stroke-linejoin="round"/>
+          <circle class="stroke" cx="32" cy="32" r="9.5" fill="none" stroke-width="3"/>
+          <circle class="pupil" cx="32" cy="32" r="4.5"/>
+        </g>
+      </svg>
+      <h1 class="word">innate</h1>
+    </div>
+    <p class="soon">More coming soon.</p>
+  </main>
+  <footer><span id="host">innate</span> &middot; by <a href="https://nathanshturm.com">Nathan Shturm</a></footer>
+  <script>
+    if (/^(www\.)?innate\.(games|tools)$/.test(location.hostname)) document.getElementById('host').textContent = location.hostname.replace(/^www\./, '');
+  </script>
+</body>
+</html>
