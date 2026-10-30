@@ -2,16 +2,9 @@
 #
 #   powershell -File scripts\ingest-photos.ps1
 #
-# Each album is ONE flat folder; every photo becomes a named pair:
-#   images/photos/<album>/<prefix><NNN>-FULL.jpg   (long edge <= 1920, q3 — lightbox)
-#   images/photos/<album>/<prefix><NNN>-THUMB.jpg  (long edge <= 640,  q5 — grid)
-# where <prefix> is the day slug (e.g. hakone004-FULL.jpg) or, for day-less
-# albums, the album's `prefix` in albums.js (e.g. kenya001-FULL.jpg).
-#
-# Idempotent: re-running overwrites existing output. Slugs/prefixes must match
-# src/data/albums.js — the build scans these folders to generate album pages.
-# Europe 2026 is scaffolded (see the commented block at the bottom) but still
-# RAW-only — fill in the source folder names and uncomment once exports exist.
+# Writes <prefix><NNN>-FULL.jpg (1920px lightbox) + -THUMB.jpg (640px grid)
+# pairs into one flat folder per album. Idempotent; re-running overwrites.
+# Slugs/prefixes must match src/data/albums.js.
 
 $ErrorActionPreference = 'Stop'
 $ffmpeg = 'C:\ffmpeg\ffmpeg.exe'
@@ -32,13 +25,13 @@ function Convert-Album {
   Write-Output ("{0}: {1} photos" -f $Prefix, $i)
 }
 
-# --- Kenya 2022: flat folder of curated jpg/png, numbered "k22 (N).ext" ------
+# --- Kenya 2022 --------------------------------------------------------------
 $kenya = Get-ChildItem "$srcRoot\Kenya 2022" -File |
   Where-Object { $_.Extension -match '^\.(jpe?g|png)$' } |
   Sort-Object @{ e = { [int]($_.BaseName -replace '\D', '') } }, Extension
 Convert-Album -Files $kenya -OutDir (Join-Path $destRoot 'kenya-2022') -Prefix 'kenya'
 
-# --- Japan 2025: one day folder per outing, curated exports in outputs?/ -----
+# --- Japan 2025: one source folder per day, curated exports in outputs?/ -----
 $japanDays = @(
   @{ src = '09.17.2025 Mt. Fuji';            slug = 'mt-fuji' },
   @{ src = '09.18.2025 Hakone';              slug = 'hakone' },
@@ -68,10 +61,7 @@ foreach ($day in $japanDays) {
   Convert-Album -Files $files -OutDir (Join-Path $destRoot 'japan-2025') -Prefix $day.slug
 }
 
-# --- Europe 2026: 3 legs into one folder (slugs match src/data/albums.js) -----
-# RAW only so far — set each $src to its curated-export folder under
-# "$srcRoot\Europe 2026", rename the 'other' leg to match albums.js, then
-# uncomment. Same one-folder/day-slug-prefix scheme as Japan above.
+# --- Europe 2026: RAW only so far — fix the $src names, then uncomment -------
 # $europeLegs = @(
 #   @{ src = 'Switzerland'; slug = 'switzerland' },
 #   @{ src = 'Prague';      slug = 'prague' },

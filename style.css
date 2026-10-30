@@ -1,5 +1,3 @@
-/* site stylesheet */
-
 :root {
   --bg: #0b0909;
   --bg-alt: #151010;
@@ -21,11 +19,16 @@
 
   --container: 1100px;
   --nav-height: 4.5rem;
-  --gutter: 1.5rem; /* one horizontal page gutter, used everywhere */
+  --gutter: 1.5rem;
 
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
+
+  /* the line's shrink is tuned to roughly match the title's growth in px, so
+     the title reads as shoving the line rightward rather than drifting from it */
+  --heading-hover-scale: 1.14;
+  --heading-line-scale: 0.96;
 }
 
 * { box-sizing: border-box; }
@@ -42,11 +45,11 @@ body {
   font-family: var(--font-sans);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  overflow-wrap: break-word; /* inherited: long emails/URLs/headings never overflow */
+  overflow-wrap: break-word;
 }
 
 img, svg, video { max-width: 100%; }
-code { overflow-wrap: anywhere; } /* long tokens like ProductConfig.cmake */
+code { overflow-wrap: anywhere; }
 
 h1, h2, h3, h4 {
   margin: 0;
@@ -122,7 +125,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   letter-spacing: 0.02em;
 }
 .logo:hover { color: var(--text); }
-.logo-dot { color: var(--accent); }
+.logo-dot { display: inline-block; color: var(--accent); margin: 0 0.08em; text-align: center; }
 
 .site-nav {
   display: flex;
@@ -159,11 +162,11 @@ ul { list-style: none; margin: 0; padding: 0; }
   align-items: center;
   justify-content: center;
   gap: 5px;
-  width: 44px;  /* comfortable touch target */
+  width: 44px;
   height: 44px;
   cursor: pointer;
   margin-left: auto;
-  margin-right: -11px; /* keep the 22px bars optically flush with the gutter */
+  margin-right: -11px; /* keeps the 22px bars flush with the gutter */
 }
 .hamburger span {
   width: 22px;
@@ -186,21 +189,20 @@ main { padding-top: var(--nav-height); }
 .section {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 7rem var(--gutter);
+  padding: 8.5rem var(--gutter);
 }
+#top .section { padding-block: 6rem; }
 .section-alt { background: var(--bg-alt); max-width: none; }
 .section-alt > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
 
-/* full-bleed background image behind a section, under a dark tint.
-   The image lives on a ::before layer (slightly taller than the section) that
-   drifts vertically as the section crosses the viewport — a subtle parallax.
-   Per-section image is set via the --section-bg custom property (see #ids).
-   TEMP: images live in images/backgrounds/ — swap for real photos later. */
+/* full-bleed tinted background on a ::before layer that drifts with scroll.
+   Per-section image comes from --section-bg (see #ids below). */
 .section-bg {
   --section-tint: rgba(11, 9, 9, 0.82);
+  --parallax-shift: 19%; /* must stay under the ::before overhang below */
   position: relative;
   max-width: none;
-  overflow: clip; /* contain the oversized/drifting background layer */
+  overflow: clip;
   isolation: isolate;
 }
 .section-bg::before {
@@ -209,7 +211,7 @@ main { padding-top: var(--nav-height); }
   left: 0;
   right: 0;
   top: -20%;
-  bottom: -20%; /* extra height so the drift never reveals an edge */
+  bottom: -20%; /* overhang so the drift never reveals an edge */
   z-index: -1;
   background-image:
     linear-gradient(var(--section-tint), var(--section-tint)),
@@ -217,11 +219,9 @@ main { padding-top: var(--nav-height); }
   background-size: cover;
   background-position: center;
 }
-/* keep the content column constrained even though the section is full-bleed */
 .section-bg > * { max-width: var(--container); margin-left: auto; margin-right: auto; }
 
-/* hero declares its bg here too, but needs max-width re-cleared because the
-   later .hero rule would otherwise win and clip the bleed to the container */
+/* max-width re-cleared: the later .hero rule would otherwise clip the bleed */
 .hero.section-bg {
   --section-bg: url("images/backgrounds/hero.svg");
   max-width: none;
@@ -231,13 +231,9 @@ main { padding-top: var(--nav-height); }
 #design.section-bg   { --section-bg: url("images/backgrounds/design.svg"); }
 #photos.section-bg   { --section-bg: url("images/backgrounds/photos.svg"); }
 
-/* pure-CSS scroll parallax: drift the background layer as the section travels
-   through the viewport. Scroll-driven view() timeline — no JS. Where the
-   feature is unsupported, the layer simply sits static (graceful fallback). */
+/* scroll parallax via a view() timeline; unsupported browsers get a static layer */
 @supports (animation-timeline: view()) {
-  /* longhands only — the `animation` shorthand resets animation-timeline to
-     auto, which silently kills the scroll binding. Keeping duration at its
-     initial `auto` lets the animation fill the whole view() timeline. */
+  /* longhands only — the `animation` shorthand resets animation-timeline */
   .section-bg::before {
     animation-name: section-parallax;
     animation-timing-function: linear;
@@ -247,18 +243,19 @@ main { padding-top: var(--nav-height); }
     will-change: transform;
   }
   @keyframes section-parallax {
-    from { transform: translateY(-14%); }
-    to   { transform: translateY(14%); }
+    from { transform: translateY(calc(-1 * var(--parallax-shift))); }
+    to   { transform: translateY(var(--parallax-shift)); }
   }
 }
-/* reduced motion = NO motion, not instant motion. Kill the parallax and
-   smooth scrolling here; hover-growth effects are neutralized next to their
-   own rules (search the file for prefers-reduced-motion). A universal
-   `transition-duration: 0.01ms` is a trap: hover targets snap and jump
-   under the cursor, which is harder to use, not calmer. */
+/* reduced motion = no motion, not instant motion — don't blanket-zero
+   transition durations, hover targets would snap and jump under the cursor */
 @media (prefers-reduced-motion: reduce) {
   html, .viewer-strip { scroll-behavior: auto; }
-  .section-bg::before { animation: none; transform: none; }
+  /* damped, not killed: the parallax only tracks scroll the user is doing */
+  .section-bg { --parallax-shift: 6%; }
+  :root { --heading-hover-scale: 1.03; --heading-line-scale: 0.99; }
+  /* the panel still slides open — only the video's own travel is dropped */
+  .detail-video video { transform: none; }
 }
 
 .section-heading {
@@ -267,28 +264,43 @@ main { padding-top: var(--nav-height); }
   gap: 1rem;
   margin-bottom: 3rem;
 }
-.section-number {
-  font-family: var(--font-mono);
-  color: var(--accent);
-  font-size: 1.1rem;
+/* uppercase needs positive tracking; the global -0.02em is tuned for mixed case */
+.section-heading :is(h1, h2) {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 .section-heading h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); }
 .section-line {
   flex: 1;
-  min-width: 1.5rem; /* the line shrinks to this before the heading wraps */
+  min-width: 1.5rem;
   height: 1px;
   background: var(--border-strong);
 }
 
 .section-heading-link { display: block; }
 .section-heading-link .section-heading { margin-bottom: 3rem; }
+.section-heading-link .section-heading h2 {
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
+  transform-origin: left center;
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+.section-heading-link .section-line {
+  transform-origin: right center;
+  transition: transform 0.3s ease, background 0.2s ease;
+}
 .section-arrow {
   font-family: var(--font-mono);
   color: var(--text-dim);
   transition: transform 0.2s ease, color 0.2s ease;
 }
-.section-heading-link:hover .section-heading h2 { color: var(--accent-hover); }
-.section-heading-link:hover .section-line { background: var(--accent); }
+.section-heading-link:hover .section-heading h2 {
+  color: var(--accent-hover);
+  transform: scale(var(--heading-hover-scale));
+}
+.section-heading-link:hover .section-line {
+  background: var(--accent);
+  transform: scaleX(var(--heading-line-scale));
+}
 .section-heading-link:hover .section-arrow {
   color: var(--accent-hover);
   transform: translateX(4px);
@@ -322,11 +334,8 @@ main { padding-top: var(--nav-height); }
 }
 .back-link:hover { color: var(--accent-hover); }
 
-/* themed sub-page headers: every section page gets the SAME dark header band
-   (the games/rose tint — deliberately not per-accent, so the band reads dark
-   everywhere). The accent class on the header still recolors that page's
-   section number + line via --accent. Full-bleed like .section-bg; scoped to
-   headers that carry an accent class, so plain detail-page headers are unaffected. */
+/* themed sub-page headers: one shared dark band (deliberately not per-accent),
+   while the accent class still recolors the section number + line */
 .page-header:is(.accent-rose, .accent-yellow, .accent-orange, .accent-violet, .accent-blue) {
   --page-header-tint: rgba(248, 220, 211, 0.24);
   max-width: none;
@@ -357,9 +366,7 @@ main { padding-top: var(--nav-height); }
 .hero {
   max-width: var(--container);
   margin: 0 auto;
-  /* taller stage for the name — extra room goes into the section's own
-     padding, never into the gaps between the hero's children */
-  padding: 10.5rem var(--gutter) 4.5rem;
+  padding: 11rem var(--gutter) 6rem;
 }
 .hero h1 {
   font-size: clamp(2.75rem, 7vw, 4.5rem);
@@ -383,9 +390,8 @@ main { padding-top: var(--nav-height); }
   margin-top: 1.1rem;
   flex-wrap: wrap;
 }
-/* hero CTA sits a touch smaller and flatter than the shared .btn */
 .hero-actions .btn {
-  padding: 0.65rem 1.25rem; /* keeps ~44px height for touch */
+  padding: 0.65rem 1.25rem;
   font-size: 0.85rem;
 }
 .hero-actions .btn-ghost:hover {
@@ -452,7 +458,7 @@ main { padding-top: var(--nav-height); }
   color: var(--text);
 }
 
-/* real images dropped in here fill the box like the gradients do */
+/* real images fill the box like the gradients */
 .placeholder-media > img {
   position: absolute;
   inset: 0;
@@ -461,11 +467,11 @@ main { padding-top: var(--nav-height); }
   object-fit: cover;
 }
 
-/* game cards */
+/* games / projects listing cards */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
 }
 .card {
   background: var(--bg-elevated);
@@ -481,20 +487,35 @@ main { padding-top: var(--nav-height); }
   border-color: var(--accent);
   box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6);
 }
-.card-featured { grid-column: span 1; }
-.card .card-media { min-height: 220px; border-radius: 0; }
-.card-body { padding: 1.75rem; }
-.card-body h3 { font-size: 1.3rem; margin-bottom: 0.75rem; }
-.card-body p { font-size: 0.95rem; }
+.card .card-media { aspect-ratio: 16 / 9; min-height: 0; border-radius: 0; }
+.card-body { padding: 1.25rem 1.35rem 1.4rem; flex: 1; display: flex; flex-direction: column; }
+.card-body h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+.card-body p { font-size: 0.9rem; }
+.card-body .tag-list { margin-top: auto; padding-top: 1rem; }
+.news-banner {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background: #ffe16d;
+  color: #0b0909;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.placeholder-media > .news-banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  font-size: 0.85rem;
+  text-align: center;
+}
 .card-links { margin-top: 1.25rem; font-weight: 600; font-size: 0.9rem; }
+.card-body .card-links { margin-top: 0.9rem; font-size: 0.85rem; }
 
-/* whole-card click target: a stretched overlay-link fills the card so the
-   entire card navigates to its detail page (matching the home-page tiles),
-   while real links inside the card stay clickable above it. */
+/* stretched overlay link makes the whole card clickable; real links sit above it */
 .card-linked { position: relative; cursor: pointer; }
 .card-overlay { position: absolute; inset: 0; z-index: 1; }
 .card-linked .card-body a,
-.card-linked .row-body a,
 .card-linked .card-links a { position: relative; z-index: 2; }
 
 .tag-list {
@@ -512,17 +533,14 @@ main { padding-top: var(--nav-height); }
   border-radius: 999px;
 }
 
-/* per-project / per-game tag color themes.
-   put one of these classes on a .card or .row-item to recolor its tags.
-   to add a new color, copy a line and set your own text + background. */
+/* tag color themes — put one on a .card or .row-item to recolor its tags */
 .tag-red    { --tag-color: #ff5b6f; --tag-bg: rgba(252, 49, 79, 0.12); }
 .tag-violet { --tag-color: #a583f7; --tag-bg: rgba(122, 63, 242, 0.16); }
 .tag-teal   { --tag-color: #3fd6c0; --tag-bg: rgba(31, 191, 168, 0.14); }
 .tag-orange { --tag-color: #f5b968; --tag-bg: rgba(242, 161, 63, 0.15); }
 .tag-blue   { --tag-color: #6fa8f7; --tag-bg: rgba(63, 143, 242, 0.15); }
 
-/* per-section accent themes (home page): override the accent tokens for
-   everything inside the section — section number, heading hover, view-all link */
+/* per-section accent themes: override the accent tokens inside the section */
 .accent-rose {
   --accent: #f8dcd3;
   --accent-hover: #fdf0eb;
@@ -547,7 +565,6 @@ main { padding-top: var(--nav-height); }
   --accent-soft: rgba(122, 63, 242, 0.16);
   --accent-soft-strong: rgba(122, 63, 242, 0.3);
 }
-/* About has no home-page card — give its header a cool blue of its own. */
 .accent-blue {
   --accent: #6fa8f7;
   --accent-hover: #9cc4fa;
@@ -557,13 +574,50 @@ main { padding-top: var(--nav-height); }
 
 /* project / game detail sub-pages */
 .detail-section { display: flex; flex-direction: column; gap: 2.5rem; }
-.detail-hero {
-  min-height: 340px;
+/* detail pages: title + tagline sit on the hero image instead of above it */
+.detail-banner {
+  min-height: min(58vh, 460px);
   border-radius: var(--radius-lg);
-  align-items: flex-start;
+  margin-top: 0.5rem;
 }
+.detail-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(11, 9, 9, 0.92),
+    rgba(11, 9, 9, 0.55) 45%,
+    rgba(11, 9, 9, 0.05)
+  );
+}
+.detail-banner-text {
+  position: relative;
+  z-index: 1; /* ::after gradient is the last child — it paints over the text otherwise */
+  width: 100%;
+  padding: 2.5rem clamp(1.25rem, 3.5vw, 2.75rem);
+}
+.detail-banner .section-heading {
+  margin-bottom: 0;
+  gap: 0.9rem;
+}
+.detail-banner h1 {
+  font-size: clamp(2.3rem, 6.5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+}
+.detail-banner .page-intro {
+  margin-top: 0.75rem;
+  max-width: 44rem;
+  color: var(--text);
+}
+.detail-section-banner { padding-top: 5rem; }
+
 .detail-block { max-width: 46rem; }
 .detail-block h2 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+.detail-block h3 { font-size: 1.15rem; margin: 1.75rem 0 0.6rem; }
+.detail-block h3:first-child { margin-top: 0; }
 .detail-block p { font-size: 1.05rem; margin-bottom: 1rem; }
 .detail-block p:last-child { margin-bottom: 0; }
 .detail-gallery {
@@ -575,13 +629,144 @@ main { padding-top: var(--nav-height); }
   aspect-ratio: 16 / 10;
   min-height: 0;
 }
-/* captioned screenshot gallery (project detail pages) */
+.detail-block:not(.tool-index) ul,
+.detail-block:not(.tool-index) ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.detail-block:not(.tool-index) li {
+  position: relative;
+  padding-left: 1.1rem;
+  color: var(--text-dim);
+  font-size: 1.05rem;
+}
+.detail-block:not(.tool-index) li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+.detail-block:not(.tool-index) ol { counter-reset: detail-item; }
+.detail-block:not(.tool-index) ol li { counter-increment: detail-item; }
+.detail-block:not(.tool-index) ol li::before {
+  content: counter(detail-item) ".";
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.detail-block li strong { color: var(--text); }
+
+/* roadmap timeline: each step's own top border is the rail segment, so the
+   row reads as one line on desktop and as separators when it stacks */
+.roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.roadmap li {
+  --roadmap-color: var(--text-faint);
+  position: relative;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--roadmap-color);
+}
+.roadmap li::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--roadmap-color);
+  background: var(--bg);
+}
+.roadmap .is-done,
+.roadmap .is-now { --roadmap-color: var(--accent); border-top-style: solid; }
+.roadmap .is-done::before { background: var(--accent); }
+.roadmap .roadmap-stage {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--roadmap-color);
+}
+.roadmap h4 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+.roadmap p { font-size: 0.95rem; margin: 0; }
+
+/* game list */
+.game-list { max-width: 46rem; }
+.game-list li {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 0.3rem 2rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--border-strong);
+}
+.game-list li:last-child { border-bottom: 1px solid var(--border-strong); }
+.game-list h4 { font-size: 1.05rem; color: var(--text); }
+.game-list .game-modes {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.game-list li > p:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* tool hub pages */
+.tool-index ul { display: flex; flex-direction: column; gap: 0.6rem; }
+.tool-index li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+.tool-index a { font-weight: 600; }
+.tool-index span { color: var(--text-dim); font-size: 0.92rem; }
+.tool-block { border-left: 2px solid transparent; padding-left: 1.25rem; }
+.tool-block:target { border-left-color: var(--accent); }
+.tool-block h2 a { color: var(--text); }
+.tool-block h2 a:hover { color: var(--accent); }
+.tool-anchor::after {
+  content: "#";
+  margin-left: 0.4rem;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.tool-anchor:hover::after,
+.tool-anchor:focus-visible::after { opacity: 1; }
+.tool-from {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.tool-from a { color: var(--text-dim); }
+.tool-from a:hover { color: var(--accent); }
+
+/* captioned screenshot gallery */
 .shot-gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.75rem 1.5rem;
   align-items: start;
 }
+.shot-gallery.shots-1col { grid-template-columns: 1fr; }
 .shot-gallery figure {
   margin: 0;
   display: flex;
@@ -605,42 +790,83 @@ main { padding-top: var(--nav-height); }
   color: var(--text);
   font-weight: 600;
 }
-/* click-to-play video embed. No JS: preload="none" means the browser fetches
-   nothing but the poster until the visitor actually presses play.
-   The <figcaption> is the FIRST child so the label sits above the player —
-   valid HTML, figcaption may be either the first or last child of a figure. */
+/* click-to-play video: preload="none" fetches only the poster until play.
+   figcaption goes first so the label sits above the player. */
 .detail-video {
   margin: 0;
-  max-width: 56rem;
+  interpolate-size: allow-keywords; /* lets block-size animate to auto */
 }
-.detail-video figcaption {
+/* browsers without ::details-content just drop these and open instantly */
+.detail-video::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition: block-size 0.35s ease, content-visibility 0.35s allow-discrete;
+}
+.detail-video[open]::details-content { block-size: auto; }
+.detail-video summary {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.1rem;
+  gap: 1.1rem;
+  list-style: none;
+  cursor: pointer;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
 }
-/* thin rule running off the label, matching .section-line */
-.detail-video figcaption::after {
+.detail-video summary::-webkit-details-marker { display: none; }
+.detail-video summary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.detail-video summary > span::before,
+.detail-video summary > span::after {
   content: "";
-  flex: 1;
+  width: 0.4em;
+  height: 0.4em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-0.15em) rotate(45deg);
+  transition: transform 0.3s ease;
+}
+.detail-video[open] summary > span::before,
+.detail-video[open] summary > span::after {
+  transform: translateY(0.06em) rotate(-135deg);
+}
+.detail-video summary::before,
+.detail-video summary::after {
+  content: "";
+  flex: 1 1 0;
   min-width: 1.5rem;
   height: 1px;
   background: var(--border-strong);
+  transition: flex-grow 0.3s ease, min-width 0.3s ease, margin-right 0.3s ease;
+}
+/* the leading rule collapses on open, sliding the label back to the left margin */
+.detail-video[open] summary::before {
+  flex-grow: 0;
+  min-width: 0;
+  margin-right: -1.1rem;
 }
 .detail-video video {
   display: block;
+  margin-top: 1.1rem;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
   background: #000;
   border-radius: var(--radius-md);
   box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.35s ease;
+}
+.detail-video[open] video {
+  opacity: 1;
+  transform: none;
 }
 .detail-links {
   display: flex;
@@ -660,19 +886,6 @@ main { padding-top: var(--nav-height); }
   flex: none;
 }
 
-/* project rows */
-.row-list { display: flex; flex-direction: column; gap: 4rem; }
-.row-item {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 2.5rem;
-  align-items: center;
-}
-.row-item.reverse { direction: rtl; }
-.row-item.reverse .row-body { direction: ltr; }
-.row-media { min-height: 260px; }
-.row-body h3 { font-size: 1.4rem; margin-bottom: 0.9rem; }
-
 /* design gallery */
 .gallery-grid {
   display: grid;
@@ -682,7 +895,7 @@ main { padding-top: var(--nav-height); }
 .gallery-item {
   margin: 0;
   aspect-ratio: 4 / 3;
-  min-height: 0; /* .placeholder-media's 180px min + this aspect would force a 240px min-WIDTH, overflowing narrow grids */
+  min-height: 0; /* the inherited 180px min + this aspect would overflow narrow grids */
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
@@ -729,13 +942,9 @@ main { padding-top: var(--nav-height); }
   outline-offset: 3px;
 }
 
-/* image viewer — embedded in the page, no JS. Opening a thumbnail :targets a
-   slide inside ONE persistent overlay; the strip scroll-snaps horizontally, so
-   prev/next (anchor jumps within the scroller) and touch swipes glide between
-   photos in place — the overlay itself never re-mounts and the page never
-   navigates. Closed, the viewer is display:none so its lazy -FULL images have
-   no geometry and are NOT fetched; open, the browser only fetches slides near
-   the scrollport. */
+/* image viewer, no JS: a thumbnail :targets a slide inside one persistent
+   overlay and the strip scroll-snaps between photos. display:none when closed
+   so its lazy -FULL images are never fetched. */
 .viewer {
   position: fixed;
   inset: 0;
@@ -744,7 +953,7 @@ main { padding-top: var(--nav-height); }
 }
 body:has(.viewer-slide:target) .viewer {
   display: block;
-  animation: viewer-in 0.2s ease; /* plays on open only, not per photo */
+  animation: viewer-in 0.2s ease;
 }
 @keyframes viewer-in {
   from { opacity: 0; }
@@ -774,9 +983,9 @@ body:has(.viewer-slide:target) {
   justify-content: center;
   gap: 1rem;
   scroll-snap-align: center;
-  scroll-snap-stop: always; /* arrow/swipe can't skip past photos */
+  scroll-snap-stop: always;
 }
-/* clicking the empty space around a photo closes the viewer */
+/* clicking the space around a photo closes the viewer */
 .slide-close {
   position: absolute;
   inset: 0;
@@ -786,13 +995,11 @@ body:has(.viewer-slide:target) {
   position: relative;
   z-index: 1;
 }
-/* the image stage fills all space above the bar, so the bar (and its arrows)
-   sits at the same spot on every slide no matter the photo's aspect ratio */
+/* the stage fills the space above the bar, so the bar sits put on every slide */
 .viewer-slide .lightbox-image {
   flex: 1 1 0;
   max-width: 900px;
 }
-/* backdrop — a sibling below the viewer, faded via the same :has hook */
 .lightbox-scrim {
   position: fixed;
   inset: 0;
@@ -807,8 +1014,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   opacity: 1;
   visibility: visible;
 }
-/* real <img> children size themselves (portrait vs landscape); the fixed 3/2
-   aspect only applies to legacy placeholder blocks */
+/* real <img> children size themselves; the 3/2 aspect is placeholders only */
 .lightbox-image {
   width: 100%;
   min-height: 0;
@@ -823,7 +1029,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 }
 .lightbox-image img {
   max-width: 100%;
-  max-height: 100%; /* contained by the fixed stage, not the viewport math */
+  max-height: 100%;
   border-radius: var(--radius-md);
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.8);
 }
@@ -834,7 +1040,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   z-index: 2;
   color: var(--text);
   font-size: 1.1rem;
-  width: 2.75rem;  /* 44px touch minimum, matches .lightbox-nav */
+  width: 2.75rem;
   height: 2.75rem;
   display: flex;
   align-items: center;
@@ -892,7 +1098,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
 }
-/* fixed 2-up grid (projects preview → 2x2) */
+/* fixed 2-up grid */
 .quick-grid.grid-2col { grid-template-columns: repeat(2, 1fr); }
 .quick-card {
   position: relative;
@@ -920,34 +1126,25 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 }
 .quick-card:hover .placeholder-media { transform: scale(1.06); }
 
-/* expanding "accordion" carousel — home Games/Projects previews.
-   All cards sit in one strip at equal width; hovering a card grows it big
-   while its siblings shrink and dim, as if shouldered aside. Pure CSS: the
-   whole effect is flex-grow + opacity transitions, no JS. */
+/* accordion carousel: hovering a card widens it, pushing its siblings narrower */
 .card-carousel {
   display: flex;
   gap: 0.85rem;
   width: 100%;
-  align-items: center; /* lets cards differ in height as they scale */
-  min-height: 300px; /* reserve the hovered height so hover never reflows the section */
 }
 .card-carousel .quick-card {
   flex: 1 1 0;
   min-width: 0;
-  height: 240px;
-  aspect-ratio: auto; /* override the .quick-card 4/3 in this context */
+  height: 260px;
+  aspect-ratio: auto;
   transition:
     flex-grow 0.55s cubic-bezier(0.33, 1, 0.68, 1),
-    height 0.55s cubic-bezier(0.33, 1, 0.68, 1),
     opacity 0.5s ease,
     box-shadow 0.5s ease;
 }
-/* hovering the strip eases every card back a little — smaller both ways... */
-.card-carousel:hover .quick-card { flex-grow: 0.55; height: 200px; opacity: 0.5; }
-/* ...except the one under the cursor, which grows big both ways and lifts forward */
+.card-carousel:hover .quick-card { opacity: 0.6; }
 .card-carousel .quick-card:hover {
-  flex-grow: 4;
-  height: 300px;
+  flex-grow: 2.6;
   opacity: 1;
   z-index: 2;
   box-shadow: 0 28px 55px -25px rgba(0, 0, 0, 0.75);
@@ -955,14 +1152,13 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 .card-carousel .quick-card .quick-card-label { transition: font-size 0.55s cubic-bezier(0.33, 1, 0.68, 1); }
 .card-carousel .quick-card:hover .quick-card-label { font-size: 1.05rem; }
 
-/* touch / narrow screens: no hover, so fall back to a swipeable strip */
+/* no hover on touch — fall back to a swipeable strip */
 @media (max-width: 760px) {
   .card-carousel {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
-    min-height: 0; /* no hover growth on touch, so no reserved height needed */
   }
   .card-carousel .quick-card {
     flex: 0 0 72%;
@@ -970,14 +1166,14 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     scroll-snap-align: center;
   }
   .card-carousel:hover .quick-card,
-  .card-carousel .quick-card:hover { flex-grow: 0; height: 210px; opacity: 1; }
+  .card-carousel .quick-card:hover { flex-grow: 0; opacity: 1; }
 }
 
 /* "coming soon" — blur the section content under a centered overlay */
 .coming-soon { position: relative; border-radius: var(--radius-lg); overflow: hidden; }
 .coming-soon-content {
   filter: blur(10px);
-  transform: scale(1.03); /* hide blurred edges bleeding past the frame */
+  transform: scale(1.03); /* hides blurred edges bleeding past the frame */
   pointer-events: none;
   user-select: none;
 }
@@ -1042,8 +1238,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 .album-row:hover .album-overlay span { opacity: 1; transform: translateY(0); }
 .album-row:hover .album-images .placeholder-media { transform: scale(1.03); }
 
-/* touch devices never hover: pin the album title to a bottom gradient,
-   drop the accidental-exit slide-close, grow the lightbox arrows */
+/* touch devices never hover: pin the album title, grow the lightbox arrows */
 @media (hover: none) {
   .album-overlay {
     align-items: flex-end;
@@ -1056,11 +1251,11 @@ body:has(.viewer-slide:target) .lightbox-scrim {
     transform: none;
     font-size: clamp(1rem, 4vw, 1.4rem);
   }
-  .slide-close { display: none; } /* a swipe ending in a stray tap must not exit the viewer */
+  .slide-close { display: none; } /* a swipe ending in a stray tap must not exit */
   .lightbox-nav { width: 3rem; height: 3rem; }
 }
 
-/* day sub-album cards (trip pages, e.g. Japan 2025) */
+/* day sub-album cards (trip pages) */
 .day-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .day-card .quick-card-label { padding-bottom: 1.9rem; }
 .day-card-meta {
@@ -1111,7 +1306,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   align-items: center;
   gap: 1.5rem;
 }
-/* click-to-reveal contact details (email + phone). Pure CSS via <details>. */
+/* click-to-reveal contact details, via <details> */
 .contact-reveal { text-align: center; }
 .contact-reveal summary {
   cursor: pointer;
@@ -1130,7 +1325,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   margin-top: 0.5rem;
   font-family: var(--font-mono);
   font-size: 1.1rem;
-  word-break: break-word; /* long email must not overflow the card on mobile */
+  word-break: break-word;
 }
 
 .contact-social { display: flex; gap: 1.5rem; }
@@ -1150,8 +1345,7 @@ body:has(.viewer-slide:target) .lightbox-scrim {
   font-size: 0.8rem;
   color: var(--text-faint);
 }
-/* the tiny "+" is a hidden link to the disclaimer — blends into the credit
-   line, no underline/pointer, a faint accent tint only on hover. */
+/* the tiny "+" is a hidden disclaimer link blended into the credit line */
 .footer-plus {
   color: inherit;
   text-decoration: none;
@@ -1170,21 +1364,16 @@ body:has(.viewer-slide:target) .lightbox-scrim {
 
 /* responsive */
 @media (max-width: 900px) {
-  .card-featured { grid-column: span 1; }
-  .row-item, .row-item.reverse { grid-template-columns: 1fr; direction: ltr; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .photo-grid { grid-template-columns: repeat(3, 1fr); }
   .about-grid { grid-template-columns: 1fr; }
 }
 
-/* starred items (localStorage quick-access, starred.js).
-   Everything here is invisible until the script tags <html class="js">, so a
-   no-JS visitor sees the exact site that existed before this feature. */
+/* starred items (starred.js) — invisible until the script tags <html class="js"> */
 .star-btn, .starred { display: none; }
 html.js .starred { display: block; }
 html.js .star-btn { display: inline-flex; }
-/* a starred item carries no marker — its star button simply disappears; the
-   item shows up (and can only be unstarred) in the floating list instead */
+/* a starred item's button disappears; it's unstarred from the floating list */
 html.js .star-btn.starred { display: none; }
 
 .star-btn {
@@ -1204,7 +1393,7 @@ html.js .star-btn.starred { display: none; }
   stroke-width: 1.8;
   stroke-linejoin: round;
 }
-/* corner button over card / row media (media is position:relative already) */
+/* corner button over card / row media */
 .star-btn-card {
   position: absolute;
   top: 0.75rem;
@@ -1223,7 +1412,7 @@ html.js .star-btn.starred { display: none; }
   transform: scale(1.08);
 }
 
-/* inline button beside a detail page's h1 (inside .section-heading's flex row) */
+/* inline button beside a detail page's h1 */
 .star-btn-detail {
   flex: none;
   width: 2.25rem;
@@ -1231,13 +1420,17 @@ html.js .star-btn.starred { display: none; }
   background: none;
   color: var(--text-dim);
 }
+.detail-banner .star-btn-detail {
+  background: rgba(11, 9, 9, 0.5);
+  color: var(--text);
+}
 .star-btn-detail:hover {
   color: var(--accent-hover);
   border-color: var(--accent);
   background: var(--accent-soft);
 }
 
-/* round button in the lightbox bar, matching .lightbox-nav */
+/* round button in the lightbox bar */
 .star-btn-bar {
   width: 2.75rem;
   height: 2.75rem;
@@ -1250,9 +1443,7 @@ html.js .star-btn.starred { display: none; }
   background: var(--accent-soft);
 }
 
-/* floating quick-access menu: a round button pinned bottom-right; the list
-   pops up above it. Sits below the photo viewer + scrim (199+) and the nav
-   drawer/scrim (90+), so overlays still cover it. */
+/* floating quick-access menu, pinned bottom-right and under every overlay */
 .starred {
   position: fixed;
   right: calc(1.25rem + env(safe-area-inset-right));
@@ -1379,8 +1570,8 @@ html.js .star-btn.starred { display: none; }
 
 @media (max-width: 760px) {
   :root {
-    --nav-height: 4rem;  /* shorter chrome on phones; cascades to header, drawer, scroll offsets */
-    --gutter: 1.25rem;   /* one consistent mobile gutter */
+    --nav-height: 4rem;
+    --gutter: 1.25rem;
   }
 
   .hamburger { display: flex; }
@@ -1406,11 +1597,9 @@ html.js .star-btn.starred { display: none; }
   .nav-toggle-input:checked + .site-header .site-nav {
     transform: translateX(0);
   }
-  /* scrim sits under the header (90 < 100) on purpose: the drawer lives inside
-     the header's stacking context, so a scrim above the header would cover the
-     drawer too. The undimmed header strip is acceptable. */
+  /* scrim sits under the header on purpose — the drawer is in the header's
+     stacking context, so a scrim above it would cover the drawer too */
   .nav-toggle-input:checked ~ .nav-scrim { display: block; }
-  /* freeze the page behind the open drawer (parallel to the viewer lock) */
   body:has(.nav-toggle-input:checked) { overflow: hidden; }
 
   .nav-toggle-input:checked + .site-header .hamburger span:nth-child(1) {
@@ -1421,24 +1610,27 @@ html.js .star-btn.starred { display: none; }
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  .hero { padding: 6rem var(--gutter) 3rem; }
+  .hero { padding: 6.5rem var(--gutter) 4rem; }
   .page-header { padding: 4.5rem var(--gutter) 1rem; }
-  .section { padding: 5rem var(--gutter); }
+  .section { padding: 6rem var(--gutter); }
+  #top .section { padding-block: 4.25rem; }
 
   .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .card-grid { grid-template-columns: 1fr; gap: 1.25rem; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-gallery { grid-template-columns: 1fr; }
   .shot-gallery { grid-template-columns: 1fr; }
+  .roadmap { grid-template-columns: 1fr; gap: 1.5rem; }
+  .game-list li { grid-template-columns: 1fr; }
+  .game-list li > p:last-child { grid-column: 1; grid-row: auto; margin-top: 0.4rem; }
   .quick-grid.grid-2col { grid-template-columns: 1fr; }
   .album-images { grid-template-columns: repeat(2, 1fr); height: 160px; }
   .album-images .placeholder-media:nth-child(3) { display: none; }
 
-  /* desktop-scaled sizes read huge in single-column layouts */
-  .detail-hero { min-height: 240px; }
-  .row-media { min-height: 200px; }
-  .card .card-media { min-height: 180px; }
-  .card-grid { gap: 1.25rem; }
-  .row-list { gap: 3rem; }
+  /* desktop sizes read huge in single-column */
+  .detail-banner { min-height: 300px; }
+  .detail-banner-text { padding: 1.5rem 1.25rem; }
+  .detail-section-banner { padding-top: 3.5rem; }
   .card-body { padding: 1.25rem; }
   .contact-card { padding: 1.75rem 1.25rem; }
   .contact-section { margin-top: 4rem; }

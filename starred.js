@@ -1,13 +1,5 @@
-/*
- * Starred items — the site's second JS exception (see CLAUDE.md).
- * Pure progressive enhancement: with JS disabled no star UI exists at all —
- * the build-emitted .star-btn buttons and the nav .starred menu stay
- * display:none until this script tags <html> with the `js` class.
- *
- * localStorage['nls-starred'] = [{ id, title, href, img }] in star order.
- * Entries point at built page filenames, so renaming a slug orphans its
- * stars (they just 404 until unstarred) — acceptable for a personal site.
- */
+// Starred items: localStorage['nls-starred'] = [{ id, title, href, img }].
+// Progressive enhancement — the star UI stays display:none until <html class="js">.
 (() => {
   const KEY = 'nls-starred';
 
@@ -34,8 +26,7 @@
   const empty = menu && menu.querySelector('.starred-empty');
   const count = menu && menu.querySelector('.starred-count');
 
-  // a starred item's button is hidden by CSS (.star-btn.starred) — the item
-  // lives in the floating list only, and unstarring happens only there
+  // a starred item's own button hides; it lives in the floating list only
   function syncButtons() {
     const items = load();
     for (const btn of document.querySelectorAll('.star-btn')) {
@@ -87,8 +78,6 @@
     toggle.setAttribute('aria-expanded', 'false');
   }
 
-  // star / unstar. One delegated listener covers card buttons and the buttons
-  // inside every lightbox slide.
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.star-btn');
     if (!btn) return;
@@ -117,7 +106,7 @@
     });
   }
 
-  // another tab starred something — keep this one honest
+  // another tab starred something
   addEventListener('storage', (e) => {
     if (e.key !== KEY) return;
     renderPanel();

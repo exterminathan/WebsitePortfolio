@@ -1,21 +1,5 @@
 #!/usr/bin/env node
-/*
- * Static site builder — zero dependencies, just Node stdlib.
- *
- *   node build.js        # build the site into dist/
- *
- * What it does:
- *   1. Wraps every page in src/pages/ with the shared shell (src/layouts/base.html
- *      + src/partials/*), so the nav/head/footer live in ONE place.
- *   2. Renders the Games/Projects listing cards + home previews from the data in
- *      src/data/*.js.
- *   3. Generates a standalone detail page (game-<slug>.html / project-<slug>.html)
- *      for every item whose `detail` flag is true — that's the per-project /
- *      per-game sub-page. Items with `detail: false` get no page and no link.
- *   4. Copies static assets (style.css, images/, resume.pdf) into dist/.
- *
- * The whole dist/ folder is what gets deployed (see scripts/deploy.sh, SRC="dist").
- */
+// Static site builder (zero deps): src/ -> dist/. Run: node build.js
 
 const fs = require('fs');
 const path = require('path');
@@ -27,32 +11,23 @@ const DIST = path.join(ROOT, 'dist');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
-// short content hash of style.css → cache-busting token on the <link> so a
-// rebuilt stylesheet is never served from a stale browser cache.
+// cache-bust token so a rebuilt stylesheet is never served stale
 const cssVersion = crypto
   .createHash('md5')
   .update(read(path.join(ROOT, 'style.css')))
   .digest('hex')
   .slice(0, 8);
 
-// ---------------------------------------------------------------------------
-// feature flag: the localStorage star/favorites system (starred.js).
-// Flip to false and rebuild to ship a site with ZERO trace of the feature —
-// no star buttons, no floating widget, no <script> tag, no starred.js copied.
-// (Visitors' saved favorites survive in their localStorage for when it's back.)
-// ---------------------------------------------------------------------------
+// false ships the site with zero trace of the star/favorites feature
 const STARRED_ENABLED = false;
 
-// same cache-busting for starred.js (the localStorage star/favorites script)
 const jsVersion = crypto
   .createHash('md5')
   .update(read(path.join(ROOT, 'starred.js')))
   .digest('hex')
   .slice(0, 8);
 
-// ---------------------------------------------------------------------------
-// tiny template engine: {{> partial }} includes, {{ var }} substitutions
-// ---------------------------------------------------------------------------
+// template engine: {{> partial }} includes, {{ var }} substitutions
 const partials = {};
 for (const f of fs.readdirSync(path.join(SRC, 'partials'))) {
   partials[path.basename(f, '.html')] = read(path.join(SRC, 'partials', f));
@@ -66,14 +41,13 @@ function includePartials(str) {
   });
 }
 
-// replace {{ key }} for every key present in vars; leave unknown tokens untouched
 function fillVars(str, vars) {
   return str.replace(/\{\{\s*([\w-]+)\s*\}\}/g, (m, key) =>
     Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : m
   );
 }
 
-// fill repeatedly so tokens introduced by {{content}} (e.g. {{gamesCards}}) resolve
+// repeat so tokens introduced by {{content}} also resolve
 function renderLoop(str, vars) {
   let out = str;
   for (let i = 0; i < 8; i++) {
@@ -84,12 +58,26 @@ function renderLoop(str, vars) {
   return out;
 }
 
-// ---------------------------------------------------------------------------
-// data + card renderers
-// ---------------------------------------------------------------------------
-const games = require(path.join(SRC, 'data', 'games.js'));
-const projects = require(path.join(SRC, 'data', 'projects.js'));
+// hidden: true drops an entry from the whole build — card, preview, detail page
+const visible = (items) => items.filter((x) => !x.hidden);
+
+const content = require('./lib/content');
+
+const allGames = content.load('games');
+const allProjects = content.load('projects');
+const allDesign = content.load('design');
+const games = visible(allGames);
+const projects = visible(allProjects);
+const design = visible(allDesign);
 const albums = require(path.join(SRC, 'data', 'albums.js'));
+
+// singular prefix -> the collection it names, for detail pages and `from:` refs
+const COLLECTIONS = { game: allGames, project: allProjects, design: allDesign };
+const SECTION = {
+  game: { href: 'games.html', label: 'Games', active: 'games' },
+  project: { href: 'projects.html', label: 'Projects', active: 'projects' },
+  design: { href: 'design.html', label: 'Design / 3D', active: 'design' },
+};
 
 const FOOTER_SOCIAL =
   '      <div class="footer-social">\n' +
@@ -99,8 +87,6 @@ const FOOTER_SOCIAL =
 const linkAnchor = (l) =>
   `                <a href="${l.href}"${l.external ? ' target="_blank"' : ''}>${l.label}</a>`;
 
-// star/favorite buttons (localStorage, starred.js) — display:none without JS.
-// data-star-* carries everything the nav panel needs to list the item later.
 const escAttr = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
@@ -117,92 +103,55 @@ function starButton(cls, id, title, href, img) {
   );
 }
 
-function gameCard(g) {
-  const cls = ['card', g.detail && 'card-linked', g.featured && 'card-featured', g.tag && `tag-${g.tag}`]
-    .filter(Boolean)
-    .join(' ');
-  const badge = g.media.badge
-    ? `\n              <span class="media-tag">${g.media.badge}</span>`
-    : '';
-  const paras = g.body.map((p) => `              <p>${p}</p>`).join('\n');
-  const tags = g.tags.map((t) => `                <li>${t}</li>`).join('\n');
-  const overlay = g.detail
-    ? `\n            <a class="card-overlay" href="game-${g.slug}.html" aria-label="${g.title}"></a>`
-    : '';
-  const linkItems = (g.links || []).map(linkAnchor);
-  if (g.detail)
-    linkItems.push(
-      `                <a href="game-${g.slug}.html">View details &#8594;</a>`
-    );
-  const links = linkItems.length
-    ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
-    : '';
-  const star = starButton(
-    'star-btn-card',
-    `game:${g.slug}`,
-    g.title,
-    g.detail ? `game-${g.slug}.html` : `games.html#${g.slug}`,
-    g.media.img
-  );
-  return `          <article class="${cls}" id="${g.slug}">${overlay}
-            <div class="card-media placeholder-media">
-              <img src="${g.media.img}" alt="${g.media.alt}" loading="lazy" />${badge}
-              ${star}
-            </div>
-            <div class="card-body">
-              <h3>${g.title}</h3>
-${paras}
-              <ul class="tag-list">
-${tags}
-              </ul>${links}
-            </div>
-          </article>`;
-}
+const PREVIEW_COUNT = 5;
 
-function projectRow(p, i) {
-  const cls = ['row-item', p.detail && 'card-linked', i % 2 === 1 && 'reverse', p.tag && `tag-${p.tag}`]
+const itemCard = (kind) => (item) => {
+  const listPage = kind === 'game' ? 'games.html' : 'projects.html';
+  const detailHref = `${kind}-${item.slug}.html`;
+  const cls = ['card', item.detail && 'card-linked', item.tag && `tag-${item.tag}`]
     .filter(Boolean)
     .join(' ');
   const star = starButton(
     'star-btn-card',
-    `project:${p.slug}`,
-    p.title,
-    p.detail ? `project-${p.slug}.html` : `projects.html#${p.slug}`,
-    p.media && p.media.img
+    `${kind}:${item.slug}`,
+    item.title,
+    item.detail ? detailHref : `${listPage}#${item.slug}`,
+    item.media && item.media.img
   );
+  const news = item.news ? `\n              <p class="news-banner">${item.news}</p>` : '';
   let media;
-  if (p.media && p.media.img) {
-    const badge = p.media.badge
-      ? `\n              <span class="media-tag">${p.media.badge}</span>`
+  if (item.media && item.media.img) {
+    const badge = item.media.badge
+      ? `\n              <span class="media-tag">${item.media.badge}</span>`
       : '';
-    media = `            <div class="card-media placeholder-media row-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />${badge}\n              ${star}\n            </div>`;
+    media = `            <div class="card-media placeholder-media">\n              <img src="${item.media.img}" alt="${item.media.alt}" loading="lazy" />${news}${badge}\n              ${star}\n            </div>`;
   } else {
-    media = `            <div class="card-media placeholder-media ${p.mediaClass} row-media">\n              ${star}\n            </div>`;
+    media = `            <div class="card-media placeholder-media ${item.mediaClass}">\n              ${star}\n            </div>`;
   }
-  const paras = p.body.map((x) => `              <p>${x}</p>`).join('\n');
-  const tags = p.tags.map((t) => `                <li>${t}</li>`).join('\n');
-  const overlay = p.detail
-    ? `\n            <a class="card-overlay" href="project-${p.slug}.html" aria-label="${p.title}"></a>`
+  const blurb = item.body[0] || item.tagline;
+  const tags = item.tags.map((t) => `                <li>${t}</li>`).join('\n');
+  const overlay = item.detail
+    ? `\n            <a class="card-overlay" href="${detailHref}" aria-label="${item.title}"></a>`
     : '';
-  const linkItems = (p.links || []).map(linkAnchor);
-  if (p.detail)
-    linkItems.push(
-      `                <a href="project-${p.slug}.html">View details &#8594;</a>`
-    );
+  const linkItems = item.links.map(linkAnchor);
+  if (item.detail)
+    linkItems.push(`                <a href="${detailHref}">View details &#8594;</a>`);
   const links = linkItems.length
     ? `\n              <div class="card-links">\n${linkItems.join('\n')}\n              </div>`
     : '';
-  return `          <article class="${cls}" id="${p.slug}">${overlay}
+  return `          <article class="${cls}" id="${item.slug}">${overlay}
 ${media}
-            <div class="row-body">
-              <h3>${p.title}</h3>
-${paras}
+            <div class="card-body">
+              <h3>${item.title}</h3>${blurb ? `\n              <p>${blurb}</p>` : ''}
               <ul class="tag-list">
 ${tags}
               </ul>${links}
             </div>
           </article>`;
-}
+};
+
+const listing = (kind, items) =>
+  `        <div class="card-grid">\n${items.map(itemCard(kind)).join('\n\n')}\n        </div>`;
 
 function gamePreview(g) {
   const href = g.detail ? `game-${g.slug}.html` : `games.html#${g.slug}`;
@@ -213,6 +162,48 @@ function gamePreview(g) {
             <span class="quick-card-label">${g.title}</span>
           </a>`;
 }
+
+function designCard(d) {
+  const cls = ['gallery-item', 'placeholder-media', !d.media && d.mediaClass, d.tag && `tag-${d.tag}`]
+    .filter(Boolean)
+    .join(' ');
+  const img = d.media
+    ? `\n            <img src="${d.media.img}" alt="${d.media.alt}" loading="lazy" />`
+    : '';
+  const overlay = d.detail
+    ? `\n            <a class="card-overlay" href="design-${d.slug}.html" aria-label="${d.title}"></a>`
+    : '';
+  const star = starButton(
+    'star-btn-card',
+    `design:${d.slug}`,
+    d.title,
+    d.detail ? `design-${d.slug}.html` : `design.html#${d.slug}`,
+    d.media && d.media.img
+  );
+  const caption = `            <figcaption>${d.title}</figcaption>`;
+  const rows = [caption, star && `            ${star}`].filter(Boolean).join('\n');
+  return `          <figure class="${cls}" id="${d.slug}">${img}${overlay}
+${rows}
+          </figure>`;
+}
+
+// stand-ins stay inert <div>s: the home preview sits inside an aria-hidden blur
+function designPreview(d) {
+  const media = d.media
+    ? `<div class="placeholder-media">\n                  <img src="${d.media.img}" alt="${d.media.alt}" loading="lazy" />\n                </div>`
+    : `<div class="placeholder-media ${d.mediaClass}"></div>`;
+  const label = `<span class="quick-card-label">${d.title}</span>`;
+  if (!d.detail)
+    return `              <div class="quick-card">\n                ${media}\n                ${label}\n              </div>`;
+  return `              <a class="quick-card" href="design-${d.slug}.html">\n                ${media}\n                ${label}\n              </a>`;
+}
+
+// the sunset Design section keeps its blurred stand-ins until real pieces land
+const PLACEHOLDER_NAMES = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+const designFallback = (classes, render) =>
+  classes.map((c, i) =>
+    render({ slug: `piece-${i + 1}`, title: `Piece ${PLACEHOLDER_NAMES[i]}`, mediaClass: c, detail: false })
+  );
 
 function projectPreview(p) {
   const href = p.detail ? `project-${p.slug}.html` : 'projects.html';
@@ -226,17 +217,10 @@ function projectPreview(p) {
           </a>`;
 }
 
-// ---------------------------------------------------------------------------
-// photo albums — src/data/albums.js names them; the actual photos are scanned
-// from images/photos/<album>[/<day>]/{full,thumb}/ (see scripts/ingest-photos.ps1).
-// Albums/days with no photos on disk are skipped, so a photo-less clone builds.
-// ---------------------------------------------------------------------------
+// photos are scanned off disk, not listed in albums.js; empty albums are skipped
 const PHOTOS = path.join(ROOT, 'images', 'photos');
 
-// each album is ONE flat folder: images/photos/<album>/<prefix><NNN>-FULL.jpg
-// plus a matching -THUMB.jpg. <prefix> is the day slug (day albums) or the
-// album's `prefix` (flat albums, e.g. kenya001-FULL.jpg). Grids use THUMB,
-// lightboxes use FULL. `files` below are the -FULL basenames, sorted.
+// one flat folder per album: images/photos/<album>/<prefix><NNN>-{FULL,THUMB}.jpg
 function partFiles(albumSlug, prefix) {
   const dir = path.join(PHOTOS, albumSlug);
   if (!fs.existsSync(dir)) return [];
@@ -247,7 +231,7 @@ function partFiles(albumSlug, prefix) {
     .sort();
 }
 
-// an album's renderable parts: its days (with photos), or itself as one part
+// an album's renderable parts: its days, or itself as one part
 function albumParts(album) {
   if (album.days)
     return album.days
@@ -261,8 +245,6 @@ function albumParts(album) {
 const thumbOf = (f) => f.replace(/-FULL(\.jpe?g)$/i, '-THUMB$1');
 const photoSrc = (album, file) => `images/photos/${album.slug}/${file}`;
 
-// resolve a hand-picked cover base name (e.g. 'hakone014') to its -THUMB url,
-// warning on typos so a broken cover never ships silently
 function coverThumb(album, base) {
   const src = `images/photos/${album.slug}/${base}-THUMB.jpg`;
   if (!fs.existsSync(path.join(ROOT, src)))
@@ -270,9 +252,7 @@ function coverThumb(album, base) {
   return src;
 }
 
-// photos.html row + home-page preview: title overlay over 3 cover thumbnails.
-// `covers` in albums.js picks them; default is first photo of the first 3
-// days / first 3 photos of a flat album.
+// album row card: title over 3 covers (albums.js `covers`, else the first photos)
 function albumRow(album) {
   const parts = albumParts(album);
   if (!parts.length) return '';
@@ -302,7 +282,7 @@ ${imgs}
           </a>`;
 }
 
-// trip page for an album with days: one sub-album card per day
+// trip page: one sub-album card per day
 function tripContent(album, parts) {
   const cards = parts
     .map((d) => {
@@ -335,7 +315,6 @@ ${cards}
 // photo grid + CSS-only :target lightbox for one part (a day, or a flat album)
 function photoGridContent(album, part, day) {
   const files = part.files;
-  // this page's output filename (sans .html) — the stable id + href stem for stars
   const pageName = day ? `photos-${album.slug}-${day.slug}` : `photos-${album.slug}`;
   const back = day
     ? { href: `photos-${album.slug}.html`, label: album.title }
@@ -386,9 +365,7 @@ ${items}
         </div>
       </section>
 
-      <!-- embedded image viewer — a thumbnail :targets its slide inside one
-           persistent overlay; prev/next glide the scroll-snap strip in place
-           instead of re-rendering anything -->
+      <!-- image viewer: thumbnails :target a slide in this one persistent overlay -->
       <div class="lightbox-scrim" aria-hidden="true"></div>
       <div class="viewer">
         <a href="#_" class="lightbox-close" aria-label="Close">&#10005;</a>
@@ -397,12 +374,9 @@ ${slides}
         </div>
       </div>
 
-      <!-- the site's one JS exception: keyboard nav + history-clean hash hops
-           for the viewer. Pure progressive enhancement — without it, clicks
-           still work, they just leave per-photo history entries -->
+      <!-- progressive enhancement: keyboard nav, and location.replace so
+           browsing photos never stacks history -->
       <script>
-        // location.replace instead of anchor-default pushState: browsing
-        // photos never stacks history — Back always leaves the album page
         document.addEventListener('click', (e) => {
           const a = e.target.closest('a[href^="#"]');
           if (!a) return;
@@ -423,24 +397,70 @@ ${slides}
       </script>`;
 }
 
-// ---------------------------------------------------------------------------
-// detail (sub-page) renderer — one per item with detail: true
-// ---------------------------------------------------------------------------
+const anchor = (l, indent) =>
+  `${indent}<a href="${l.href}"${l.external ? ' target="_blank"' : ''}${l.ariaLabel ? ` aria-label="${escAttr(l.ariaLabel)}"` : ''}>${l.label}</a>`;
+
+// a tool's `from:` entry is 'project:slug' / 'game:slug', or a raw link object
+function resolveFrom(ref, owner) {
+  if (typeof ref !== 'string') return ref;
+  const [type, slug] = ref.split(':');
+  const item = (COLLECTIONS[type] || []).find((x) => x.slug === slug);
+  if (!item) throw new Error(`Unknown from: "${ref}" on ${owner}`);
+  if (item.hidden || !item.detail) {
+    console.warn(`WARN: from: "${ref}" on ${owner} has no page — link dropped`);
+    return null;
+  }
+  return { href: `${type}-${slug}.html`, label: item.title };
+}
+
+// an index plus one #slug-anchored section per tool, for cross-page deep links
+function toolSections(item) {
+  const tools = item.tools || [];
+  if (!tools.length) return '';
+  const index = tools
+    .map(
+      (t) =>
+        `          <li><a href="#${t.slug}">${t.title}</a>${t.blurb ? `<span>${t.blurb}</span>` : ''}</li>`
+    )
+    .join('\n');
+  const blocks = tools
+    .map((t) => {
+      const from = (t.from || [])
+        .map((r) => resolveFrom(r, `${item.slug}/${t.slug}`))
+        .filter(Boolean)
+        .map((l) => anchor(l, ''));
+      const meta = from.length
+        ? `\n        <p class="tool-from">From ${from.join(', ')}</p>`
+        : '';
+      const body = (t.body || '').replace(/^\n+|\s+$/g, '');
+      const links = (t.links || []).map((l) => anchor(l, '          '));
+      const linkBlock = links.length
+        ? `\n        <div class="detail-links">\n${links.join('\n')}\n        </div>`
+        : '';
+      return `      <section class="detail-block tool-block" id="${t.slug}">
+        <h2><a class="tool-anchor" href="#${t.slug}">${t.title}</a></h2>${meta}
+${body}${linkBlock}
+      </section>`;
+    })
+    .join('\n\n');
+  return `      <div class="detail-block tool-index" id="tools">
+        <h2>Tools</h2>
+        <ul>
+${index}
+        </ul>
+      </div>
+
+${blocks}`;
+}
+
+// sub-page renderer — one per item with detail: true
 function detailContent(item, type) {
-  const back =
-    type === 'game'
-      ? { href: 'games.html', label: 'Games' }
-      : { href: 'projects.html', label: 'Projects' };
-  const tagline = item.tagline
-    ? `\n        <p class="page-intro">${item.tagline}</p>`
-    : '';
+  const back = SECTION[type];
+  const taglineAt = (pad) =>
+    item.tagline ? `\n${pad}<p class="page-intro">${item.tagline}</p>` : '';
+  const tagline = taglineAt('        ');
   const sectionCls = item.tag ? `detail-section tag-${item.tag}` : 'detail-section';
-  const hero =
-    item.media && item.media.img
-      ? `        <div class="detail-hero placeholder-media">
-          <img src="${item.media.img}" alt="${item.media.alt}" />
-        </div>\n`
-      : '';
+  const heroImg = item.heroImg || (item.media && item.media.img);
   const body = (item.detailBody || '').replace(/^\n+|\s+$/g, '');
   const tags =
     item.tags && item.tags.length
@@ -448,13 +468,14 @@ function detailContent(item, type) {
           .map((t) => `          <li>${t}</li>`)
           .join('\n')}\n        </ul>`
       : '';
-  const linkItems = (item.detailLinks || item.links || []).map(
-    (l) => `          <a href="${l.href}"${l.external ? ' target="_blank"' : ''}${l.ariaLabel ? ` aria-label="${l.ariaLabel}"` : ''}>${l.label}</a>`
+  const linkItems = (item.detailLinks || item.links || []).map((l) =>
+    anchor(l, '          ')
   );
   const links = linkItems.length
     ? `\n        <div class="detail-links">\n${linkItems.join('\n')}\n        </div>`
     : '';
-  // same star id as the listing card, so either page stars the same favorite
+  const linksTop = item.detailLinksTop ? links : '';
+  const news = item.news ? `\n        <p class="news-banner">${item.news}</p>` : '';
   const star = starButton(
     'star-btn-detail',
     `${type}:${item.slug}`,
@@ -462,6 +483,25 @@ function detailContent(item, type) {
     `${type}-${item.slug}.html`,
     item.media && item.media.img
   );
+  const tools = toolSections(item);
+  if (heroImg) {
+    return `      <div class="page-header">
+        <a href="${back.href}" class="back-link">&#8592; Back to ${back.label}</a>
+        <header class="detail-banner placeholder-media">
+          <img src="${heroImg}" alt="${(item.media && item.media.alt) || item.title}" />${news}
+          <div class="detail-banner-text">
+            <div class="section-heading">
+              <h1>${item.title}</h1>
+              ${star}
+            </div>${taglineAt('            ')}
+          </div>
+        </header>
+      </div>
+
+      <section class="section ${sectionCls} detail-section-banner">${linksTop}
+${body}${tools ? `\n\n${tools}` : ''}${tags}${links}
+      </section>`;
+  }
   return `      <div class="page-header">
         <a href="${back.href}" class="back-link">&#8592; Back to ${back.label}</a>
         <div class="section-heading">
@@ -471,14 +511,12 @@ function detailContent(item, type) {
         </div>${tagline}
       </div>
 
-      <section class="section ${sectionCls}">
-${hero}${body}${tags}${links}
+      <section class="section ${sectionCls}">${linksTop}${news}
+${body}${tools ? `\n\n${tools}` : ''}${tags}${links}
       </section>`;
 }
 
-// ---------------------------------------------------------------------------
 // page front-matter parsing + assembly
-// ---------------------------------------------------------------------------
 function parsePage(raw) {
   const m = raw.match(/^\s*<!--([\s\S]*?)-->\s*\n?([\s\S]*)$/);
   if (!m) return { meta: {}, body: raw };
@@ -499,23 +537,30 @@ function pageVars(meta, content) {
     title: meta.title || 'Nathan Shturm',
     content,
     cssVersion,
-    // starred feature: the head <script> and the floating widget markup
-    // (src/partials/starred.html) drop out entirely when the flag is off
     starredScript: STARRED_ENABLED
       ? `<script src="starred.js?v=${jsVersion}" defer></script>`
       : '',
     starredWidget: STARRED_ENABLED ? partials.starred : '',
-    // `robots:` front-matter → a per-page robots meta (e.g. hidden pages set
-    // "noindex, nofollow"). Absent on normal pages, so the token drops out.
     robotsMeta: meta.robots
       ? `\n<meta name="robots" content="${meta.robots}" />`
       : '',
     mainAttrs: meta.mainAttrs ? ` ${meta.mainAttrs}` : '',
     footerSocial: meta.footerSocial === 'false' ? '' : FOOTER_SOCIAL,
-    gamesCards: games.map(gameCard).join('\n\n'),
-    projectsCards: projects.map(projectRow).join('\n\n'),
-    gamesPreview: games.map(gamePreview).join('\n'),
-    projectsPreview: projects.map(projectPreview).join('\n'),
+    gamesCards: listing('game', games),
+    projectsCards: listing('project', projects),
+    gamesPreview: games.slice(0, PREVIEW_COUNT).map(gamePreview).join('\n'),
+    projectsPreview: projects.slice(0, PREVIEW_COUNT).map(projectPreview).join('\n'),
+    designCards: (design.length
+      ? design.map(designCard)
+      : designFallback(
+          ['media-a', 'media-b', 'media-c', 'media-d', 'media-e', 'media-b', 'media-a', 'media-c', 'media-d'],
+          designCard
+        )
+    ).join('\n'),
+    designPreview: (design.length
+      ? design.slice(0, 3).map(designPreview)
+      : designFallback(['media-a', 'media-b', 'media-e'], designPreview)
+    ).join('\n'),
     photoAlbums: albums.map(albumRow).filter(Boolean).join('\n\n'),
   };
   for (const k of NAV_KEYS) {
@@ -529,9 +574,6 @@ function assemble(vars) {
   return renderLoop(includePartials(layout), vars);
 }
 
-// ---------------------------------------------------------------------------
-// build
-// ---------------------------------------------------------------------------
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
 
@@ -545,13 +587,13 @@ for (const file of fs.readdirSync(path.join(SRC, 'pages'))) {
   written.push(file);
 }
 
-// detail sub-pages (only for items flagged detail: true)
+// detail sub-pages
 function writeDetails(items, type) {
   for (const item of items) {
     if (!item.detail) continue;
     const meta = {
       title: `${item.title} — Nathan Shturm`,
-      active: type === 'game' ? 'games' : 'projects',
+      active: SECTION[type].active,
     };
     const out = assemble(pageVars(meta, detailContent(item, type)));
     const name = `${type}-${item.slug}.html`;
@@ -561,8 +603,9 @@ function writeDetails(items, type) {
 }
 writeDetails(games, 'game');
 writeDetails(projects, 'project');
+writeDetails(design, 'design');
 
-// photo album pages — trip page + one page per day, or one page per flat album
+// photo album pages
 for (const album of albums) {
   const parts = albumParts(album);
   if (!parts.length) continue;
@@ -602,5 +645,6 @@ fs.cpSync(path.join(ROOT, 'images'), path.join(DIST, 'images'), { recursive: tru
 if (fs.existsSync(path.join(ROOT, 'resume.pdf')))
   fs.copyFileSync(path.join(ROOT, 'resume.pdf'), path.join(DIST, 'resume.pdf'));
 
+content.reportMissing();
 console.log(`Built ${written.length} pages -> dist/`);
 for (const f of written) console.log(`  ${f}`);

@@ -1,18 +1,10 @@
-# Curate the web photo library: keep -FULL/-THUMB pairs in sync after deletions.
+# Delete either half of a -FULL/-THUMB pair, then run this to drop the orphan.
 #
 #   powershell -File scripts\prune-photos.ps1 -DryRun   # preview
 #   powershell -File scripts\prune-photos.ps1           # actually delete
 #
-# Every photo is a pair in one flat album folder: <name>-FULL.jpg + <name>-THUMB.jpg
-# (e.g. images/photos/japan-2025/hakone004-FULL.jpg). Workflow: browse an album
-# folder in Explorer, delete either half of the shots you don't want, then run
-# this — it deletes the orphaned other half so each photo is fully gone.
-# Rebuild after. The build skips missing numbers, so gaps are harmless.
-#
-# NOTE: re-running scripts\ingest-photos.ps1 re-converts everything from
-# F:\Photography\_PORTFOLIO and resurrects pruned photos. To make a removal
-# permanent across re-ingests, also delete the source export from the
-# outputs/ folder on F: (that's the real curation master).
+# Re-ingesting resurrects pruned photos — delete the source export on F: too
+# to make a removal permanent.
 
 param([switch]$DryRun)
 

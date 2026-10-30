@@ -9,18 +9,9 @@
 #
 set -euo pipefail
 
-# --- Config -------------------------------------------------------------------
-# SRC = the local, flat, deploy-ready site directory (contains index.html,
-# images/, resume.pdf, etc. with root-relative `images/...` paths).
-#
-# NOTE: this is intentionally a placeholder. The repo is not yet flattened to
-# match the server's flat layout — see docs/DEPLOY.md. Point SRC at your flat
-# build (e.g. "dist" or the repo root once flattened) before deploying.
-SRC="dist"
-
+SRC="dist"                               # build output; run node build.js first
 SSH_HOST="hostinger"                     # from ~/.ssh/config
-REMOTE_DIR="public_html/"                # ~/public_html -> domains/nathanshturm.com/public_html
-# ------------------------------------------------------------------------------
+REMOTE_DIR="public_html/"
 
 cd "$(dirname "$0")/.."
 
@@ -39,8 +30,7 @@ fi
 
 echo "Deploying '$SRC/' -> ${SSH_HOST}:${REMOTE_DIR}"
 
-# -a archive, -v verbose, -z compress, --delete mirror (removes stale remote files)
-# Excludes keep server-only / VCS files from being touched or deleted.
+# --delete mirrors the source; the excludes protect server-only files
 rsync -avz $DRY_RUN --delete \
   --exclude ".git/" \
   --exclude ".well-known/" \

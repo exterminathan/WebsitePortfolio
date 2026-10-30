@@ -5,9 +5,8 @@
 #   ./scripts/pull-images.sh --dry-run   # preview changes, write nothing
 #   ./scripts/pull-images.sh             # actually pull
 #
-# Recovery tool for gitignored assets (images/photos/): a fresh clone has no
-# photos, so run this before building/deploying from a new machine — otherwise
-# deploy.sh's --delete would wipe them off the server. See docs/DEPLOY.md.
+# Recovers gitignored images/photos/ on a fresh clone — run it before deploying
+# from a new machine, or deploy.sh's --delete wipes them off the server.
 #
 set -euo pipefail
 
