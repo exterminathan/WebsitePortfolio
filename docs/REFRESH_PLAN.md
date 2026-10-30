@@ -7,8 +7,9 @@ reference this is based on.
 ## Decided
 
 - **Remove the light/dark theme switch.** The current live site's toggle goes away.
-- **Every section gets its own header/nav entry** (Games, Products, Graphic Design/3D,
-  Photos, About Me — one nav link each, no nesting).
+- **Every section gets its own header/nav entry**, one link each, no nesting. The
+  sections are Games, Projects, Photos and About (Design/3D is sunset, below). The
+  "Products" placeholder name became **Projects**.
 - **Photos:** manual export from Google Drive into the repo (see below), no live
   embedding or sync automation.
 - **Design inspiration references:**
@@ -35,24 +36,33 @@ reference this is based on.
   - Still zero JS: scroll lock behind the open drawer and all touch behavior is
     pure CSS (`:has()`, `hover: none`).
 
+- **Site sections/IA (settled).** The portfolio is split into distinct sections
+  instead of one flat page, since the work has expanded beyond game dev:
+  - **Games** — projects where he's working as a game designer (Quartermaster,
+    Duck Around, Bleak).
+  - **Projects** — non-game projects that are still good portfolio pieces.
+  - **Design/3D — sunset.** The section is still wired up in the build but has no
+    real entries, so its nav link stays commented out and the page and home preview
+    show blurred "coming soon" stand-ins. Real work can bring it back later.
+  - **Photos** — photography. Source photos live in Nathan's Google Drive, kept
+    private (not shared out). Manual export: pick photos, run the ingest script into
+    `images/photos/`, deploy. No live Drive embedding, no sync automation. The photos
+    themselves stay out of git.
+  - **About** — short bio + contact info.
+- **Hosting moves to Firebase (2026-10).** Firebase Hosting replaces Hostinger. The
+  domain is at Namecheap, and a holding page is live until launch. See
+  `docs/DEPLOY.md`. Launch itself is not approved yet.
+- **Block, Tile and Island become three Games entries.** Each gets a banner linking
+  to its live site (block., tile. and islands.innate.games). The BlockGameOnline
+  entry goes away, and Island moves out of Projects.
+- **Five new project entries**: WindowsVoiceControl, VSTBuddy/DAWdler, VoxMidi,
+  ColorPalettes and LightweightTaskbarGroups. Pitches are drafted by an agent for
+  Nate to fix later. Skipped: RemoteDesktopViewer, VSTDecomper, LegoBuildSuggestions.
+
 ## Under discussion
 
-- **Site sections/IA** — split the portfolio into distinct sections instead of
-  one flat page, since the amount of work Nathan does has expanded beyond just
-  game dev. Candidate sections:
-  - **Games** — projects where he's working as a game designer (e.g. Quartermaster,
-    Duck Around).
-  - **Products (name TBD)** — non-game projects that are still good portfolio
-    pieces. "Products" is a placeholder name, not settled.
-  - **Graphic Design / 3D (shape TBD)** — a section for graphic design / 3D work;
-    scope and name still undecided.
-  - **Photos** — photography. Source photos live in Nathan's Google Drive, kept
-    private (not shared out). Decided: manual export — pick photos, copy into the
-    repo's `images`/`photos` folder, commit, deploy. Same pattern as the old
-    Kenya gallery. No live Drive embedding, no sync-script automation.
-  - **About Me** — short bio + contact info.
+- (nothing open)
 
 ## Out of scope / explicitly rejected
 
 - (none yet)
-</content>

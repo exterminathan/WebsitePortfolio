@@ -1,93 +1,73 @@
-# Deploy & SSH — Hostinger
+# Deploy — Firebase Hosting
 
-How to connect to the Hostinger server and push site changes without manual
-file uploads.
+The site is hosted on Firebase Hosting. Hostinger is legacy (see the last section).
 
-## Connection
+**Launch is not approved.** Do not deploy the real site, push, or run any `firebase` command until Nate says so. Today only the holding page is live on nathanshturm.com.
 
-SSH is already configured on this machine. An entry named `hostinger` lives in
-`~/.ssh/config`:
+## Project and sites
 
-```
-Host hostinger
-  HostName 185.212.70.87
-  Port 65002
-  User u795556072
-  IdentityFile ~/.ssh/hostinger
-  IdentitiesOnly yes
-```
+One Firebase/GCP project (`project-a89ff80d-7ecd-456f-aee`, "inNATE Toolset") holds three Hosting sites. `.firebaserc` maps a target name to each site, and `firebase.json` says what each target serves.
 
-- **Key:** a dedicated `ed25519` keypair at `~/.ssh/hostinger` (private) /
-  `~/.ssh/hostinger.pub` (public). The public key is registered in
-  hPanel → Advanced → SSH Access → Manage SSH keys.
-- **Connect:** `ssh hostinger`
-- **Web root:** `~/public_html` → `domains/nathanshturm.com/public_html`
-  (the live site is served flat from this directory).
+| Target | Site | Domain | Serves |
+|---|---|---|---|
+| `portfolio` | `nathanshturm` | nathanshturm.com | `dist/` (real site), or `holding/nathanshturm/` (holding page) |
+| `innate-games` | `innate-games` | innate.games | `innate/public/` |
+| `innate-tools` | `innate-tools` | innate.tools | `innate/public/` |
 
-To set this up again on a new machine: generate a key
-(`ssh-keygen -t ed25519 -f ~/.ssh/hostinger`), paste the `.pub` into hPanel's
-SSH keys, and add the `Host hostinger` block above to `~/.ssh/config`.
+Config files:
 
-## Deploying changes (rsync)
+- `firebase.json` — all three targets. `portfolio` serves `dist/`. HTML is `no-cache`; CSS/JS are `immutable` for a year (the build adds a `?v=` hash to their URLs); images, video and fonts cache for a week. The innate targets rewrite everything to `/index.html`.
+- `firebase.holding.json` — one target, `portfolio`, serving `holding/nathanshturm/`. Its predeploy step, `holding/prepare.js`, copies `resume.pdf` and `images/icons/webicon.svg` (as `favicon.svg`) into that folder.
 
-The site is static, so deploy = copy the built site into `public_html/`. Use the
-helper script:
+## Deploy commands
+
+Run from the repo root.
 
 ```bash
-# preview what WOULD change (safe, no writes):
-./scripts/deploy.sh --dry-run
+# Holding page (what is live until launch)
+firebase deploy --config firebase.holding.json --only hosting:portfolio
 
-# actually push:
-./scripts/deploy.sh
+# Real site: NOT APPROVED YET. Build first, then deploy dist/
+node build.js
+firebase deploy --only hosting:portfolio
+
+# innate.games and innate.tools holding pages
+firebase deploy --only hosting:innate-games,hosting:innate-tools
 ```
 
-The script rsyncs a local source directory up to `~/public_html` over the
-`hostinger` SSH host. It uses `--delete` so the server mirrors your local folder
-exactly — files removed locally get removed on the server. **Always run
-`--dry-run` first** until you trust it.
+The holding deploy and the real deploy go to the same site, so whichever ran last is what visitors see. Deploying the real site replaces the holding page.
 
-### Important: point the script at the RIGHT source
+Before building the real site, `resume.pdf` (gitignored) must be at the repo root and `images/photos/` (gitignored) must be present locally. See CLAUDE.md, "Deployment".
 
-The repo layout does not yet match the flat deploy layout. Until it's flattened:
+### Credentials gotcha (Windows)
 
-- The deployable homepage lives at `pages/index/` on the `portfolio-redesign`
-  branch, but its asset paths (`../../images/…`) assume that nesting.
-- The live server is **flat** (`index.html` + `images/` at the root).
-
-So do **not** rsync `pages/index/` directly — the paths won't line up. Either:
-
-1. **(Recommended) Flatten the repo first** so `index.html`, `index.css`,
-   `index.js`, `resume.pdf`, and `images/` all sit at the repo root with
-   `images/…` paths, then deploy the root; **or**
-2. Assemble a `dist/` folder with the correct flat structure and point the script
-   at that.
-
-Set `SRC` at the top of `scripts/deploy.sh` to whichever directory holds the
-flat, deploy-ready site.
-
-## Pulling from the server
-
-To grab something that only exists on the server (e.g. the live Steam-link edit,
-or `resume.pdf`):
+The Firebase CLI runs on gcloud's credentials file. If the Windows `GOOGLE_APPLICATION_CREDENTIALS` variable points at a missing key file, set it for the session first:
 
 ```bash
-scp hostinger:public_html/index.html ./somewhere/
-# or a whole folder:
-rsync -avz hostinger:public_html/ ./server-backup/
+export GOOGLE_APPLICATION_CREDENTIALS="$APPDATA/gcloud/application_default_credentials.json"
 ```
 
-## Editing live over SSH (optional)
+## DNS (Namecheap)
 
-If you ever want to edit files directly on the server, VS Code's **Remote-SSH**
-extension can open `hostinger:~/public_html` in place. Convenient, but you'd be
-editing production directly and bypassing git — prefer the rsync flow.
+nathanshturm.com is registered at Namecheap and its DNS is edited there by hand (Advanced DNS). Each Firebase custom domain needs, per domain:
 
-## Notes / gotchas
+- `A @` to Firebase's address (`199.36.158.100`)
+- `TXT @` with `hosting-site=<site>`
+- `CNAME www` to `<site>.web.app`
 
-- Hostinger's SSH port is **65002**, not 22.
-- The private key `~/.ssh/hostinger` has **no passphrase** (convenient for
-  scripted deploys). If you want one, run
-  `ssh-keygen -p -f ~/.ssh/hostinger` and load it via `ssh-agent`.
-- First connection to a new machine will prompt to trust the host key — accept it
-  once and it's saved to `~/.ssh/known_hosts`.
-</content>
+Leave any `google-site-verification` TXT records alone.
+
+## Gotcha: CDN cached "Site Not Found"
+
+After a custom domain turned active, Firebase's CDN kept serving a cached "Site Not Found" 404 for `/`. A redeploy purged it. To tell a cache problem from a real one, request the page with a random query string (`?v=random`).
+
+Also, a home router can cache "not found" DNS answers for about an hour. Check new records against 8.8.8.8, or on a phone off Wi-Fi.
+
+## Legacy Hostinger
+
+The site used to be served from Hostinger shared hosting over SSH. These scripts are legacy and **must not be run until Nate approves**:
+
+- `scripts/deploy.sh` — rsyncs `dist/` to `~/public_html` on the `hostinger` SSH host, with `--delete`.
+- `scripts/pull-images.sh` — rsyncs the server's `images/` back down (additive), to recover gitignored `images/photos/` on a fresh clone.
+
+They need a `hostinger` entry in `~/.ssh/config` (host `185.212.70.87`, port `65002`, key `~/.ssh/hostinger`). The Hostinger plan is expected to lapse after launch.
