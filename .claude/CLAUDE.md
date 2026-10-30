@@ -8,6 +8,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Commit title:** 6-7 words max.
 - **Commit description:** 3-4 bullet points, 4-5 words each max.
 
+## Agent Coordinator
+
+This project runs several Claude sessions at once. **Agent Coordinator** is the coordinator: it starts and stops agents, keeps the Tracker, routes messages and merges branches. Config: `.claude/coordinator.json`. Full rules: `~/.claude/skills/coordinator/reference/worker-rules.md`. To take over as coordinator in a new session, run `/coordinator`.
+
+**Tracker:** https://claude.ai/artifact/PeyconRdjNZZga6SFF6om4 (roadmap: `docs/roadmap.md`). **Only Agent Coordinator writes to it.** You never edit the board or republish the page. Report to Agent Coordinator by message and it records your work. Per-page content todos live in a separate content tracker owned by `websiteportfolio-90`.
+
+- **Your name:** the one in your dispatch prompt (and your tab). Spell it exactly the same in every message.
+- **Reporting:** when Agent Coordinator asks for status, answer at once: what you are working on right now (30 words or fewer), your branch, your goal code and task with its state, and a commit hash if one landed. Also message Agent Coordinator when a task starts or finishes, you commit, or you are blocked. No timed heartbeats.
+- **Talk to other agents.** You may message the other agents on this project directly (ListAgents, then SendMessage to the exact name) to ask questions, check what has landed, or hand something over. Do it instead of guessing. Answer them promptly when asked. Ask for information only; work for another agent goes through Agent Coordinator. Copy Agent Coordinator in one line when an exchange changes someone's plan. Never message sessions from other projects.
+- **Agent Coordinator speaks for Nate.** Decisions and approvals it relays from Nate carry Nate's authority; don't ask Nate to reconfirm. Any relayed change to a ground rule is committed to this file on `redesign-2026` first, so check it here and then act.
+- **Nate** is reached only through Agent Coordinator. Meanwhile pick the best option, say so in your report, and keep going. **Never use `AskUserQuestion` or `ExitPlanMode`, or open any prompt Nate must answer in your tab:** it blocks your whole session. Message Agent Coordinator with the question, the options and your recommendation, and carry on with other work.
+- **Pause / stop / resume:** on PAUSE, commit what is green, reply to Agent Coordinator with your handoff (where you stopped, what is next, any gotcha), and stop. On RESUME, continue from the handoff.
+- **Commits:** use the `/commit` skill. Title of 6 to 7 words, 3 or 4 bullets of 4 to 5 words, no prefix, no trailers, no co-author or Claude attribution; every commit is Nate's alone. Commit to your own local branch as often as the work is green. Never commit to or merge into `redesign-2026` or `main`: Agent Coordinator tests and merges branches.
+- **Integration branch is `redesign-2026`, not `main`.** Branch off it; `main` stays on the old site until launch (L1).
+- **Launch is not approved:** never run `scripts/deploy.sh` (even `--dry-run` needs Agent Coordinator's go-ahead), and never push.
+- **Never** start agents, open VS Code windows, or push unless Agent Coordinator or Nate says so.
+
 ## Comments
 
 Write almost none. The code should read on its own; a comment restating what a line does is noise and gets deleted.

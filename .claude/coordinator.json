@@ -1,0 +1,18 @@
+{
+  "projectName": "WebsitePortfolio",
+  "projectSlug": "websiteportfolio",
+  "ownerName": "Nate",
+  "root": "C:/Users/Nathan/Documents/GitHub/WebsitePortfolio",
+  "window": "WebsitePortfolio",
+  "roadmap": "docs/roadmap.md",
+  "mainBranch": "redesign-2026",
+  "push": false,
+  "tzOffset": "-07:00",
+  "coordinatorName": "Agent Coordinator",
+  "trackerUrl": "https://claude.ai/artifact/PeyconRdjNZZga6SFF6om4",
+  "tracks": [
+    { "key": "C", "title": "Content", "sub": "Fill every page and add new entries." },
+    { "key": "S", "title": "Structure", "sub": "Where each project lives." },
+    { "key": "L", "title": "Launch", "sub": "Hosting, merge to main, deploy." }
+  ]
+}
