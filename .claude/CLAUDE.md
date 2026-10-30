@@ -98,15 +98,22 @@ Prose here.
 
 - **`src/` + `build.js` + `lib/` + `style.css`** — the source of the live site. **This is what future work should target** (never edit `dist/` by hand — it's regenerated).
 - **`dist/`** — build output (gitignored). This is what gets deployed.
-- **`docs/`** — planning docs written *during* the current redesign:
-  - `REFRESH_PLAN.md` — running list of decided/undecided redesign choices. Not final; treat as a source of intent, not a spec, and update it as decisions are made in conversation.
-  - `CURRENT_SITE.md` — a snapshot of the site *before* this redesign (the old multi-page design and the dark single-page design that was actually live on Hostinger at the time). Historical reference only — describes branch/layout state that has since been flattened into root.
-  - `DEPLOY.md` — SSH/rsync deploy instructions for Hostinger (see Deployment below).
+- **`docs/`** — planning and reference docs:
+  - `roadmap.md` — the 2026 redesign goals (C Content, S Structure, L Launch). Owned by Website Portfolio Coordinator; agents don't edit it.
+  - `REFRESH_PLAN.md` — decided and open redesign choices. A source of intent, not a spec; update it as decisions are made.
+  - `DEPLOY.md` — Firebase Hosting deploy instructions, plus the legacy Hostinger notes (see Deployment below).
+  - `CURRENT_SITE.md` — a snapshot of the site *before* this redesign. Historical reference only; don't edit it.
+  - `site-tracker.html` — source of the N:S Site Tracker artifact (per-page content todos). Owned by ToDo.
+  - `innate-logos/` + `innate-logos.html` — the 41 saved innate logo concepts (keep them all) and the picks sheet.
 - **`archive/`** — two previous versions of the site, kept for reference only, not built or linked from the live site:
   - `archive/old-multipage/` — original blue/cream multi-page portfolio (photos/kenya/linktree pages).
   - `archive/live-single-page/` — the dark, game-dev-themed single-page design that was actually deployed to Hostinger before this redesign.
-- **`scripts/deploy.sh`** — rsync deploy helper (see Deployment below).
-- **`scripts/pull-images.sh`** — rsyncs the server's `images/` back down (additive, no `--delete`); recovers gitignored `images/photos/` on a fresh clone before deploying.
+- **`holding/`** — the temporary "coming soon" page for nathanshturm.com (`holding/nathanshturm/index.html`). `holding/prepare.js` is its Firebase predeploy step: it copies `resume.pdf` and `images/icons/webicon.svg` (as `favicon.svg`) into that folder, where they are gitignored.
+- **`innate/public/`** — the shared holding page (the 41 Eye mark) served at innate.games and innate.tools.
+- **`firebase.json`** — hosting config with three targets: `portfolio` (serves `dist/`), `innate-games` and `innate-tools` (both serve `innate/public/`). **`firebase.holding.json`** — a one-target config that serves `holding/nathanshturm/` as `portfolio`. **`.firebaserc`** — maps the targets to sites `nathanshturm`, `innate-games`, `innate-tools` in the default Firebase/GCP project.
+- **`.claude/`** — `CLAUDE.md` (this file), `coordinator.json` (Agent Coordinator config) and `settings.json`.
+- **`scripts/deploy.sh`** — legacy Hostinger rsync deploy helper (see Deployment below).
+- **`scripts/pull-images.sh`** — legacy Hostinger helper: rsyncs the server's `images/` back down (additive, no `--delete`); recovers gitignored `images/photos/` on a fresh clone before deploying.
 - **`images/`** — has four subfolders: `images/projects/` (per-project/game screenshot & primary assets, one folder per slug, e.g. `images/projects/quartermaster/`, `images/projects/duckaround/`), `images/design/` (same convention for the sunset Design/3D collection), `images/photos/` (photography album assets — **gitignored** like `resume.pdf`: too large for git, they live locally and on the server only, and must be present locally when building/deploying), and `images/icons/` (UI/social icons plus site-level assets like `webicon.svg` favicon and `out_on_steam.png` badge). Nothing lives loose at the `images/` root.
 
 ## Site structure
@@ -128,8 +135,12 @@ Rendered pages (in `dist/`): `index.html` (home), `games.html`, `projects.html`,
 
 ## Deployment
 
-Static site hosted on Hostinger shared hosting (domain `nathanshturm.com`), deployed via SSH/rsync — see `docs/DEPLOY.md` for full setup (SSH host alias, key location, gotchas).
+Hosted on **Firebase Hosting**, not Hostinger. Domain `nathanshturm.com` is registered and has its DNS at Namecheap. Full steps: `docs/DEPLOY.md`.
 
-- **Run `node build.js` first**, then deploy. `scripts/deploy.sh` has `SRC="dist"` — it rsyncs the freshly built `dist/` to `~/public_html` on the `hostinger` SSH host, with `--delete`, so it mirrors exactly (files not in `dist/` are removed on the server). Because the build only emits the site's own files into `dist/`, `docs/`, `archive/`, `src/`, etc. are naturally excluded.
-- Deploy with `./scripts/deploy.sh --dry-run` first, then `./scripts/deploy.sh` to push for real.
-- `resume.pdf` is linked from every page's nav but is **not committed to the repo** — drop it at the repo root before building and the build copies it into `dist/` (it's gitignored); it must be present for that nav link to resolve on the live site.
+- **Launch is not approved.** Don't run any deploy or `firebase` command until Nate says so via Website Portfolio Coordinator.
+- **The real site:** `firebase.json`, target `portfolio` (site `nathanshturm`), serves `dist/`. Run `node build.js` first. `firebase deploy --only hosting:portfolio`. Headers: HTML is `no-cache`, CSS/JS are immutable for a year (the build adds a `?v=` hash to their URLs), media is cached a week.
+- **The holding page (what is live until launch):** `firebase deploy --config firebase.holding.json --only hosting:portfolio` serves `holding/nathanshturm/` instead of `dist/`. Whichever deploy ran last is what the site serves.
+- **innate.games / innate.tools:** `firebase deploy --only hosting:innate-games,hosting:innate-tools` serves `innate/public/`.
+- `resume.pdf` is linked from every page's nav but is **not committed** (gitignored): drop it at the repo root before building, and the build copies it into `dist/`; `holding/prepare.js` does the same for the holding page.
+- `images/photos/` is gitignored too and must be present locally when building.
+- **Legacy:** `scripts/deploy.sh` and `scripts/pull-images.sh` target the old Hostinger server over SSH. Don't run them unless Nate approves.
