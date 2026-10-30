@@ -30,10 +30,12 @@ Gate: BlockGameOnline entry is gone and Block, Tile and Island are Games entries
 ## L · Launch
 
 ### L1 · Ship the redesign
-The redesign goes live on nathanshturm.com, hosted on Firebase. Launch is not approved yet: no deploy, no push. No fixed date; Nate wants it as soon as he is ready.
-Gate: owner-approved deploy is live on Firebase and `main` holds the redesign.
+The redesign replaces the temporary holding page on nathanshturm.com, hosted on Firebase. Launch is not approved yet: no deploy of the real site, no push.
+Gate: owner-approved deploy of `dist/` is live on Firebase and `main` holds the redesign.
 - [x] Decide hosting: Firebase Hosting, not Hostinger
-- [ ] Move domain DNS and registration off Hostinger (domain expires 2026-12-20)
-- [ ] Set up Firebase Hosting and its deploy script
+- [x] Move the domain to Namecheap and DNS to Firebase (holding page live)
+- [x] Set up Firebase Hosting config
+- [x] Update docs for Firebase and the redesign
 - [ ] Merge redesign-2026 into main
-- [ ] Deploy and check live site
+- [ ] Deploy the portfolio over the holding page and check it live
+- [ ] Let the Hostinger plan lapse
