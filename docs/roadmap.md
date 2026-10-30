@@ -7,29 +7,33 @@ Goals for the 2026 redesign. Page-level content todos (screenshots, copy, links 
 ### C1 · Fill the content gaps
 Every existing page is complete: no TODO markers left in `src/`.
 Gate: `grep -r TODO src/` finds nothing, and the content tracker shows every page done.
-- [ ] Screenshot pass for every project and game
+- [ ] Screenshot pass for every project and game (Nate and agents together; none ready yet, expected soon)
 - [ ] Win4kss full write-up
 - [ ] BrickOSINT backend shots and next-up text
 
 ### C2 · Add the new project entries
-The projects that aren't on the site yet get their own entries.
-Gate: each agreed project has a `.md` entry with media and builds cleanly.
-- [ ] List which projects to add
-- [ ] Write and add the new entries
+Five new project entries, pitches drafted by an agent for Nate to fix later.
+Gate: each of the five has a `.md` entry with media and builds cleanly.
+- [x] List which projects to add: WindowsVoiceControl, VSTBuddy/DAWdler, VoxMidi, ColorPalettes, LightweightTaskbarGroups (skipped: RemoteDesktopViewer, VSTDecomper, LegoBuildSuggestions)
+- [ ] Write and add the five entries, checking each draft pitch against its repo
 
 ## S · Structure
 
 ### S1 · Place Block, Tile and Island
-Decide where Block, Tile and Island go (games, projects or innate.games).
-Gate: placement decided and reflected in `src/content/`.
-- [ ] Owner's grand plan for placement
-- [ ] Move or add the entries to match
+Block, Tile and Island become three separate entries in the Games listing.
+Gate: BlockGameOnline entry is gone and Block, Tile and Island are Games entries, each with a banner to its live site.
+- [x] Decide placement: all three under Games
+- [ ] Remove the BlockGameOnline entry
+- [ ] Add Block, Tile and Island games entries (Island moves from Projects, where it is catan.md)
+- [ ] Add a banner on each linking to block., tile. and islands.innate.games
 
 ## L · Launch
 
 ### L1 · Ship the redesign
-The redesign goes live on nathanshturm.com.
-Gate: owner-approved deploy is live and `main` holds the redesign.
-- [ ] Decide hosting: Hostinger or Firebase
+The redesign goes live on nathanshturm.com, hosted on Firebase. Launch is not approved yet: no deploy, no push. No fixed date; Nate wants it as soon as he is ready.
+Gate: owner-approved deploy is live on Firebase and `main` holds the redesign.
+- [x] Decide hosting: Firebase Hosting, not Hostinger
+- [ ] Move domain DNS and registration off Hostinger (domain expires 2026-12-20)
+- [ ] Set up Firebase Hosting and its deploy script
 - [ ] Merge redesign-2026 into main
 - [ ] Deploy and check live site
