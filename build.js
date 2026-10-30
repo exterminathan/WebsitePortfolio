@@ -103,7 +103,12 @@ function starButton(cls, id, title, href, img) {
   );
 }
 
-const PREVIEW_COUNT = 5;
+const HOME_PICKS = {
+  games: ['quartermaster', 'duck-around', 'bleak'],
+  projects: ['brick-osint', 'efficient-asset-ripper', 'flight-track', 'win4kss', 'lightweight-taskbar-groups'],
+};
+const homePicks = (kind, items) =>
+  HOME_PICKS[kind].map((slug) => items.find((i) => i.slug === slug)).filter(Boolean);
 
 const itemCard = (kind) => (item) => {
   const listPage = kind === 'game' ? 'games.html' : 'projects.html';
@@ -551,8 +556,8 @@ function pageVars(meta, content) {
     footerSocial: meta.footerSocial === 'false' ? '' : FOOTER_SOCIAL,
     gamesCards: listing('game', games),
     projectsCards: listing('project', projects),
-    gamesPreview: games.slice(0, PREVIEW_COUNT).map(gamePreview).join('\n'),
-    projectsPreview: projects.slice(0, PREVIEW_COUNT).map(projectPreview).join('\n'),
+    gamesPreview: homePicks('games', games).map(gamePreview).join('\n'),
+    projectsPreview: homePicks('projects', projects).map(projectPreview).join('\n'),
     designCards: (design.length
       ? design.map(designCard)
       : designFallback(
