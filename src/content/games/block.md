@@ -1,13 +1,21 @@
 ---
-order: 13
-title: BlockGameOnline
+order: 4
+title: Block
 tag: red
 mediaClass: media-a
 tagline: Online Blokus to play with family across the globe — live rooms, bots, and no accounts.
 tags: [TypeScript, React, Socket.IO, Cloud Run]
+links:
+  - https://block.innate.games | Play live →
 body:
   - Built an online Blokus with live room codes, easy-to-hard bots, and a server-authoritative engine shared between client and server.
 ---
+
+<a class="domain-banner" href="https://block.innate.games" target="_blank" rel="noopener">
+  <span class="domain-banner-name">block.innate.games</span>
+  <span class="domain-banner-text">Play Block live in your browser.</span>
+  <span class="domain-banner-arrow" aria-hidden="true">&#8599;</span>
+</a>
 
 ## Overview
 
