@@ -27,6 +27,13 @@ Gate: BlockGameOnline entry is gone and Block, Tile and Island are Games entries
 - [ ] Add Block, Tile and Island games entries (Island moves from Projects, where it is catan.md)
 - [ ] Add a banner on each linking to block., tile. and islands.innate.games
 
+### S2 · Split projects and tools
+Tools are things Nate built that others can use (download or via a site). Projects show his skills and passions and may not be freely available.
+Gate: Tools page, nav link, detail pages and home panel exist, entries are split, and the build passes.
+- [x] Add a tools collection and split the entries
+- [x] Tools page, nav link and detail pages
+- [x] Tools panel on the home page
+
 ## L · Launch
 
 ### L1 · Ship the redesign
