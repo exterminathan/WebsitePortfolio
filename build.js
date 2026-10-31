@@ -65,17 +65,20 @@ const content = require('./lib/content');
 
 const allGames = content.load('games');
 const allProjects = content.load('projects');
+const allTools = content.load('tools');
 const allDesign = content.load('design');
 const games = visible(allGames);
 const projects = visible(allProjects);
+const tools = visible(allTools);
 const design = visible(allDesign);
 const albums = require(path.join(SRC, 'data', 'albums.js'));
 
 // singular prefix -> the collection it names, for detail pages and `from:` refs
-const COLLECTIONS = { game: allGames, project: allProjects, design: allDesign };
+const COLLECTIONS = { game: allGames, project: allProjects, tool: allTools, design: allDesign };
 const SECTION = {
   game: { href: 'games.html', label: 'Games', active: 'games' },
   project: { href: 'projects.html', label: 'Projects', active: 'projects' },
+  tool: { href: 'tools.html', label: 'Tools', active: 'tools' },
   design: { href: 'design.html', label: 'Design / 3D', active: 'design' },
 };
 
@@ -105,13 +108,14 @@ function starButton(cls, id, title, href, img) {
 
 const HOME_PICKS = {
   games: ['quartermaster', 'duck-around', 'bleak'],
-  projects: ['brick-osint', 'efficient-asset-ripper', 'flight-track', 'win4kss', 'lightweight-taskbar-groups'],
+  projects: ['brick-osint', 'flight-track', 'creator-bot', 'patchbay', '3d-painter'],
+  tools: ['efficient-asset-ripper', 'win4kss', 'lightweight-taskbar-groups'],
 };
 const homePicks = (kind, items) =>
   HOME_PICKS[kind].map((slug) => items.find((i) => i.slug === slug)).filter(Boolean);
 
 const itemCard = (kind) => (item) => {
-  const listPage = kind === 'game' ? 'games.html' : 'projects.html';
+  const listPage = `${kind}s.html`;
   const detailHref = `${kind}-${item.slug}.html`;
   const cls = ['card', item.detail && 'card-linked', item.tag && `tag-${item.tag}`]
     .filter(Boolean)
@@ -213,8 +217,11 @@ const designFallback = (classes, render) =>
     render({ slug: `piece-${i + 1}`, title: `Piece ${PLACEHOLDER_NAMES[i]}`, mediaClass: c, detail: false })
   );
 
-function projectPreview(p) {
-  const href = p.detail ? `project-${p.slug}.html` : 'projects.html';
+const projectPreview = (p) => previewCard('project', p);
+const toolPreview = (t) => previewCard('tool', t);
+
+function previewCard(kind, p) {
+  const href = p.detail ? `${kind}-${p.slug}.html` : `${kind}s.html`;
   const media =
     p.media && p.media.img
       ? `<div class="placeholder-media">\n              <img src="${p.media.img}" alt="${p.media.alt}" loading="lazy" />\n            </div>`
@@ -538,7 +545,7 @@ function parsePage(raw) {
   return { meta, body: m[2] };
 }
 
-const NAV_KEYS = ['games', 'projects', 'design', 'photos', 'about'];
+const NAV_KEYS = ['games', 'projects', 'tools', 'design', 'photos', 'about'];
 
 function pageVars(meta, content) {
   const vars = {
@@ -556,8 +563,10 @@ function pageVars(meta, content) {
     footerSocial: meta.footerSocial === 'false' ? '' : FOOTER_SOCIAL,
     gamesCards: listing('game', games),
     projectsCards: listing('project', projects),
+    toolsCards: listing('tool', tools),
     gamesPreview: homePicks('games', games).map(gamePreview).join('\n'),
     projectsPreview: homePicks('projects', projects).map(projectPreview).join('\n'),
+    toolsPreview: homePicks('tools', tools).map(toolPreview).join('\n'),
     designCards: (design.length
       ? design.map(designCard)
       : designFallback(
@@ -611,6 +620,7 @@ function writeDetails(items, type) {
 }
 writeDetails(games, 'game');
 writeDetails(projects, 'project');
+writeDetails(tools, 'tool');
 writeDetails(design, 'design');
 
 // photo album pages

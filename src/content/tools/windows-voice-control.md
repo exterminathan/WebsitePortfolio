@@ -1,5 +1,5 @@
 ---
-order: 17
+order: 6
 title: WindowsVoiceControl
 tag: blue
 mediaClass: media-a

@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 3
 title: JUCE VST Template
 tag: orange
 mediaClass: media-d

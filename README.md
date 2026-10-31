@@ -1,6 +1,6 @@
 # WebsitePortfolio
 
-Nathan Shturm's personal portfolio, nathanshturm.com. A static site with no runtime framework: pages are authored in `src/` (HTML pages plus Markdown content for games and projects) and assembled into plain HTML in `dist/` by a zero-dependency Node script.
+Nathan Shturm's personal portfolio, nathanshturm.com. A static site with no runtime framework: pages are authored in `src/` (HTML pages plus Markdown content for games, projects and tools) and assembled into plain HTML in `dist/` by a zero-dependency Node script.
 
 ## Build
 

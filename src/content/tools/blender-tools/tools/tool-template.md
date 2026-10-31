@@ -2,7 +2,7 @@
 order: 1
 title: Tool Name
 blurb: One-line summary, shown in the index above.
-from: [project:efficient-asset-ripper]
+from: [tool:efficient-asset-ripper]
 links:
   - https://github.com/exterminathan | GitHub →
 ---

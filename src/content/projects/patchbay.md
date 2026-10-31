@@ -1,5 +1,5 @@
 ---
-order: 12
+order: 5
 title: Patchbay
 tag: teal
 mediaClass: media-c

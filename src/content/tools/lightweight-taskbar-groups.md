@@ -1,5 +1,5 @@
 ---
-order: 21
+order: 9
 title: Lightweight Taskbar Groups
 tag: red
 mediaClass: media-e
