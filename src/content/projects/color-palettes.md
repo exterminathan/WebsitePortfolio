@@ -1,5 +1,5 @@
 ---
-order: 20
+order: 6
 title: ColorPalettes
 tag: orange
 mediaClass: media-d

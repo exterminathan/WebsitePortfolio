@@ -1,5 +1,5 @@
 ---
-order: 18
+order: 7
 title: VSTBuddy / DAWdler
 tag: violet
 mediaClass: media-b

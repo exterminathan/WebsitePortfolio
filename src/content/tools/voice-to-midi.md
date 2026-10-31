@@ -1,5 +1,5 @@
 ---
-order: 19
+order: 8
 title: VoxMidi
 tag: teal
 mediaClass: media-c
