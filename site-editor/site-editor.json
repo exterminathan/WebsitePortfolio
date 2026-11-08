@@ -1,0 +1,10 @@
+{
+  "sites": {
+    "main": {
+      "serve": "dist",
+      "sources": ["src"],
+      "build": "node build.js",
+      "port": 5205
+    }
+  }
+}

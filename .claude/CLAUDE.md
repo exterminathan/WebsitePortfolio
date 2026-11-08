@@ -8,6 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Commit title:** 6-7 words max.
 - **Commit description:** 3-4 bullet points, 4-5 words each max.
 
+## Communication
+
+Write with a pragmatic 80% of ASD-STE100: sentences of 20 to 25 words or fewer, paragraphs of 6 sentences or fewer, active voice, one name per thing, no filler, answer first. Reports lead with failures, keep every hedge and number, end with the decision needed, and put detail on the card, commit or doc. Agent messages are an ask, a deadline and a command. Full rules: `~/.claude/CLAUDE.md`, "Communication".
+
 ## Agent Coordinator
 
 This project runs several Claude sessions at once. **Website Portfolio Coordinator** is the coordinator: it starts and stops agents, keeps the Tracker, routes messages and merges branches. Config: `.claude/coordinator.json`. Full rules: `~/.claude/skills/coordinator/reference/worker-rules.md`. To take over as coordinator in a new session, run `/coordinator`.
@@ -24,6 +28,12 @@ This project runs several Claude sessions at once. **Website Portfolio Coordinat
 - **Integration branch is `redesign-2026`, not `main`.** Branch off it; `main` stays on the old site until launch (L1).
 - **Launch is not approved:** never run `scripts/deploy.sh` (even `--dry-run` needs Website Portfolio Coordinator's go-ahead), and never push.
 - **Never** start agents, open VS Code windows, or push unless Website Portfolio Coordinator or Nate says so.
+
+## Site editor
+
+`site-editor/` holds a local editor: Nate double-clicks text on the site and the edit saves to the source. Run `python -I site-editor/editor.py main` (serves `dist/` on port 5205). Docs: `site-editor/TOOLKIT.md`.
+
+Owner edits win. Before changing site text, read `site-editor/edits/*.json`. After any change to site sources, run: `python -I site-editor/editor.py main --reapply`. It puts the owner's edits back. A CONFLICT line means the old text is gone: tell the coordinator, who tells Nate. Never delete `edits/*.json`.
 
 ## Comments
 
