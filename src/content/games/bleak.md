@@ -2,7 +2,6 @@
 order: 3
 title: Bleak
 tag: violet
-detail: false
 media:
   img: bleak_placeholder.svg
   alt: Bleak — coming soon
@@ -12,3 +11,7 @@ body:
   - A moody, atmospheric game in early development.
   - Writeup, media, and links coming soon.
 ---
+
+## Overview
+
+<!-- TODO: write-up -->
