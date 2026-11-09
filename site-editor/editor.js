@@ -86,27 +86,37 @@
     const r = await fetch(API + path, { method: 'POST', body: JSON.stringify(body) });
     return r.json();
   }
+  const reload = () => { try { sessionStorage.setItem('se-on', '1'); } catch (e) {} location.reload(); };
+  async function refreshRefs() {
+    try {
+      const html = await (await fetch(location.href, { cache: 'no-store' })).text();
+      const next = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[data-se]')];
+      const now = [...document.querySelectorAll('[data-se]')];
+      if (next.length !== now.length) return reload();
+      now.forEach((n, i) => n.setAttribute('data-se', next[i].getAttribute('data-se')));
+    } catch (e) { reload(); }
+  }
   async function send(info) {
     msg('Saving...');
     try {
       const r = await post('save', { edits: [info] });
       const x = r.results[0];
-      if (!x.ok) msg(x.msg || 'Not saved');
-      else if (x.mode === 'source') msg('Saved to ' + x.file);
-      else msg(x.msg);
-      if (r.rebuilt) setTimeout(() => location.reload(), 300);
-    } catch (e) { msg('Could not reach the editor server'); }
+      if (!x.ok) { msg(x.msg || 'Not saved'); return false; }
+      msg(x.mode === 'source' ? 'Saved to ' + x.file : x.msg);
+      if (r.rebuilt) await refreshRefs();
+      return true;
+    } catch (e) { msg('Could not reach the editor server'); return false; }
   }
   async function op(body) {
     msg('Saving...');
     try {
       const r = await post('op', { ...body, page: location.pathname });
       msg(r.msg);
-      if (r.ok) setTimeout(() => location.reload(), 300);
+      if (r.ok) setTimeout(reload, 300);
     } catch (e) { msg('Could not reach the editor server'); }
   }
 
-  /* plain text edit */
+
 
   function startEdit(node) {
     const parent = node.parentNode, orig = node.data, before = norm(orig);
@@ -124,18 +134,28 @@
     span.focus();
     const r = document.createRange(); r.selectNodeContents(span);
     const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-    let done = false;
-    const finish = save => {
-      if (done) return; done = true;
-      const val = span.textContent.replace(/[ ]/g, ' ');
-      parent.replaceChild(document.createTextNode(save ? val : orig), span);
-      if (save && norm(val) !== before) { info.after = norm(val); send(info); }
-      else msg('No change');
+    const session = String(Date.now());
+    let last = before, done = false, timer = null, chain = Promise.resolve();
+    const flush = () => {
+      clearTimeout(timer);
+      chain = chain.then(async () => {
+        const val = norm(span.textContent.replace(/\u00a0/g, ' '));
+        if (!val || val === last) return;
+        if (await send({ ...info, before: last, after: val, session })) { last = val; info.total = 1; info.nth = 0; }
+      });
+      return chain;
     };
-    span.addEventListener('blur', () => finish(true));
+    span.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(flush, 600); });
+    const finish = () => {
+      if (done) return;
+      done = true;
+      const val = span.textContent.replace(/\u00a0/g, ' ');
+      parent.replaceChild(document.createTextNode(val.trim() ? val : orig), span);
+      flush();
+    };
+    span.addEventListener('blur', () => finish());
     span.addEventListener('keydown', k => {
-      if (k.key === 'Escape') { k.preventDefault(); finish(false); }
-      else if (k.key === 'Enter' && !k.shiftKey) { k.preventDefault(); finish(true); }
+      if (k.key === 'Escape' || (k.key === 'Enter' && !k.shiftKey)) { k.preventDefault(); finish(); }
       k.stopPropagation();
     });
     span.addEventListener('paste', k => { k.preventDefault(); document.execCommand('insertText', false, (k.clipboardData || window.clipboardData).getData('text')); });
@@ -271,7 +291,8 @@
     const md = isMd(el), ref = el.getAttribute('data-se');
     const start = el.dataset.seKind;
     let kind = md ? start : 'p';
-    const orig = el.innerHTML;
+    const session = String(Date.now());
+    let ref0 = ref, last = serialize(el, kind, md), lastKind = kind, timer = null, chain = Promise.resolve(), needsReload = false;
     el.setAttribute('data-se-rich-on', '');
     el.contentEditable = 'true';
     rich = el;
@@ -280,46 +301,63 @@
       ['code', '</>', 'Inline code', wrapCode], ['link', 'Link', 'Link (Ctrl+K)', link]];
     fmt.innerHTML = btns.map(b => `<button data-c="${b[0]}" title="${b[2]}">${b[1]}</button>`).join('') +
       (md ? '<i></i>' + Object.keys(KINDS).map(k => `<button data-k="${k}" class="${k === kind ? 'on' : ''}">${KINDS[k]}</button>`).join('') : '') +
-      '<i></i><button data-c="save">Save</button><button data-c="cancel">Cancel</button>';
+      '<i></i><button data-c="save">Done</button><span style="opacity:.7;font-weight:500">saves as you type</span>';
     fmt.style.display = 'flex';
     const r = el.getBoundingClientRect();
     fmt.style.left = Math.max(4, Math.min(r.left, innerWidth - fmt.offsetWidth - 4)) + 'px';
     fmt.style.top = (r.top > fmt.offsetHeight + 12 ? r.top - fmt.offsetHeight - 8 : r.bottom + 8) + 'px';
     el.focus();
     let done = false;
-    const finish = save => {
-      if (done) return; done = true;
+    const save = () => {
+      clearTimeout(timer);
+      chain = chain.then(async () => {
+        const text = serialize(el, kind, md);
+        if (!text || (text === last && kind === lastKind)) return;
+        msg('Saving...');
+        try {
+          const r = await post('op', { op: 'replace', ref: ref0, text, session, page: location.pathname });
+          if (!r.ok) return msg(r.msg);
+          last = text;
+          lastKind = kind;
+          if (kind !== start) needsReload = true;
+          await refreshRefs();
+          ref0 = el.getAttribute('data-se');
+          msg('Saved');
+        } catch (e) { msg('Could not reach the editor server'); }
+      });
+      return chain;
+    };
+    el.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(save, 600); });
+    const finish = async () => {
+      if (done) return;
+      done = true;
+      await save();
       rich = null;
       fmt.style.display = 'none';
       el.removeAttribute('data-se-rich-on');
       el.removeAttribute('contenteditable');
-      if (!save) { el.innerHTML = orig; return msg('No change'); }
-      const text = serialize(el, kind, md);
-      if (!text) { el.innerHTML = orig; return msg('Empty text: not saved'); }
-      if (el.innerHTML === orig && kind === start) return msg('No change');
-      op({ op: 'replace', ref, text });
+      if (needsReload) reload();
     };
     const onFmt = e => {
       const b = e.target.closest('button');
       if (!b) return;
-      if (b.dataset.k) { kind = b.dataset.k; fmt.querySelectorAll('[data-k]').forEach(x => x.classList.toggle('on', x === b)); msg('Will save as ' + KINDS[kind]); return; }
+      if (b.dataset.k) { kind = b.dataset.k; fmt.querySelectorAll('[data-k]').forEach(x => x.classList.toggle('on', x === b)); save(); return; }
       const c = b.dataset.c;
-      if (c === 'save') return finish(true);
-      if (c === 'cancel') return finish(false);
+      if (c === 'save') return finish();
       btns.find(x => x[0] === c)[3]();
     };
     fmt.onmousedown = e => e.preventDefault();
     fmt.onclick = onFmt;
     el.addEventListener('keydown', k => {
       const list = el.tagName === 'UL' || el.tagName === 'OL';
-      if (k.key === 'Escape') { k.preventDefault(); finish(false); }
-      else if (k.key === 'Enter' && (!list || k.ctrlKey)) { k.preventDefault(); finish(true); }
+      if (k.key === 'Escape') { k.preventDefault(); finish(); }
+      else if (k.key === 'Enter' && (!list || k.ctrlKey)) { k.preventDefault(); finish(); }
       else if ((k.ctrlKey || k.metaKey) && k.key.toLowerCase() === 'k') { k.preventDefault(); link(); }
       k.stopPropagation();
     });
     el.addEventListener('paste', k => { k.preventDefault(); document.execCommand('insertText', false, (k.clipboardData || window.clipboardData).getData('text')); });
-    el.addEventListener('focusout', e => { if (!e.relatedTarget || !fmt.contains(e.relatedTarget)) setTimeout(() => finish(true), 120); });
-    msg('Editing: Ctrl+B bold, Ctrl+I italic, Enter saves, Esc cancels');
+    el.addEventListener('focusout', e => { if (!e.relatedTarget || !fmt.contains(e.relatedTarget)) setTimeout(() => finish(), 120); });
+    msg('Saves as you type. Ctrl+B bold, Ctrl+I italic, Enter or Done to finish');
   }
 
   /* wiring */
@@ -371,12 +409,17 @@
     addImage(cur, f);
   });
 
-  document.getElementById('se-t').onclick = ev => {
-    on = !on; ev.target.classList.toggle('on', on); ev.target.textContent = 'Editing: ' + (on ? 'on' : 'off');
+  const setOn = v => {
+    on = v;
+    const b = document.getElementById('se-t');
+    b.classList.toggle('on', on);
+    b.textContent = 'Editing: ' + (on ? 'on' : 'off');
     document.body.classList.toggle('se-on', on);
     if (!on) place(null);
-    msg(on ? 'Double-click text to edit. Hover a block for its controls.' : 'Editing is off. Click around, then turn it back on.');
+    msg(on ? 'Double-click text to edit. Changes save as you type. Hover a block for its controls.' : 'Editing is off. Click around, then turn it back on.');
   };
+  document.getElementById('se-t').onclick = () => setOn(!on);
+  try { if (sessionStorage.getItem('se-on')) { sessionStorage.removeItem('se-on'); setOn(true); } } catch (e) {}
   document.getElementById('se-title').onclick = () => {
     const old = document.title, t = prompt('Page title (the text on the browser tab):', old);
     if (t && t.trim() && t.trim() !== old.trim()) { document.title = t.trim(); send({ before: norm(old), after: norm(t), page: location.pathname, total: 1, nth: 0 }); }
@@ -384,7 +427,7 @@
   document.getElementById('se-undo').onclick = async () => {
     try {
       const r = await post('undo', {});
-      msg(r.msg); if (r.ok) setTimeout(() => location.reload(), 400);
+      msg(r.msg); if (r.ok) setTimeout(reload, 400);
     } catch (e) { msg('Could not reach the editor server'); }
   };
 })();

@@ -239,8 +239,15 @@ def apply_edit(site, e):
             choice = pool[nth]
     eid = str(int(time.time() * 1000))
     entry = {'id': eid, 'ts': time.strftime('%Y-%m-%d %H:%M:%S'), 'page': e.get('page', '/'), 'sel': e.get('sel'), 'idx': e.get('idx'), 'before': before, 'after': after}
+    sid = e.get('session')
     with site.lock:
         log = site.log()
+        if sid:
+            entry['session'] = sid
+            if log and log[-1].get('session') == sid and log[-1].get('mode') in ('source', 'override'):
+                prev = log.pop()
+                eid = entry['id'] = prev['id']
+                entry['before'] = prev['before']
         if choice:
             entry['mode'] = 'source'
             entry['file'] = write_patch(site, eid, choice, encode(choice, after))
@@ -463,6 +470,13 @@ def struct_op(site, body):
             if other and other['path'] != b['path']:
                 raise Refuse('Blocks are in different files.')
             eid = str(int(time.time() * 1000))
+            sid = body.get('session')
+            prev = None
+            if op == 'replace' and sid:
+                last = site.log()
+                if last and last[-1].get('session') == sid and last[-1].get('op') == 'replace':
+                    prev = last[-1]
+                    eid = prev['id']
             md = b['unit'] == 'l'
             created = []
             if op == 'insert':
@@ -498,8 +512,14 @@ def struct_op(site, body):
             with open(b['path'], 'w', encoding='utf-8', newline='') as fh:
                 fh.write(text)
             log = site.log()
-            log.append({'id': eid, 'ts': time.strftime('%Y-%m-%d %H:%M:%S'), 'mode': 'struct', 'op': op, 'file': b['rel'],
-                        'created': created, 'before': summary, 'after': summary, 'page': body.get('page', '/')})
+            if prev:
+                log[-1]['ts'] = time.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                entry = {'id': eid, 'ts': time.strftime('%Y-%m-%d %H:%M:%S'), 'mode': 'struct', 'op': op, 'file': b['rel'],
+                         'created': created, 'before': summary, 'after': summary, 'page': body.get('page', '/')}
+                if sid and op == 'replace':
+                    entry['session'] = sid
+                log.append(entry)
             site.save_log(log)
             return {'ok': True, 'msg': summary.capitalize()}
         except Refuse as ex:
