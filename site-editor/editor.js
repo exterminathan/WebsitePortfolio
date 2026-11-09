@@ -341,7 +341,7 @@
     const onFmt = e => {
       const b = e.target.closest('button');
       if (!b) return;
-      if (b.dataset.k) { kind = b.dataset.k; fmt.querySelectorAll('[data-k]').forEach(x => x.classList.toggle('on', x === b)); save(); return; }
+      if (b.dataset.k) { kind = b.dataset.k; fmt.querySelectorAll('[data-k]').forEach(x => x.classList.toggle('on', x === b)); finish(); return; }
       const c = b.dataset.c;
       if (c === 'save') return finish();
       btns.find(x => x[0] === c)[3]();
