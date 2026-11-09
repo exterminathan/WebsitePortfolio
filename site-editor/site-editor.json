@@ -1,9 +1,10 @@
 {
   "sites": {
     "main": {
-      "serve": "dist",
+      "serve": "site-editor/.preview",
       "sources": ["src"],
       "build": "node build.js",
+      "env": { "SE_PREVIEW": "1" },
       "port": 5205
     }
   }

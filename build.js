@@ -7,7 +7,8 @@ const crypto = require('crypto');
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
-const DIST = path.join(ROOT, 'dist');
+const PREVIEW = !!process.env.SE_PREVIEW;
+const DIST = PREVIEW ? path.join(ROOT, 'site-editor', '.preview') : path.join(ROOT, 'dist');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
 
@@ -599,8 +600,12 @@ const written = [];
 // regular pages
 for (const file of fs.readdirSync(path.join(SRC, 'pages'))) {
   if (!file.endsWith('.html')) continue;
-  const { meta, body } = parsePage(read(path.join(SRC, 'pages', file)));
-  fs.writeFileSync(path.join(DIST, file), assemble(pageVars(meta, body)));
+  const raw = read(path.join(SRC, 'pages', file));
+  const { meta, body } = parsePage(raw);
+  const shown = PREVIEW
+    ? require('./lib/annotate').annotate(body, `src/pages/${file}`, raw.length - body.length)
+    : body;
+  fs.writeFileSync(path.join(DIST, file), assemble(pageVars(meta, shown)));
   written.push(file);
 }
 
@@ -659,10 +664,10 @@ for (const album of albums) {
 fs.copyFileSync(path.join(ROOT, 'style.css'), path.join(DIST, 'style.css'));
 if (STARRED_ENABLED)
   fs.copyFileSync(path.join(ROOT, 'starred.js'), path.join(DIST, 'starred.js'));
-fs.cpSync(path.join(ROOT, 'images'), path.join(DIST, 'images'), { recursive: true });
-if (fs.existsSync(path.join(ROOT, 'resume.pdf')))
+if (!PREVIEW) fs.cpSync(path.join(ROOT, 'images'), path.join(DIST, 'images'), { recursive: true });
+if (!PREVIEW && fs.existsSync(path.join(ROOT, 'resume.pdf')))
   fs.copyFileSync(path.join(ROOT, 'resume.pdf'), path.join(DIST, 'resume.pdf'));
 
 content.reportMissing();
-console.log(`Built ${written.length} pages -> dist/`);
+console.log(`Built ${written.length} pages -> ${PREVIEW ? 'site-editor/.preview' : 'dist'}/`);
 for (const f of written) console.log(`  ${f}`);
