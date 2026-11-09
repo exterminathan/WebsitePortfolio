@@ -13,10 +13,13 @@ Only the Python standard library is used. The server listens on 127.0.0.1 only.
 See TOOLKIT.md for how to add this to another project.
 """
 import argparse
+import base64
+import hashlib
 import html
 import http.server
 import json
 import mimetypes
+import os
 import re
 import shutil
 import socketserver
@@ -44,8 +47,9 @@ ENT = {
 
 
 class Site:
-    def __init__(self, name, serve, sources, port, build=None, edits=None):
+    def __init__(self, name, serve, sources, port, build=None, edits=None, env=None):
         self.name, self.serve, self.sources, self.port, self.build = name, serve, sources, port, build
+        self.env = env or {}
         self.edits = edits or HERE / 'edits' / (name + '.json')
         self.backups = HERE / '.backups' / name
         self.lock = threading.Lock()
@@ -75,7 +79,7 @@ def load_sites():
     for name, c in cfg['sites'].items():
         serve = ROOT / c['serve']
         sources = [ROOT / s for s in c.get('sources', [c['serve']])]
-        sites[name] = Site(name, serve, sources, c.get('port', 5200), c.get('build'))
+        sites[name] = Site(name, serve, sources, c.get('port', 5200), c.get('build'), env=c.get('env'))
     return sites
 
 
@@ -257,7 +261,11 @@ def undo(site):
         if not log:
             return {'ok': False, 'msg': 'Nothing to undo.'}
         e = log.pop()
-        if e.get('mode') == 'source':
+        for rel in e.get('created') or []:
+            f = ROOT / rel
+            if f.is_file() and inside(f, 'images'):
+                f.unlink()
+        if e.get('mode') in ('source', 'struct'):
             bdir = site.backups / e['id']
             for f in bdir.rglob('*'):
                 if f.is_file():
@@ -272,6 +280,9 @@ def reapply(site):
     with site.lock:
         log = site.log()
         for e in log:
+            if e.get('mode') == 'struct':
+                report.append('NOT REPLAYED  %s on %s (%s): structure edits are not re-applied; check the page' % (e.get('op'), e.get('file'), e.get('ts')))
+                continue
             if e.get('mode') != 'source':
                 continue
             hits = find_all(site, pattern(e['before']))
@@ -293,8 +304,208 @@ def reapply(site):
 def run_build(site):
     if not site.build:
         return False
-    r = subprocess.run(site.build, shell=True, cwd=ROOT, capture_output=True, text=True)
+    r = subprocess.run(site.build, shell=True, cwd=ROOT, capture_output=True, text=True, env={**os.environ, **site.env})
     return r.returncode == 0
+
+
+# ---------- structural edits (blocks, sections, images) ----------
+
+FROZEN = 'src/content/projects/efficient-asset-ripper.md'
+IMG_EXT = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.avif'}
+MAX_IMG = 25_000_000
+NEW_MD = '## New section\n\nWrite here.'
+NEW_HTML = ('<section class="section">\n  <div class="section-heading">\n    <h2>New section</h2>\n'
+            '    <span class="section-line"></span>\n  </div>\n  <p>Write here.</p>\n</section>')
+
+
+class Refuse(Exception):
+    pass
+
+
+def inside(p, base):
+    try:
+        p.resolve().relative_to((ROOT / base).resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def h6(s):
+    return hashlib.md5(s.replace('\r', '').encode('utf-8')).hexdigest()[:6]
+
+
+def backup(site, eid, path):
+    dest = site.backups / eid / path.relative_to(ROOT)
+    if not dest.exists():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, dest)
+
+
+def locate(ref):
+    file, unit, rng, inn, hsh = ref.split('|')
+    rel = file.replace('\\', '/')
+    if rel == FROZEN:
+        raise Refuse('This page is frozen by the owner. The editor will not change it.')
+    path = ROOT / rel
+    if not inside(path, 'src') or path.suffix not in ('.md', '.html') or not path.is_file():
+        raise Refuse('The editor only changes .md and .html files under src/.')
+    s, e = map(int, rng.split('-'))
+    text = read(path)
+    if unit == 'l':
+        seg = '\n'.join(text.split('\n')[s:e])
+    else:
+        if any(ord(c) > 0xFFFF for c in text):
+            raise Refuse('This page has emoji; structure edits are not supported on it.')
+        seg = text[s:e]
+    if h6(seg) != hsh:
+        raise Refuse('The source changed since this page loaded. Reload the page.')
+    i = tuple(map(int, inn.split('-'))) if inn else None
+    return {'rel': rel, 'path': path, 'text': text, 'unit': unit, 's': s, 'e': e, 'in': i}
+
+
+def new_lines(text, block):
+    cr = '\r' if '\r\n' in block['text'] else ''
+    return [ln + cr for ln in text.split('\n')]
+
+
+def indent_of(text, s):
+    ls = text.rfind('\n', 0, s) + 1
+    m = re.match(r'[ \t]*', text[ls:s])
+    return m.group(0) if m and ls + len(m.group(0)) == s else ''
+
+
+def splice(b, op, payload=None, other=None):
+    text = b['text']
+    if b['unit'] == 'l':
+        lines = text.split('\n')
+        blank = '\r' if '\r\n' in text else ''
+        if op == 'insert':
+            lines[b['e']:b['e']] = [blank] + new_lines(payload, b)
+        elif op == 'replace':
+            lines[b['s']:b['e']] = new_lines(payload, b)
+        elif op == 'delete':
+            del lines[b['s']:b['e']]
+            k = b['s']
+            if k < len(lines) and not lines[k].strip() and (k == 0 or not lines[k - 1].strip()):
+                del lines[k]
+            elif k >= len(lines):
+                while lines and not lines[-1].strip():
+                    lines.pop()
+        elif op == 'swap':
+            a, c = (b, other) if b['s'] < other['s'] else (other, b)
+            lines[a['s']:c['e']] = lines[c['s']:c['e']] + lines[a['e']:c['s']] + lines[a['s']:a['e']]
+        return '\n'.join(lines)
+    if op == 'insert':
+        ind = indent_of(text, b['s'])
+        body = payload.replace('\n', '\n' + ind)
+        return text[:b['e']] + '\n\n' + ind + body + text[b['e']:]
+    if op == 'replace':
+        i0, i1 = b['in']
+        old = text[i0:i1]
+        lead, trail = old[:len(old) - len(old.lstrip())], old[len(old.rstrip()):]
+        return text[:i0] + lead + payload + trail + text[i1:]
+    if op == 'delete':
+        s, e = b['s'], b['e']
+        while s > 0 and text[s - 1] in ' \t':
+            s -= 1
+        while e < len(text) and text[e] in ' \t':
+            e += 1
+        if text[e:e + 2] == '\r\n':
+            e += 2
+        elif text[e:e + 1] == '\n':
+            e += 1
+        return text[:s] + text[e:]
+    a, c = (b, other) if b['s'] < other['s'] else (other, b)
+    return text[:a['s']] + text[c['s']:c['e']] + text[a['e']:c['s']] + text[a['s']:a['e']] + text[c['e']:]
+
+
+def asset_dir(rel):
+    parts = rel.split('/')
+    if parts[:2] == ['src', 'pages']:
+        return 'images'
+    typ, slug = parts[2], parts[3]
+    slug = slug[:-3] if slug.endswith('.md') else slug
+    index = ROOT / 'src' / 'content' / typ / slug / 'index.md'
+    item = index if index.is_file() else ROOT / rel
+    m = re.search(r'^assets:\s*(.+?)\s*$', read(item).split('\n---', 1)[0], re.M)
+    if m:
+        return m.group(1).strip('\'"').rstrip('/')
+    return ('images/design/' if typ == 'design' else 'images/projects/') + slug
+
+
+def save_image(rel, name, data):
+    raw = base64.b64decode(data)
+    if len(raw) > MAX_IMG:
+        raise Refuse('Image is larger than 25 MB.')
+    stem, ext = os.path.splitext(os.path.basename(name or 'image'))
+    ext = ext.lower()
+    if ext not in IMG_EXT:
+        raise Refuse('Use a png, jpg, gif, webp, svg or avif image.')
+    stem = re.sub(r'[^a-z0-9]+', '-', stem.lower()).strip('-') or 'image'
+    folder = ROOT / asset_dir(rel)
+    if not inside(folder, 'images'):
+        raise Refuse('Asset folder is outside images/.')
+    folder.mkdir(parents=True, exist_ok=True)
+    final, n = stem + ext, 1
+    while (folder / final).exists():
+        n += 1
+        final = '%s-%d%s' % (stem, n, ext)
+    (folder / final).write_bytes(raw)
+    return final, (folder / final)
+
+
+def struct_op(site, body):
+    op = body.get('op')
+    with site.lock:
+        try:
+            b = locate(body['ref'])
+            other = locate(body['ref2']) if body.get('ref2') else None
+            if other and other['path'] != b['path']:
+                raise Refuse('Blocks are in different files.')
+            eid = str(int(time.time() * 1000))
+            md = b['unit'] == 'l'
+            created = []
+            if op == 'insert':
+                text = splice(b, 'insert', NEW_MD if md else NEW_HTML)
+                summary = 'insert section'
+            elif op == 'image':
+                alt = re.sub(r'[\[\]\r\n]', ' ', body.get('alt') or '').strip()
+                final, dest = save_image(b['rel'], body.get('name'), body.get('data', ''))
+                created.append(str(dest.relative_to(ROOT)).replace('\\', '/'))
+                if md:
+                    snippet = '![%s](%s)' % (alt, final)
+                else:
+                    snippet = ('<div class="shot-gallery shots-1col">\n  <figure>\n    <img src="images/%s" alt="%s" loading="lazy" />\n  </figure>\n</div>'
+                               % (final, html.escape(alt, quote=True)))
+                text = splice(b, 'insert', snippet)
+                summary = 'insert image ' + final
+            elif op == 'delete':
+                text = splice(b, 'delete')
+                summary = 'delete block'
+            elif op == 'swap':
+                if not other:
+                    raise Refuse('Nothing to swap with.')
+                text = splice(b, 'swap', other=other)
+                summary = 'move block'
+            elif op == 'replace':
+                if not md and not b['in']:
+                    raise Refuse('This element cannot be edited as rich text.')
+                text = splice(b, 'replace', body.get('text', ''))
+                summary = 'format text'
+            else:
+                raise Refuse('Unknown edit.')
+            backup(site, eid, b['path'])
+            with open(b['path'], 'w', encoding='utf-8', newline='') as fh:
+                fh.write(text)
+            log = site.log()
+            log.append({'id': eid, 'ts': time.strftime('%Y-%m-%d %H:%M:%S'), 'mode': 'struct', 'op': op, 'file': b['rel'],
+                        'created': created, 'before': summary, 'after': summary, 'page': body.get('page', '/')})
+            site.save_log(log)
+            return {'ok': True, 'msg': summary.capitalize()}
+        except Refuse as ex:
+            return {'ok': False, 'msg': str(ex)}
+        except (ValueError, KeyError, IndexError):
+            return {'ok': False, 'msg': 'Could not read that block. Reload the page.'}
 
 
 # ---------- server ----------
@@ -333,6 +544,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if path == '/__editor/edits':
             return self.send(200, json.dumps(self.site.log()), 'application/json')
         f = resolve(self.site.serve, path)
+        if not f and self.site.env.get('SE_PREVIEW') and (path.startswith('/images/') or path == '/resume.pdf'):
+            f = resolve(ROOT, path)
         if not f:
             return self.send(404, 'Not found')
         data = f.read_bytes()
@@ -348,7 +561,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         path = urlparse(self.path).path
         n = int(self.headers.get('Content-Length') or 0)
-        if n > 1_000_000:
+        if n > 40_000_000:
             return self.send(413, '{}', 'application/json')
         body = json.loads(self.rfile.read(n) or b'{}')
         if path == '/__editor/save':
@@ -357,6 +570,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if any(r.get('mode') == 'source' for r in res):
                 built = run_build(self.site)
             return self.send(200, json.dumps({'results': res, 'rebuilt': built}), 'application/json')
+        if path == '/__editor/op':
+            r = struct_op(self.site, body)
+            r['rebuilt'] = run_build(self.site) if r['ok'] else False
+            return self.send(200, json.dumps(r), 'application/json')
         if path == '/__editor/undo':
             r = undo(self.site)
             r['rebuilt'] = run_build(self.site)
@@ -400,6 +617,8 @@ def main():
             print(line)
         return
     Handler.site = site
+    if site.env.get('SE_PREVIEW'):
+        run_build(site)
     srv = Server(('127.0.0.1', site.port), Handler)
     url = 'http://127.0.0.1:%d/' % site.port
     print('Editing %s at %s  (double-click any text; Ctrl+C to stop)' % (site.name, url))
